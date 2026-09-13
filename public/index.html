@@ -166,7 +166,7 @@
     display:flex;
     flex-direction:column;
     box-shadow:0 0 40px rgba(0,0,0,0.15);
-    overflow-x:hidden;
+    overflow:hidden;
   }
 
   /* ---------- Masthead ---------- */
@@ -672,6 +672,8 @@
 
   /* Section screen — full category view with back-to-home navigation */
   .section-screen{
+    visibility:hidden;
+    pointer-events:none;
     position:absolute;
     inset:0;
     background:var(--paper);
@@ -682,7 +684,7 @@
     transition:transform .26s cubic-bezier(.2,.7,.3,1);
     overflow-y:auto;
   }
-  .section-screen.open{transform:translateX(0);}
+  .section-screen.open{transform:translateX(0); visibility:visible; pointer-events:auto;}
   .section-screen-content{
     padding:14px 16px calc(40px + env(safe-area-inset-bottom, 0px));
   }
@@ -691,6 +693,8 @@
   /* Article detail overlay */
   .card{cursor:pointer;}
   .detail-overlay{
+    visibility:hidden;
+    pointer-events:none;
     position:absolute;
     inset:0;
     background:var(--paper);
@@ -701,7 +705,7 @@
     transition:transform .28s cubic-bezier(.2,.7,.3,1);
     overflow-y:auto;
   }
-  .detail-overlay.open{transform:translateY(0);}
+  .detail-overlay.open{transform:translateY(0); visibility:visible; pointer-events:auto;}
   .detail-header{
     position:sticky;
     top:0;
@@ -1063,7 +1067,7 @@
 </style>
 
 <style id="burbreek-language-toggle-css">
-#languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:transparent}
+#languageToggle{display:inline-flex;align-items:center;gap:2px;margin-top:5px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.18);border-radius:999px;background:rgba(255,255,255,.72);}
 #languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:.82rem}
 #languageToggle button.active{background:currentColor;color:#fff}
 @media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:.75rem}}
@@ -2163,7 +2167,7 @@
     async function loadAnalytics(){
       try{
         const cfg = await fetch('/api/config').then(r => r.ok ? r.json() : null);
-        if(!cfg || !cfg.analyticsEnabled) return;
+        if(!cfg || !cfg.analyticsEnabled || !cfg.gaMeasurementId) { console.info('[BURBREEK] GA4 not enabled: set GA_MEASUREMENT_ID in Render environment variables.'); return; }
         const script = document.createElement('script');
         script.async = true;
         script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(cfg.gaMeasurementId);
@@ -2218,6 +2222,12 @@
     async function runProductSearch(query){
       const q = String(query || '').trim();
       if(!q) return;
+      try{
+        const saved = JSON.parse(localStorage.getItem('burbreek_location_v1') || 'null');
+        if(saved && Number.isFinite(saved.lat) && Number.isFinite(saved.lng) && saved.confirmed){
+          compareLocation = {lat:saved.lat,lng:saved.lng};
+        }
+      }catch(e){}
       const data = await compareFetch(`/api/compare/search?q=${encodeURIComponent(q)}&userId=${encodeURIComponent(compareUserId)}${compareLocation.lat !== null ? `&lat=${compareLocation.lat}&lng=${compareLocation.lng}` : ''}`);
       const results = document.getElementById('compareResults');
       if(!results) return;
@@ -2264,19 +2274,41 @@
 
     setupComparison();
 
+    function localizedArticleField(article, field, lang){
+      if(lang !== 'hi') return article[field] ?? '';
+      return article[`${field}_hi`]
+        ?? article[`${field}Hi`]
+        ?? article.translations?.hi?.[field]
+        ?? article.hi?.[field]
+        ?? article[field]
+        ?? (field === 'headline' ? article.title : '')
+        ?? (field === 'dek' ? article.description : '')
+        ?? (field === 'source' ? article.source?.name : '')
+        ?? '';
+    }
+
     async function loadLiveNews(){
-      const data = await tryFetch('/api/news/trending');
+      const lang = localStorage.getItem('burbreek_language') === 'hi' ? 'hi' : 'en';
+      const data = await tryFetch('/api/news/trending?lang=' + lang);
       if(!data || !data.articles || !data.articles.length) return;
       const list = document.getElementById('trendingList');
-      list.innerHTML = data.articles.slice(0, 6).map(a => `
-        <a class="card" style="--accent:var(--red)" href="${a.url}" target="_blank" rel="noopener">
-          <div class="card-top"><span class="tag">${a.tag}</span><span class="dot"></span><span class="time">${new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>
-          <div class="headline">${a.headline}</div>
-          <div class="dek">${a.dek || ''}</div>
-          <div class="meta-row"><span>${a.source}</span></div>
-        </a>`).join('');
+      list.innerHTML = data.articles.slice(0, 6).map(a => {
+        const tag = localizedArticleField(a, 'tag', lang);
+        const headline = localizedArticleField(a, 'headline', lang);
+        const dek = localizedArticleField(a, 'dek', lang);
+        const source = localizedArticleField(a, 'source', lang);
+        return `
+        <a class="card" style="--accent:var(--red)" href="${a.url || '#'}" target="_blank" rel="noopener">
+          <div class="card-top"><span class="tag">${tag}</span><span class="dot"></span><span class="time">${a.time ? new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</span></div>
+          <div class="headline">${headline}</div>
+          <div class="dek">${dek}</div>
+          <div class="meta-row"><span>${source}</span></div>
+        </a>`;
+      }).join('');
       bindCardClicks();
     }
+
+    window.addEventListener('burbreek-language-change', () => loadLiveNews());
 
     async function loadLiveMarkets(){
       const data = await tryFetch('/api/markets');
@@ -2355,53 +2387,59 @@
 (function(){
   const KEY='burbreek_language';
   const dict={
-    en:{News:'News',Markets:'Markets',IPOs:'IPOs',Grocery:'Grocery',Fuel:'Fuel',Fashion:'Fashion',Movies:'Movies',Settings:'Settings',Live:'Live',Read:'Read',Source:'Source',English:'English',Hindi:'हिंदी',Feed:'Feed',Trending:'Trending',Startup:'Startup',Funding:'Funding',AI:'AI',IPO:'IPO',Politics:'Politics',Reels:'Reels','Good to Know':'Good to Know',Reviews:'Reviews',Tickets:'Tickets'},
-    hi:{News:'समाचार',Markets:'बाज़ार',IPOs:'आईपीओ',Grocery:'किराना',Fuel:'ईंधन',Fashion:'फैशन',Movies:'फ़िल्में',Settings:'सेटिंग्स',Live:'लाइव',Read:'पढ़ें',Source:'स्रोत',English:'अंग्रेज़ी',Hindi:'हिंदी',Feed:'फ़ीड',Trending:'ट्रेंडिंग',Startup:'स्टार्टअप',Funding:'फंडिंग',AI:'एआई',IPO:'आईपीओ',Politics:'राजनीति',Reels:'रील्स','Good to Know':'जानने योग्य',Reviews:'रिव्यू',Tickets:'टिकट्स'}
+    en:{
+      'All':'All','Trending':'Trending','Startup':'Startup','Funding':'Funding','AI':'AI','Markets':'Markets','IPO':'IPO','Politics':'Politics','Reels':'Reels','Good to Know':'Good to Know','Reviews':'Reviews','Tickets':'Tickets','Grocery Rates':'Grocery Rates','Trade Orders':'Trade Orders','Fashion by Age':'Fashion by Age','Fuel Prices':'Fuel Prices','Settings':'Settings',
+      'Trending Now':'Trending Now','Startup.news':'Startup.news','Funding Watch':'Funding Watch','AI News':'AI News','Stock Market':'Stock Market','Upcoming IPO':'Upcoming IPO','Political News':'Political News','Top 10 Reels · Worldwide':'Top 10 Reels · Worldwide','Good to Know':'Good to Know','Movies | Web Series Review':'Movies | Web Series Review','Ticket Price Compare':'Ticket Price Compare','Grocery Rate Compare':'Grocery Rate Compare','Trade Order Compare':'Trade Order Compare','Fashion Trends by Age':'Fashion Trends by Age','Fuel Price Compare':'Fuel Price Compare',
+      'Feed':'Feed','Markets':'Markets','Reels':'Reels','Reviews':'Reviews','Tickets':'Tickets','Back':'Back','Home':'Home','Save for later':'Save for later','Share':'Share','Also covered by':'Also covered by','sources':'sources','Live':'Live','Read':'Read','Source':'Source','Headline':'Headline','Settings':'Settings','Digest & personalization':'Digest & personalization','Morning brief':'Morning brief','Evening brief':'Evening brief','Pin sections you visit often':'Pin sections you visit often','Reset pinned sections':'Reset pinned sections',
+      'Use my location':'Use my location','Local results enabled':'Local results enabled','Location on ✓':'Location on ✓','Use your location for nearby prices & recommendations':'Use your location for nearby prices & recommendations','One permission. Used across grocery, fuel, tickets and local comparisons.':'One permission. Used across grocery, fuel, tickets and local comparisons.','Your confirmed location is used across nearby prices and comparisons.':'Your confirmed location is used across nearby prices and comparisons.'
+    },
+    hi:{
+      'All':'सभी','Trending':'ट्रेंडिंग','Startup':'स्टार्टअप','Funding':'फंडिंग','AI':'एआई','Markets':'बाज़ार','IPO':'आईपीओ','Politics':'राजनीति','Reels':'रील्स','Good to Know':'जानने योग्य','Reviews':'रिव्यू','Tickets':'टिकट्स','Grocery Rates':'किराना दरें','Trade Orders':'ट्रेड ऑर्डर','Fashion by Age':'उम्र के अनुसार फैशन','Fuel Prices':'ईंधन कीमतें','Settings':'सेटिंग्स',
+      'Trending Now':'अभी ट्रेंडिंग','Startup.news':'स्टार्टअप न्यूज़','Funding Watch':'फंडिंग वॉच','AI News':'एआई न्यूज़','Stock Market':'शेयर बाज़ार','Upcoming IPO':'आगामी आईपीओ','Political News':'राजनीतिक समाचार','Top 10 Reels · Worldwide':'दुनिया की टॉप 10 रील्स','Good to Know':'जानने योग्य','Movies | Web Series Review':'फ़िल्म | वेब सीरीज़ रिव्यू','Ticket Price Compare':'टिकट कीमत तुलना','Grocery Rate Compare':'किराना दर तुलना','Trade Order Compare':'ट्रेड ऑर्डर तुलना','Fashion Trends by Age':'उम्र के अनुसार फैशन ट्रेंड','Fuel Price Compare':'ईंधन कीमत तुलना',
+      'Feed':'फ़ीड','Markets':'बाज़ार','Reels':'रील्स','Reviews':'रिव्यू','Tickets':'टिकट्स','Back':'वापस','Home':'होम','Save for later':'बाद के लिए सेव करें','Share':'शेयर करें','Also covered by':'इन स्रोतों ने भी कवर किया','sources':'स्रोत','Live':'लाइव','Read':'पढ़ें','Source':'स्रोत','Headline':'शीर्षक','Settings':'सेटिंग्स','Digest & personalization':'डाइजेस्ट और निजीकरण','Morning brief':'सुबह का ब्रीफ','Evening brief':'शाम का ब्रीफ','Pin sections you visit often':'अक्सर देखे जाने वाले सेक्शन पिन करें','Reset pinned sections':'पिन किए गए सेक्शन रीसेट करें',
+      'Use my location':'मेरी लोकेशन इस्तेमाल करें','Local results enabled':'लोकल रिज़ल्ट चालू हैं','Location on ✓':'लोकेशन चालू ✓','Use your location for nearby prices & recommendations':'नज़दीकी कीमतों और सुझावों के लिए अपनी लोकेशन इस्तेमाल करें','One permission. Used across grocery, fuel, tickets and local comparisons.':'एक अनुमति। किराना, ईंधन, टिकट और लोकल तुलना में उपयोग होगी।','Your confirmed location is used across nearby prices and comparisons.':'आपकी पुष्टि की गई लोकेशन नज़दीकी कीमतों और तुलना में उपयोग होगी।'
+    }
   };
-  const exactNodes=Object.keys(dict.en);
   const originals=new WeakMap();
 
-  const style=document.createElement('style');
-  style.textContent=`
-    #languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.14);border-radius:999px;background:rgba(255,255,255,.72);font-family:inherit}
-    #languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:11px;font-weight:700;line-height:1}
-    #languageToggle button.active{background:#181818;color:#fff}
-    #languageToggle button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
-    @media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:10px}}
-  `;
-  document.head.appendChild(style);
+  function translateStaticText(lang){
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{
+      if(n.parentElement?.closest('#languageToggle')) return;
+      if(!originals.has(n)) originals.set(n,n.nodeValue);
+      const raw=originals.get(n), t=raw.trim();
+      if(Object.prototype.hasOwnProperty.call(dict.en,t)){
+        n.nodeValue=raw.replace(t,dict[lang][t] ?? t);
+      }
+    });
+  }
 
   function setLang(lang){
     lang=lang==='hi'?'hi':'en';
     localStorage.setItem(KEY,lang);
-    document.documentElement.lang=lang;
+    window.BURBREEK_LANG=lang;
+    document.documentElement.lang=lang==='hi'?'hi-IN':'en-IN';
     document.querySelectorAll('#languageToggle button').forEach(b=>{
       const active=b.dataset.lang===lang;
       b.classList.toggle('active',active);
       b.setAttribute('aria-pressed',active?'true':'false');
     });
-    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-    const nodes=[];
-    while(walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach(n=>{
-      if(!originals.has(n)) originals.set(n,n.nodeValue);
-      const raw=originals.get(n);
-      const t=raw.trim();
-      if(exactNodes.includes(t)){
-        const translated=dict[lang][t]||t;
-        n.nodeValue=raw.replace(t,translated);
-      }
-    });
+    translateStaticText(lang);
+    window.dispatchEvent(new CustomEvent('burbreek-language-change',{detail:{lang}}));
   }
 
   function init(){
-    const host=document.querySelector('.masthead-right') || document.querySelector('header') || document.body;
+    const host=document.querySelector('.masthead-right') || document.querySelector('header');
     if(host && !document.getElementById('languageToggle')){
-      const wrap=document.createElement('span');
-      wrap.innerHTML='<span id="languageToggle" role="group" aria-label="Language"><button type="button" data-lang="en" aria-label="English">EN</button><button type="button" data-lang="hi" aria-label="Hindi">हिंदी</button></span>';
-      host.appendChild(wrap.firstElementChild);
+      const el=document.createElement('span');
+      el.innerHTML='<span id="languageToggle" role="group" aria-label="Language"><button type="button" data-lang="en" aria-label="English">EN</button><button type="button" data-lang="hi" aria-label="Hindi">हिंदी</button></span>';
+      host.appendChild(el.firstElementChild);
     }
-    document.querySelectorAll('#languageToggle button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+    document.querySelectorAll('#languageToggle button').forEach(b=>{
+      b.addEventListener('click',()=>setLang(b.dataset.lang));
+    });
     setLang(localStorage.getItem(KEY)||'en');
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
