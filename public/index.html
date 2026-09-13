@@ -6,6 +6,9 @@
 <title>BURBREEK — Live Price Tracker &amp; Daily Brief</title>
 <meta name="description" content="BURBREEK — live price tracking, everyday comparisons, news, markets and weather in one fast, focused app.">
 <meta name="application-name" content="BURBREEK">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<link rel="canonical" href="https://burbreek.com/">
+<meta name="keywords" content="BURBREEK, news, live prices, grocery prices, fuel prices, markets, IPOs, startups, AI news, product comparison">
 <meta property="og:title" content="BURBREEK — Live Price Tracker &amp; Daily Brief">
 <meta property="og:description" content="Track prices, compare everyday products, and stay informed with BURBREEK.">
 <meta property="og:type" content="website">
@@ -1049,12 +1052,32 @@
   .hidden{display:none !important;}
 </style>
 
+<style id="burbreek-global-location-css">
+.global-loc-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:10px 11px;margin:0 0 14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.global-loc-copy{min-width:0}
+.global-loc-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;line-height:1.1}
+.global-loc-sub{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--ink-soft);margin-top:3px;line-height:1.35}
+.global-loc-btn{flex:none;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;padding:7px 10px;border-radius:4px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;white-space:nowrap}
+.global-loc-btn.on{background:var(--green);border-color:var(--green)}
+.global-loc-bar.confirmed{display:none}
+</style>
+
 <style id="burbreek-language-toggle-css">
 #languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:transparent}
 #languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:.82rem}
 #languageToggle button.active{background:currentColor;color:#fff}
 @media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:.75rem}}
 </style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {"@type":"WebSite","@id":"https://burbreek.com/#website","url":"https://burbreek.com/","name":"BURBREEK","description":"Fast daily news, live market snapshots and everyday price comparisons."},
+    {"@type":"WebApplication","@id":"https://burbreek.com/#app","url":"https://burbreek.com/","name":"BURBREEK","applicationCategory":"NewsApplication","operatingSystem":"Web","inLanguage":["en-IN","hi-IN"]},
+    {"@type":"Organization","@id":"https://burbreek.com/#organization","name":"BURBREEK","url":"https://burbreek.com/","logo":{"@type":"ImageObject","url":"https://burbreek.com/logo.svg"}}
+  ]
+}
+</script>
 </head>
 <body>
 <div class="frame" id="appFrame" data-mood="clear">
@@ -1124,6 +1147,14 @@
   <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Back to top">↑ Top</button>
 
   <div class="feed" id="feed">
+
+    <div class="global-loc-bar" id="globalLocationBar">
+      <div class="global-loc-copy">
+        <div class="global-loc-title" id="globalLocationTitle">Use your location for nearby prices &amp; recommendations</div>
+        <div class="global-loc-sub" id="globalLocationSub">One permission. Used across grocery, fuel, tickets and local comparisons.</div>
+      </div>
+      <button class="global-loc-btn" id="globalLocationBtn" type="button">Use my location</button>
+    </div>
 
     <!-- TRENDING -->
     <section class="section" id="sec-trending">
@@ -1297,10 +1328,6 @@
     <!-- GROCERY -->
     <section class="section" id="sec-grocery">
       <div class="section-head"><span class="section-title">Grocery Rate Compare</span><span class="section-sub">Reliance · DMart · Blinkit · Flipkart · Amazon</span></div>
-      <div class="loc-bar">
-        <div class="loc-text" id="groceryLocText">Showing <b>city-average</b> rates · enable location for nearby store prices</div>
-        <button class="loc-btn" id="groceryLocBtn" onclick="detectLocation('grocery')">Use my location</button>
-      </div>
 
       <div class="compare-tools">
         <div class="compare-search">
@@ -1525,10 +1552,6 @@
     <!-- FUEL PRICES -->
     <section class="section" id="sec-fuel">
       <div class="section-head"><span class="section-title">Fuel Price Compare</span><span class="section-sub">By provider, per litre</span></div>
-      <div class="loc-bar">
-        <div class="loc-text" id="fuelLocText">Showing <b>city-average</b> rates · enable location for nearest pumps</div>
-        <button class="loc-btn" id="fuelLocBtn" onclick="detectLocation('fuel')">Use my location</button>
-      </div>
 
       <div class="grocery-card">
         <div class="grocery-top"><span class="grocery-item">Petrol</span><span class="grocery-unit">per litre</span></div>
@@ -1583,10 +1606,6 @@
     <!-- TICKETS -->
     <section class="section" id="sec-tickets">
       <div class="section-head"><span class="section-title">Ticket Price Compare</span><span class="section-sub">Cinema &amp; showtime</span></div>
-      <div class="loc-bar">
-        <div class="loc-text" id="ticketsLocText">Showing <b>city-wide</b> cinemas · enable location for nearest first</div>
-        <button class="loc-btn" id="ticketsLocBtn" onclick="detectLocation('tickets')">Use my location</button>
-      </div>
 
       <div class="ticket-card">
         <div class="ticket-film">Kaal — 2D</div>
@@ -1867,34 +1886,73 @@
     return x - Math.floor(x);
   }
 
-  function detectLocation(scope){
-    const btn = document.getElementById(scope + 'LocBtn');
-    const text = document.getElementById(scope + 'LocText');
+  const LOCATION_KEY = 'burbreek_location_v1';
+
+  function getSavedLocation(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(LOCATION_KEY) || 'null');
+      if(saved && Number.isFinite(saved.lat) && Number.isFinite(saved.lng) && saved.confirmed) return saved;
+    }catch(e){}
+    return null;
+  }
+
+  function setGlobalLocationUI(saved){
+    const bar = document.getElementById('globalLocationBar');
+    const btn = document.getElementById('globalLocationBtn');
+    const title = document.getElementById('globalLocationTitle');
+    const sub = document.getElementById('globalLocationSub');
+    if(!bar || !btn || !title || !sub) return;
+    if(saved){
+      bar.classList.add('confirmed');
+      btn.classList.add('on');
+      btn.textContent = 'Location on ✓';
+      title.textContent = 'Local results enabled';
+      sub.textContent = 'Your confirmed location is used across nearby prices and comparisons.';
+    }else{
+      bar.classList.remove('confirmed');
+      btn.classList.remove('on');
+      btn.textContent = 'Use my location';
+      title.textContent = 'Use your location for nearby prices & recommendations';
+      sub.textContent = 'One permission. Used across grocery, fuel, tickets and local comparisons.';
+    }
+  }
+
+  function detectLocation(){
+    const btn = document.getElementById('globalLocationBtn');
+    if(!btn) return;
     if(!navigator.geolocation){
-      text.innerHTML = 'Location not available in this browser.';
+      document.getElementById('globalLocationSub').textContent = 'Location is not available in this browser.';
       return;
     }
     btn.textContent = 'Locating…';
     navigator.geolocation.getCurrentPosition(
       pos => {
-        const seed = Math.abs(pos.coords.latitude + pos.coords.longitude);
-        btn.textContent = 'Located ✓';
-        btn.classList.add('on');
-        text.innerHTML = 'Showing rates from ' + (scope === 'tickets' ? 'cinemas' : 'stores') + ' <b>nearest you</b>';
-        applyNearby(scope, seed);
-        if(scope === 'grocery'){
-          const userId = localStorage.getItem('brief_user_id');
-          if(userId){
-            fetch('/api/compare/location',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId,latitude:pos.coords.latitude,longitude:pos.coords.longitude})}).catch(()=>{});
-          }
+        const lat = Number(pos.coords.latitude);
+        const lng = Number(pos.coords.longitude);
+        const saved = {lat,lng,confirmed:true,confirmedAt:new Date().toISOString()};
+        localStorage.setItem(LOCATION_KEY, JSON.stringify(saved));
+        setGlobalLocationUI(saved);
+        const seed = Math.abs(lat + lng);
+        ['grocery','fuel','tickets'].forEach(scope => applyNearby(scope, seed));
+        const userId = localStorage.getItem('brief_user_id');
+        if(userId){
+          fetch('/api/compare/location',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId,latitude:lat,longitude:lng})}).catch(()=>{});
         }
       },
-      err => {
+      () => {
         btn.textContent = 'Use my location';
-        text.innerHTML = 'Location permission denied · showing city-average rates';
+        document.getElementById('globalLocationSub').textContent = 'Location permission denied · showing broader rates.';
       },
-      { enableHighAccuracy:false, timeout:8000 }
+      {enableHighAccuracy:false, timeout:8000, maximumAge:300000}
     );
+  }
+
+  document.getElementById('globalLocationBtn')?.addEventListener('click', detectLocation);
+  const savedLocation = getSavedLocation();
+  if(savedLocation){
+    setGlobalLocationUI(savedLocation);
+    const savedSeed = Math.abs(savedLocation.lat + savedLocation.lng);
+    ['grocery','fuel','tickets'].forEach(scope => applyNearby(scope, savedSeed));
   }
 
   function applyNearby(scope, seed){
@@ -2132,7 +2190,8 @@
       if(!id){ id = (crypto.randomUUID ? crypto.randomUUID() : 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2)); localStorage.setItem(key, id); }
       return id;
     })();
-    let compareLocation = { lat:null, lng:null };
+    const savedCompareLocation = (() => { try { return JSON.parse(localStorage.getItem('burbreek_location_v1') || 'null'); } catch(e) { return null; } })();
+    let compareLocation = (savedCompareLocation && Number.isFinite(savedCompareLocation.lat) && Number.isFinite(savedCompareLocation.lng)) ? {lat:savedCompareLocation.lat,lng:savedCompareLocation.lng} : {lat:null,lng:null};
 
     async function compareFetch(url, options){
       try{
@@ -2296,39 +2355,53 @@
 (function(){
   const KEY='burbreek_language';
   const dict={
-    en:{'News':'News','Markets':'Markets','IPOs':'IPOs','Grocery':'Grocery','Fuel':'Fuel','Fashion':'Fashion','Movies':'Movies','Settings':'Settings','Live':'Live','Read':'Read','Source':'Source','English':'English','Hindi':'हिंदी'},
-    hi:{'News':'समाचार','Markets':'बाज़ार','IPOs':'आईपीओ','Grocery':'किराना','Fuel':'ईंधन','Fashion':'फैशन','Movies':'फ़िल्में','Settings':'सेटिंग्स','Live':'लाइव','Read':'पढ़ें','Source':'स्रोत','English':'अंग्रेज़ी','Hindi':'हिंदी'}
+    en:{News:'News',Markets:'Markets',IPOs:'IPOs',Grocery:'Grocery',Fuel:'Fuel',Fashion:'Fashion',Movies:'Movies',Settings:'Settings',Live:'Live',Read:'Read',Source:'Source',English:'English',Hindi:'हिंदी',Feed:'Feed',Trending:'Trending',Startup:'Startup',Funding:'Funding',AI:'AI',IPO:'IPO',Politics:'Politics',Reels:'Reels','Good to Know':'Good to Know',Reviews:'Reviews',Tickets:'Tickets'},
+    hi:{News:'समाचार',Markets:'बाज़ार',IPOs:'आईपीओ',Grocery:'किराना',Fuel:'ईंधन',Fashion:'फैशन',Movies:'फ़िल्में',Settings:'सेटिंग्स',Live:'लाइव',Read:'पढ़ें',Source:'स्रोत',English:'अंग्रेज़ी',Hindi:'हिंदी',Feed:'फ़ीड',Trending:'ट्रेंडिंग',Startup:'स्टार्टअप',Funding:'फंडिंग',AI:'एआई',IPO:'आईपीओ',Politics:'राजनीति',Reels:'रील्स','Good to Know':'जानने योग्य',Reviews:'रिव्यू',Tickets:'टिकट्स'}
   };
-  const exactNodes=['News','Markets','IPOs','Grocery','Fuel','Fashion','Movies','Settings','Live','Read','Source'];
+  const exactNodes=Object.keys(dict.en);
+  const originals=new WeakMap();
+
+  const style=document.createElement('style');
+  style.textContent=`
+    #languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.14);border-radius:999px;background:rgba(255,255,255,.72);font-family:inherit}
+    #languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:11px;font-weight:700;line-height:1}
+    #languageToggle button.active{background:#181818;color:#fff}
+    #languageToggle button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+    @media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:10px}}
+  `;
+  document.head.appendChild(style);
+
   function setLang(lang){
-    lang=(lang==='hi')?'hi':'en';
+    lang=lang==='hi'?'hi':'en';
     localStorage.setItem(KEY,lang);
-    document.documentElement.lang=lang==='hi'?'hi':'en';
-    document.querySelectorAll('[data-lang]').forEach(b=>{
-      const on=b.dataset.lang===lang;
-      b.classList.toggle('active',on); b.setAttribute('aria-pressed',on?'true':'false');
+    document.documentElement.lang=lang;
+    document.querySelectorAll('#languageToggle button').forEach(b=>{
+      const active=b.dataset.lang===lang;
+      b.classList.toggle('active',active);
+      b.setAttribute('aria-pressed',active?'true':'false');
     });
-    // Translate only exact, standalone UI labels; do not alter live article/content text.
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
     const nodes=[];
     while(walker.nextNode()) nodes.push(walker.currentNode);
     nodes.forEach(n=>{
-      const raw=n.nodeValue, t=raw.trim();
+      if(!originals.has(n)) originals.set(n,n.nodeValue);
+      const raw=originals.get(n);
+      const t=raw.trim();
       if(exactNodes.includes(t)){
-        const tr=dict[lang][t]||t;
-        n.nodeValue=raw.replace(t,tr);
+        const translated=dict[lang][t]||t;
+        n.nodeValue=raw.replace(t,translated);
       }
     });
   }
+
   function init(){
-    const host=document.querySelector('header')||document.querySelector('nav')||document.body;
-    if(!document.getElementById('languageToggle') && host){
-      const wrap=document.createElement('span'); wrap.innerHTML=`${toggle_html}`;
+    const host=document.querySelector('.masthead-right') || document.querySelector('header') || document.body;
+    if(host && !document.getElementById('languageToggle')){
+      const wrap=document.createElement('span');
+      wrap.innerHTML='<span id="languageToggle" role="group" aria-label="Language"><button type="button" data-lang="en" aria-label="English">EN</button><button type="button" data-lang="hi" aria-label="Hindi">हिंदी</button></span>';
       host.appendChild(wrap.firstElementChild);
     }
-    document.querySelectorAll('#languageToggle button').forEach(b=>{
-      b.addEventListener('click',()=>setLang(b.dataset.lang));
-    });
+    document.querySelectorAll('#languageToggle button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
     setLang(localStorage.getItem(KEY)||'en');
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
