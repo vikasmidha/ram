@@ -491,7 +491,7 @@
   .grocery-note b{color:var(--green);}
 
 
-  /* BURBREEK comparison engine */
+  /* BRIEF comparison engine */
   .compare-tools{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:12px;margin-bottom:10px;}
   .compare-search{display:flex;gap:7px;}
   .compare-search input{flex:1;border:1px solid var(--line);background:var(--paper);padding:9px 10px;border-radius:3px;font-family:inherit;font-size:12px;outline:none;}
@@ -1047,6 +1047,13 @@
   .nav-item .glyph{display:block; font-size:14px; margin-bottom:2px;}
   .nav-item.active{color:var(--paper); border-top-color:#F0A93B;}
   .hidden{display:none !important;}
+</style>
+
+<style id="burbreek-language-toggle-css">
+#languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:transparent}
+#languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:.82rem}
+#languageToggle button.active{background:currentColor;color:#fff}
+@media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:.75rem}}
 </style>
 </head>
 <body>
@@ -1615,7 +1622,7 @@
   <div class="detail-overlay" id="detailOverlay">
     <div class="detail-header">
       <button class="detail-back" id="detailBackBtn" aria-label="Back to feed">← Back</button>
-      <span class="detail-source" id="detailSource">BURBREEK</span>
+      <span class="detail-source" id="detailSource">Brief</span>
     </div>
     <div class="detail-body-wrap">
       <span class="detail-tag" id="detailTag">Tag</span>
@@ -2026,7 +2033,7 @@
 
   function fillerParagraphs(headline, dek){
     const p2 = `Officials familiar with the matter say further details are expected over the next few days, as reactions continue to come in from stakeholders directly affected by the development.`;
-    const p3 = `This is a developing story. BURBREEK will update this card automatically as more verified reporting comes in from its source network.`;
+    const p3 = `This is a developing story. Brief will update this card automatically as more verified reporting comes in from its source network.`;
     return [dek || headline, p2, p3];
   }
 
@@ -2283,6 +2290,49 @@
     loadLivePrices('grocery', '#sec-grocery');
     loadLivePrices('fuel', '#sec-fuel');
   })();
+</script>
+
+<script id="burbreek-language-toggle">
+(function(){
+  const KEY='burbreek_language';
+  const dict={
+    en:{'News':'News','Markets':'Markets','IPOs':'IPOs','Grocery':'Grocery','Fuel':'Fuel','Fashion':'Fashion','Movies':'Movies','Settings':'Settings','Live':'Live','Read':'Read','Source':'Source','English':'English','Hindi':'हिंदी'},
+    hi:{'News':'समाचार','Markets':'बाज़ार','IPOs':'आईपीओ','Grocery':'किराना','Fuel':'ईंधन','Fashion':'फैशन','Movies':'फ़िल्में','Settings':'सेटिंग्स','Live':'लाइव','Read':'पढ़ें','Source':'स्रोत','English':'अंग्रेज़ी','Hindi':'हिंदी'}
+  };
+  const exactNodes=['News','Markets','IPOs','Grocery','Fuel','Fashion','Movies','Settings','Live','Read','Source'];
+  function setLang(lang){
+    lang=(lang==='hi')?'hi':'en';
+    localStorage.setItem(KEY,lang);
+    document.documentElement.lang=lang==='hi'?'hi':'en';
+    document.querySelectorAll('[data-lang]').forEach(b=>{
+      const on=b.dataset.lang===lang;
+      b.classList.toggle('active',on); b.setAttribute('aria-pressed',on?'true':'false');
+    });
+    // Translate only exact, standalone UI labels; do not alter live article/content text.
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{
+      const raw=n.nodeValue, t=raw.trim();
+      if(exactNodes.includes(t)){
+        const tr=dict[lang][t]||t;
+        n.nodeValue=raw.replace(t,tr);
+      }
+    });
+  }
+  function init(){
+    const host=document.querySelector('header')||document.querySelector('nav')||document.body;
+    if(!document.getElementById('languageToggle') && host){
+      const wrap=document.createElement('span'); wrap.innerHTML=`${toggle_html}`;
+      host.appendChild(wrap.firstElementChild);
+    }
+    document.querySelectorAll('#languageToggle button').forEach(b=>{
+      b.addEventListener('click',()=>setLang(b.dataset.lang));
+    });
+    setLang(localStorage.getItem(KEY)||'en');
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
 </script>
 </body>
 </html>
