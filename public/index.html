@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRIEF — Short News, Fast</title>
+<meta name="description" content="BRIEF — a fast, focused briefing for news, markets, weather and everyday price comparison.">
+<meta name="theme-color" content="#EDEAE3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEAE3;
+    --paper-raised:#F7F5F0;
+    --ink:#1B1B1B;
+    --ink-soft:#5B584F;
+    --line:#D8D3C6;
+    --red:#C4402A;      /* Political */
+    --violet:#6B4EE6;   /* AI */
+    --orange:#E0742A;   /* Startup */
+    --green:#2A7D4F;    /* Market */
+    --blue:#2F5FA8;     /* IPO */
+    --pink:#C43D7C;     /* Reels */
+    --gold:#B08A2E;     /* Good to know */
+    --teal:#1F7A78;     /* Movies/Reviews */
+    --slate:#4A5568;    /* Tickets */
+    --amber:#C97A1E;    /* Funding */
+    --mood-a:#C99A3B;   /* mood accent, default "Clear" — brass/gold */
+    --mood-b:#8A5A00;
+  }
+  [data-mood="rainy"]{ --mood-a:#4E7CA8; --mood-b:#1F3348; }
+  [data-mood="winter"]{ --mood-a:#7FA9BE; --mood-b:#2B4A57; }
+  [data-mood="summer"]{ --mood-a:#E0742A; --mood-b:#B0451E; }
+  [data-mood="clear"]{ --mood-a:#C99A3B; --mood-b:#8A5A00; }
+
+  .mood-ribbon{
+    height:4px;
+    background:linear-gradient(90deg, var(--mood-a), var(--mood-b));
+    transition:background .4s ease;
+  }
+  .logo-row{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .seal{
+    width:22px; height:22px;
+    border-radius:50%;
+    border:1.5px solid var(--mood-a);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Archivo Black',sans-serif;
+    font-size:10px;
+    color:var(--mood-a);
+    flex:none;
+    transition:border-color .4s ease, color .4s ease;
+  }
+  .masthead-right{text-align:right;}
+  .edition-line{
+    font-family:'JetBrains Mono',monospace;
+    font-size:8.5px;
+    letter-spacing:0.4px;
+    color:var(--mood-a);
+    transition:color .4s ease;
+  }
+  .mood-summary{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    background:none;
+    border:none;
+    padding:6px 0 0;
+    margin:0;
+    cursor:pointer;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+  }
+  .mood-chevron{
+    transition:transform .2s ease;
+    color:var(--mood-a);
+    flex:none;
+    margin-left:8px;
+  }
+  .mood-summary[aria-expanded="true"] .mood-chevron{transform:rotate(180deg);}
+  .mood-panel{
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    transition:max-height .22s ease, opacity .18s ease, margin .22s ease;
+  }
+  .mood-panel.expanded{
+    max-height:110px;
+    opacity:1;
+    margin-top:8px;
+  }
+  .mood-caption{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-style:italic;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .mood-chips{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .mood-chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    padding:5px 9px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--paper-raised);
+    cursor:pointer;
+    color:var(--ink-soft);
+  }
+  .mood-chip.active{
+    border-color:var(--mood-a);
+    color:var(--ink);
+    background:#fff;
+  }
+  .mood-chip.time-feel{
+    cursor:default;
+    margin-left:auto;
+    color:var(--mood-a);
+    border-color:transparent;
+    background:transparent;
+    font-weight:500;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:#DAD5C8; height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .frame{
+    width:100%;
+    max-width:430px;
+    min-height:100vh;
+    background:var(--paper);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 0 40px rgba(0,0,0,0.15);
+    overflow-x:hidden;
+  }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    padding:10px 16px 8px;
+    border-bottom:3px solid var(--ink);
+  }
+  .masthead-top{
+    display:flex; justify-content:space-between; align-items:baseline;
+  }
+  .logo{
+    font-family:'Archivo Black',sans-serif;
+    font-size:21px;
+    letter-spacing:-0.5px;
+  }
+  .logo span{color:var(--red);}
+  .date-line{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .tagline{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+  .tagline-sub{
+    font-weight:500;
+    letter-spacing:0.6px;
+    color:var(--mood-a);
+    transition:color .4s ease;
+  }
+
+  /* ---------- Ticker ---------- */
+  .ticker-wrap{
+    background:var(--ink);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:5px 0;
+    border-bottom:1px solid var(--ink);
+  }
+  .ticker-track{
+    display:inline-block;
+    padding-left:100%;
+    animation:scroll-left 34s linear infinite;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--paper);
+  }
+  .ticker-track b{color:var(--mood-a, #F0A93B); margin-right:6px; transition:color .4s ease;}
+  .ticker-track .sep{color:#666; margin:0 18px;}
+  @keyframes scroll-left{
+    0%{transform:translateX(0);}
+    100%{transform:translateX(-100%);}
+  }
+
+  /* ---------- Category pills ---------- */
+  .pill-row{
+    display:flex;
+    gap:7px;
+    padding:8px 16px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    border-bottom:1px solid var(--line);
+    background:var(--paper-raised);
+  }
+  .pill-row::-webkit-scrollbar{display:none;}
+  .pill-row::after,
+  .reel-strip::after,
+  .age-tabs::after,
+  .trend-scroll::after,
+  .market-strip::after{
+    content:"";
+    flex:none;
+    width:6px;
+  }
+  .pill{
+    flex:none;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    padding:5px 11px;
+    border-radius:3px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .pill.active{
+    background:var(--ink);
+    color:var(--paper);
+  }
+
+  /* ---------- Feed ---------- */
+  .feed{
+    flex:1;
+    padding:14px 16px calc(100px + env(safe-area-inset-bottom, 0px));
+    overflow-x:hidden;
+  }
+  .section{
+    margin-bottom:26px;
+  }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:10px;
+    padding-bottom:6px;
+    border-bottom:2px solid var(--ink);
+  }
+  .section-title{
+    font-family:'Archivo Black',sans-serif;
+    font-size:16px;
+    letter-spacing:-0.2px;
+  }
+  .section-sub{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+
+  .card{
+    display:block;
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent, var(--ink));
+    border-radius:2px;
+    padding:11px 12px;
+    margin-bottom:8px;
+  }
+  .card-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:5px;
+  }
+  .tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    font-weight:500;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--accent, var(--ink));
+  }
+  .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-soft);}
+  .time{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--ink-soft);
+  }
+  .headline{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    line-height:1.22;
+    margin-bottom:4px;
+  }
+  .dek{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.4;
+  }
+  .meta-row{
+    display:flex;
+    gap:12px;
+    margin-top:7px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+  }
+  .meta-row b{color:var(--ink);}
+
+  /* Reels strip */
+  .reel-strip{
+    display:flex;
+    gap:9px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    padding-bottom:4px;
+  }
+  .reel-strip::-webkit-scrollbar{display:none;}
+  .reel-card{
+    flex:none;
+    width:108px;
+    height:172px;
+    border-radius:8px;
+    background:linear-gradient(160deg, var(--pink), #2b1633);
+    position:relative;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    overflow:hidden;
+    border:1px solid var(--ink);
+  }
+  .reel-rank{
+    font-family:'Archivo Black',sans-serif;
+    font-size:26px;
+    color:rgba(255,255,255,0.85);
+    text-shadow:0 1px 3px rgba(0,0,0,0.4);
+  }
+  .reel-label{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:11.5px;
+    color:#fff;
+    line-height:1.15;
+  }
+  .reel-views{
+    font-family:'JetBrains Mono',monospace;
+    font-size:8.5px;
+    color:rgba(255,255,255,0.75);
+  }
+
+  /* Ticket comparison table */
+  .ticket-card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:12px;
+    margin-bottom:8px;
+  }
+  .ticket-film{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    margin-bottom:8px;
+  }
+  .ticket-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+    border-top:1px dashed var(--line);
+    font-size:12px;
+  }
+  .cinema-name{font-weight:600;}
+  .cinema-time{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+  }
+  .price-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:500;
+    font-size:12.5px;
+    padding:2px 7px;
+    border-radius:3px;
+    background:var(--slate);
+    color:#fff;
+  }
+  .price-tag.best{background:var(--green);}
+
+  /* Grocery price compare */
+  .grocery-card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:11px 12px;
+    margin-bottom:8px;
+  }
+  .grocery-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+  }
+  .grocery-item{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:15px;
+  }
+  .grocery-unit{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+  }
+  .store-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(62px, 1fr));
+    gap:6px;
+  }
+  .store-chip{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:6px 4px;
+    text-align:center;
+  }
+  .store-chip.best{
+    border-color:var(--green);
+    background:#E7F3EB;
+  }
+  .store-name{
+    font-family:'JetBrains Mono',monospace;
+    font-size:8px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    letter-spacing:0.2px;
+  }
+  .store-price{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    margin-top:2px;
+  }
+  .store-chip.best .store-price{color:var(--green);}
+  .grocery-note{
+    margin-top:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--ink-soft);
+  }
+  .grocery-note b{color:var(--green);}
+
+
+  /* BRIEF comparison engine */
+  .compare-tools{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:12px;margin-bottom:10px;}
+  .compare-search{display:flex;gap:7px;}
+  .compare-search input{flex:1;border:1px solid var(--line);background:var(--paper);padding:9px 10px;border-radius:3px;font-family:inherit;font-size:12px;outline:none;}
+  .compare-search button,.compare-chip{border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:8px 10px;font-family:inherit;font-size:10px;cursor:pointer;}
+  .compare-search button{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .compare-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--ink-soft);margin:11px 0 6px;}
+  .compare-chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .compare-chip:hover{border-color:var(--green);}
+  .compare-results{display:grid;gap:8px;margin-bottom:10px;}
+  .compare-result{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:10px 12px;}
+  .compare-result-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+  .compare-result-name{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;}
+  .compare-best{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);}
+  .compare-empty{padding:10px 0;font-size:11px;color:var(--ink-soft);}
+  .compare-meta{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--ink-soft);margin-top:5px;}
+
+  /* Trade order compare */
+  .trade-card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-left:4px solid var(--slate);
+    border-radius:2px;
+    padding:11px 12px;
+    margin-bottom:8px;
+  }
+  .trade-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+  }
+  .trade-symbol{
+    font-family:'Archivo Black',sans-serif;
+    font-size:15px;
+  }
+  .trade-ltp{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+  }
+  .broker-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:7px 0;
+    border-top:1px dashed var(--line);
+    font-size:12px;
+  }
+  .broker-name{font-weight:600;}
+  .broker-sub{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--ink-soft);
+  }
+  .order-actions{display:flex; gap:6px;}
+  .btn-order{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    font-weight:500;
+    padding:5px 10px;
+    border-radius:3px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    cursor:pointer;
+  }
+  .btn-order.buy{border-color:var(--green); color:var(--green);}
+  .btn-order.sell{border-color:var(--red); color:var(--red);}
+  .btn-order.lowest{background:var(--green); color:#fff; border-color:var(--green);}
+
+  /* Location bar */
+  .loc-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    background:var(--paper);
+    border:1px dashed var(--line);
+    border-radius:4px;
+    padding:8px 10px;
+    margin-bottom:12px;
+  }
+  .loc-text{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+  }
+  .loc-text b{color:var(--ink);}
+  .loc-btn{
+    flex:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    font-weight:500;
+    padding:6px 10px;
+    border-radius:3px;
+    border:1.5px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .loc-btn.on{background:var(--green); border-color:var(--green);}
+  .dist-chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:8px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  /* Fashion by age */
+  .age-tabs{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    margin-bottom:12px;
+  }
+  .age-tabs::-webkit-scrollbar{display:none;}
+  .age-tab{
+    flex:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    font-weight:500;
+    padding:6px 11px;
+    border-radius:12px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .age-tab.active{background:var(--ink); color:var(--paper);}
+  .age-block{margin-bottom:18px;}
+  .age-block.hidden{display:none;}
+  .age-block-title{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .trend-scroll{
+    display:flex;
+    gap:9px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    padding-bottom:4px;
+  }
+  .trend-scroll::-webkit-scrollbar{display:none;}
+  .trend-card{
+    flex:none;
+    width:150px;
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:10px;
+  }
+  .trend-swatches{
+    display:flex;
+    gap:4px;
+    margin-bottom:8px;
+  }
+  .swatch{width:16px; height:16px; border-radius:50%; border:1px solid rgba(0,0,0,0.15);}
+  .trend-name{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    line-height:1.2;
+    margin-bottom:4px;
+  }
+  .trend-desc{
+    font-size:10.5px;
+    color:var(--ink-soft);
+    line-height:1.35;
+  }
+
+  /* Section screen — full category view with back-to-home navigation */
+  .section-screen{
+    position:absolute;
+    inset:0;
+    background:var(--paper);
+    z-index:40;
+    display:flex;
+    flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .26s cubic-bezier(.2,.7,.3,1);
+    overflow-y:auto;
+  }
+  .section-screen.open{transform:translateX(0);}
+  .section-screen-content{
+    padding:14px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+  .section-screen-content .section{margin-bottom:0;}
+
+  /* Article detail overlay */
+  .card{cursor:pointer;}
+  .detail-overlay{
+    position:absolute;
+    inset:0;
+    background:var(--paper);
+    z-index:50;
+    display:flex;
+    flex-direction:column;
+    transform:translateY(100%);
+    transition:transform .28s cubic-bezier(.2,.7,.3,1);
+    overflow-y:auto;
+  }
+  .detail-overlay.open{transform:translateY(0);}
+  .detail-header{
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    border-bottom:2px solid var(--ink);
+    z-index:2;
+  }
+  .detail-back{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--ink);
+    padding:4px 6px;
+    margin-left:-6px;
+  }
+  .detail-source{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  .detail-body-wrap{
+    padding:18px 18px 60px;
+  }
+  .detail-tag{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    color:var(--accent-d, var(--ink));
+    border:1px solid var(--accent-d, var(--ink));
+    border-radius:3px;
+    padding:3px 8px;
+    margin-bottom:12px;
+  }
+  .detail-headline{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:25px;
+    line-height:1.16;
+    margin-bottom:10px;
+  }
+  .detail-meta{
+    display:flex;
+    gap:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+    padding-bottom:14px;
+    margin-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .detail-meta b{color:var(--ink);}
+  .detail-para{
+    font-size:14.5px;
+    line-height:1.62;
+    color:#2A2A24;
+    margin-bottom:14px;
+  }
+  .detail-para:first-of-type::first-letter{
+    font-family:'Archivo Black',sans-serif;
+    font-size:38px;
+    float:left;
+    line-height:0.8;
+    padding:5px 6px 0 0;
+    color:var(--ink);
+  }
+  .detail-sources{
+    margin-top:20px;
+    padding-top:14px;
+    border-top:2px solid var(--ink);
+  }
+  .detail-sources-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .detail-source-chip{
+    display:inline-block;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-weight:500;
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:5px 9px;
+    margin:0 6px 6px 0;
+  }
+  .detail-actions{
+    display:flex;
+    gap:8px;
+    margin-top:18px;
+  }
+  .detail-action-btn{
+    flex:1;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    font-weight:500;
+    padding:10px;
+    border-radius:3px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    cursor:pointer;
+  }
+  .detail-action-btn.primary{background:var(--ink); color:var(--paper);}
+
+  /* Live badge */
+  .live-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--red);
+    text-transform:uppercase;
+  }
+  .live-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--red);
+    animation:pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:0.35; transform:scale(0.7);}
+  }
+  .refresh-note{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--ink-soft);
+    margin:-4px 0 10px;
+  }
+  .skeleton{
+    background:linear-gradient(90deg, var(--paper-raised) 25%, var(--paper) 50%, var(--paper-raised) 75%);
+    background-size:200% 100%;
+    animation:shimmer 1.1s linear infinite;
+    border-radius:3px;
+  }
+  @keyframes shimmer{
+    0%{background-position:200% 0;}
+    100%{background-position:-200% 0;}
+  }
+
+  /* Pinned */
+  .pinned-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    font-weight:500;
+    color:#8A5A00;
+    background:#FCE9C2;
+    border:1px solid #E8C77E;
+    border-radius:3px;
+    padding:3px 7px;
+    margin-bottom:10px;
+  }
+  .section.pinned-section{
+    border-top:2px dashed #E8C77E;
+    padding-top:10px;
+  }
+
+  /* Settings */
+  .settings-card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:12px;
+    margin-bottom:10px;
+  }
+  .settings-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 0;
+    border-top:1px dashed var(--line);
+  }
+  .settings-row:first-child{border-top:none; padding-top:0;}
+  .settings-label{font-size:13px; font-weight:600;}
+  .settings-sub{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .switch{
+    position:relative;
+    width:38px; height:21px;
+    flex:none;
+    cursor:pointer;
+  }
+  .switch input{opacity:0; width:0; height:0;}
+  .switch .track{
+    position:absolute; inset:0;
+    background:#C7C2B2;
+    border-radius:11px;
+    transition:.15s;
+  }
+  .switch .knob{
+    position:absolute; top:2px; left:2px;
+    width:17px; height:17px;
+    background:#fff;
+    border-radius:50%;
+    transition:.15s;
+    box-shadow:0 1px 2px rgba(0,0,0,0.25);
+  }
+  .switch input:checked + .track{background:var(--green);}
+  .switch input:checked + .track .knob{transform:translateX(17px);}
+  .pin-progress-row{
+    display:flex;
+    justify-content:space-between;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    padding:5px 0;
+    border-top:1px dashed var(--line);
+  }
+  .pin-progress-row b{color:var(--ink);}
+  .reset-btn{
+    margin-top:8px;
+    width:100%;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    padding:8px;
+    border-radius:3px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    cursor:pointer;
+  }
+
+  /* Market strip */
+  .market-strip{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    margin-bottom:10px;
+  }
+  .market-strip::-webkit-scrollbar{display:none;}
+  .idx-card{
+    flex:none;
+    background:var(--ink);
+    color:var(--paper);
+    padding:9px 12px;
+    border-radius:4px;
+    min-width:108px;
+  }
+  .idx-name{font-family:'JetBrains Mono',monospace; font-size:9px; color:#B9B5A8;}
+  .idx-val{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:16px; margin-top:2px;}
+  .idx-chg{font-family:'JetBrains Mono',monospace; font-size:10px; margin-top:1px;}
+  .up{color:#5FBE87;}
+  .down{color:#E6786A;}
+
+  /* Collapsible header */
+  .app-header{
+    position:sticky;
+    top:0;
+    z-index:30;
+    background:var(--paper);
+    transition:box-shadow .25s ease;
+  }
+  .app-header.scrolled{
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  }
+  /* Tagline shrinks away once scrolled, keeping only the compact logo/date
+     row + one-line mood summary visible — maximizes reading room. */
+  .app-header .tagline{
+    max-height:30px;
+    opacity:1;
+    overflow:hidden;
+    transition:max-height .22s ease, opacity .16s ease, margin .22s ease;
+  }
+  .app-header.scrolled .tagline{max-height:0; opacity:0; margin-top:0;}
+  .app-header.scrolled .masthead{padding-bottom:6px;}
+  .app-header.scrolled .mood-panel.expanded{max-height:0; opacity:0; margin-top:0;}
+  /* Ticker + category tabs: only needed while browsing, not while reading —
+     they slide away on scroll-down and reappear the moment the user scrolls up. */
+  .app-header .ticker-wrap,
+  .app-header .pill-row{
+    max-height:60px;
+    overflow:hidden;
+    transition:max-height .22s ease, opacity .18s ease, padding .22s ease, border-color .22s ease;
+  }
+  .app-header.tabs-hidden .ticker-wrap{max-height:0; opacity:0; padding-top:0; padding-bottom:0; border-color:transparent;}
+  .app-header.tabs-hidden .pill-row{max-height:0; opacity:0; padding-top:0; padding-bottom:0; border-color:transparent;}
+
+  /* Quick jump back to top once header has collapsed, appears bottom-right above footer */
+  .scroll-top-btn{
+    position:fixed;
+    right:calc(50% - 205px);
+    bottom:72px;
+    z-index:25;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    padding:8px 12px;
+    border-radius:16px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    box-shadow:0 3px 10px rgba(0,0,0,0.25);
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(8px);
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .scroll-top-btn.visible{opacity:1; pointer-events:auto; transform:translateY(0);}
+  @media (max-width:430px){
+    .scroll-top-btn{right:16px;}
+  }
+
+  /* Footer: compact by default, tucks fully away while actively reading,
+     reappears on scroll-up so navigation is never more than a gesture away */
+  .bottom-nav{transition:transform .22s ease;}
+  .bottom-nav.nav-hidden{transform:translateY(100%);}
+  .bottom-nav{
+    position:sticky;
+    bottom:0;
+    display:flex;
+    background:var(--ink);
+    border-top:3px solid var(--ink);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  .nav-item{
+    flex:1;
+    text-align:center;
+    padding:7px 4px 9px;
+    color:#8B8778;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    cursor:pointer;
+    border-top:2px solid transparent;
+  }
+  .nav-item .glyph{display:block; font-size:14px; margin-bottom:2px;}
+  .nav-item.active{color:var(--paper); border-top-color:#F0A93B;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="frame" id="appFrame" data-mood="clear">
+
+<header class="app-header" id="appHeader">
+  <div class="mood-ribbon" id="moodRibbon"></div>
+
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="logo-row">
+        <div class="seal">B</div>
+        <div class="logo">BRIEF<span>.</span></div>
+      </div>
+      <div class="masthead-right">
+        <div class="edition-line" id="editionLine">EDITION No. 214</div>
+        <div class="date-line" id="dateLine">SUN, AUG 16</div>
+      </div>
+    </div>
+    <div class="tagline">Every story. Ten seconds. No fluff. <span class="tagline-sub">Prepared exclusively for you.</span></div>
+
+    <button class="mood-summary" id="moodSummaryBtn" aria-expanded="false">
+      <span id="moodSummaryText">☀️ Clear · Morning read · Est. 4 min</span>
+      <span class="mood-chevron" id="moodChevron">▾</span>
+    </button>
+    <div class="mood-panel" id="moodPanel">
+      <span class="mood-caption" id="moodCaption">Clear skies, sharp focus — your briefing is ready. Est. read: 4 min.</span>
+      <div class="mood-chips" id="moodChips">
+        <button class="mood-chip active" data-mood="clear">☀️ Clear</button>
+        <button class="mood-chip" data-mood="rainy">🌧️ Rainy</button>
+        <button class="mood-chip" data-mood="winter">❄️ Winter</button>
+        <button class="mood-chip" data-mood="summer">🌤️ Summer</button>
+        <span class="mood-chip time-feel" id="timeFeel">Morning read</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <b>BREAKING</b>Parliament winter session dates announced<span class="sep">//</span>
+      <b>MARKET</b>Nifty closes flat, IT stocks drag<span class="sep">//</span>
+      <b>AI</b>New open-weight model tops reasoning charts<span class="sep">//</span>
+      <b>IPO</b>Logistics-tech firm files DRHP for ₹2,200 Cr issue<span class="sep">//</span>
+      <b>STARTUP</b>Foodtech platform raises Series B<span class="sep">//</span>
+    </div>
+  </div>
+
+  <div class="pill-row" id="pillRow">
+    <button class="pill active" data-target="all">All</button>
+    <button class="pill" data-target="trending">Trending</button>
+    <button class="pill" data-target="startup">Startup</button>
+    <button class="pill" data-target="funding">Funding</button>
+    <button class="pill" data-target="ai">AI</button>
+    <button class="pill" data-target="market">Markets</button>
+    <button class="pill" data-target="ipo">IPO</button>
+    <button class="pill" data-target="politics">Politics</button>
+    <button class="pill" data-target="reels">Reels</button>
+    <button class="pill" data-target="gtk">Good to Know</button>
+    <button class="pill" data-target="reviews">Reviews</button>
+    <button class="pill" data-target="tickets">Tickets</button>
+    <button class="pill" data-target="grocery">Grocery Rates</button>
+    <button class="pill" data-target="trade">Trade Orders</button>
+    <button class="pill" data-target="fashion">Fashion by Age</button>
+    <button class="pill" data-target="fuel">Fuel Prices</button>
+    <button class="pill" data-target="settings">Settings</button>
+  </div>
+</header>
+
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Back to top">↑ Top</button>
+
+  <div class="feed" id="feed">
+
+    <!-- TRENDING -->
+    <section class="section" id="sec-trending">
+      <div class="section-head"><span class="section-title">Trending Now</span><span class="live-badge"><span class="live-dot"></span>Live</span></div>
+      <div class="refresh-note" id="trendingRefreshNote">Auto-updates as new stories break · last refresh: just now</div>
+
+      <div id="trendingList">
+      <a class="card" style="--accent:var(--red)">
+        <div class="card-top"><span class="tag">Politics</span><span class="dot"></span><span class="time" data-mins="12">12 min ago</span></div>
+        <div class="headline">Parliament to convene early for winter session amid bill logjam</div>
+        <div class="dek">Government signals push to clear five pending bills before year-end; opposition seeks debate time.</div>
+        <div class="meta-row"><span><b>18</b> sources</span><span>Read: 45s</span></div>
+      </a>
+
+      <a class="card" style="--accent:var(--violet)">
+        <div class="card-top"><span class="tag">AI</span><span class="dot"></span><span class="time" data-mins="40">40 min ago</span></div>
+        <div class="headline">New open-weight model claims top spot on reasoning benchmark</div>
+        <div class="dek">Lab says the release undercuts closed-model pricing by 70% at similar performance.</div>
+        <div class="meta-row"><span><b>9</b> sources</span><span>Read: 30s</span></div>
+      </a>
+
+      <a class="card" style="--accent:var(--green)">
+        <div class="card-top"><span class="tag">Markets</span><span class="dot"></span><span class="time" data-mins="60">1 hr ago</span></div>
+        <div class="headline">Nifty ends flat as IT drags, banks hold the line</div>
+        <div class="dek">Broader market breadth stayed positive; FIIs turned net buyers after six sessions.</div>
+        <div class="meta-row"><span><b>22</b> sources</span><span>Read: 35s</span></div>
+      </a>
+      </div>
+    </section>
+
+    <!-- STARTUP -->
+    <section class="section" id="sec-startup">
+      <div class="section-head"><span class="section-title">Startup.news</span><span class="section-sub">Founders &amp; product</span></div>
+
+      <a class="card" style="--accent:var(--orange)">
+        <div class="card-top"><span class="tag">Startup</span><span class="dot"></span><span class="time">2 hr ago</span></div>
+        <div class="headline">D2C skincare brand crosses ₹100 Cr ARR, eyes offline push</div>
+        <div class="dek">Three-year-old brand plans 200 store-in-store counters by next fiscal.</div>
+      </a>
+      <a class="card" style="--accent:var(--orange)">
+        <div class="card-top"><span class="tag">Startup</span><span class="dot"></span><span class="time">3 hr ago</span></div>
+        <div class="headline">Two IIT-grads' agri-logistics startup partners with state mandis</div>
+        <div class="dek">Pilot cuts post-harvest spoilage by a claimed 18% across four districts.</div>
+      </a>
+    </section>
+
+    <!-- FUNDING -->
+    <section class="section" id="sec-funding">
+      <div class="section-head"><span class="section-title">Funding Watch</span><span class="section-sub">Rounds this week</span></div>
+
+      <a class="card" style="--accent:var(--amber)">
+        <div class="card-top"><span class="tag">Funding</span><span class="dot"></span><span class="time">5 hr ago</span></div>
+        <div class="headline">Foodtech platform raises $40M Series B, led by returning investor</div>
+        <div class="meta-row"><span><b>Stage:</b> Series B</span><span><b>Sector:</b> Foodtech</span></div>
+      </a>
+      <a class="card" style="--accent:var(--amber)">
+        <div class="card-top"><span class="tag">Funding</span><span class="dot"></span><span class="time">yesterday</span></div>
+        <div class="headline">Climate-tech firm secures seed round from three angel syndicates</div>
+        <div class="meta-row"><span><b>Stage:</b> Seed</span><span><b>Sector:</b> Climate</span></div>
+      </a>
+    </section>
+
+    <!-- AI -->
+    <section class="section" id="sec-ai">
+      <div class="section-head"><span class="section-title">AI News</span><span class="section-sub">Models, labs, policy</span></div>
+
+      <a class="card" style="--accent:var(--violet)">
+        <div class="card-top"><span class="tag">AI</span><span class="dot"></span><span class="time">40 min ago</span></div>
+        <div class="headline">New open-weight model tops reasoning charts</div>
+        <div class="dek">Undercuts closed-model API pricing while matching benchmark scores.</div>
+      </a>
+      <a class="card" style="--accent:var(--violet)">
+        <div class="card-top"><span class="tag">AI</span><span class="dot"></span><span class="time">6 hr ago</span></div>
+        <div class="headline">Regulator proposes disclosure rule for AI-generated ads</div>
+        <div class="dek">Draft rule would require a visible label on synthetic media used in advertising.</div>
+      </a>
+    </section>
+
+    <!-- MARKET -->
+    <section class="section" id="sec-market">
+      <div class="section-head"><span class="section-title">Stock Market</span><span class="section-sub">Live snapshot</span></div>
+      <div class="market-strip">
+        <div class="idx-card"><div class="idx-name">SENSEX</div><div class="idx-val">--</div><div class="idx-chg">Waiting for market data</div></div>
+        <div class="idx-card"><div class="idx-name">NIFTY 50</div><div class="idx-val">--</div><div class="idx-chg">Waiting for market data</div></div>
+        <div class="idx-card"><div class="idx-name">BANK NIFTY</div><div class="idx-val">--</div><div class="idx-chg">Waiting for market data</div></div>
+        <div class="idx-card"><div class="idx-name">NASDAQ</div><div class="idx-val">--</div><div class="idx-chg">Waiting for market data</div></div>
+      </div>
+      <a class="card" style="--accent:var(--green)">
+        <div class="card-top"><span class="tag">Markets</span><span class="dot"></span><span class="time">1 hr ago</span></div>
+        <div class="headline">FIIs turn net buyers after six straight sessions of selling</div>
+        <div class="dek">₹2,340 Cr inflow led by financials and auto; DIIs stayed net sellers.</div>
+      </a>
+    </section>
+
+    <!-- IPO -->
+    <section class="section" id="sec-ipo">
+      <div class="section-head"><span class="section-title">Upcoming IPO</span><span class="section-sub">Filings &amp; listings</span></div>
+
+      <a class="card" style="--accent:var(--blue)">
+        <div class="card-top"><span class="tag">IPO</span><span class="dot"></span><span class="time">today</span></div>
+        <div class="headline">Logistics-tech firm files DRHP for ₹2,200 Cr issue</div>
+        <div class="meta-row"><span><b>Opens:</b> TBA</span><span><b>Lot size:</b> TBA</span></div>
+      </a>
+      <a class="card" style="--accent:var(--blue)">
+        <div class="card-top"><span class="tag">IPO</span><span class="dot"></span><span class="time">2 days left</span></div>
+        <div class="headline">Specialty-chemicals maker's ₹850 Cr IPO closes Wednesday</div>
+        <div class="meta-row"><span><b>GMP:</b> ₹38</span><span><b>Subscribed:</b> 4.2x</span></div>
+      </a>
+    </section>
+
+    <!-- POLITICS -->
+    <section class="section" id="sec-politics">
+      <div class="section-head"><span class="section-title">Political News</span><span class="section-sub">Center &amp; states</span></div>
+
+      <a class="card" style="--accent:var(--red)">
+        <div class="card-top"><span class="tag">Politics</span><span class="dot"></span><span class="time">12 min ago</span></div>
+        <div class="headline">Parliament to convene early for winter session amid bill logjam</div>
+        <div class="dek">Five pending bills targeted before year-end; opposition seeks extended debate time.</div>
+      </a>
+      <a class="card" style="--accent:var(--red)">
+        <div class="card-top"><span class="tag">Politics</span><span class="dot"></span><span class="time">4 hr ago</span></div>
+        <div class="headline">State cabinet clears new industrial land policy</div>
+        <div class="dek">Policy aims to cut clearance timelines from 90 to 30 days.</div>
+      </a>
+    </section>
+
+    <!-- REELS -->
+    <section class="section" id="sec-reels">
+      <div class="section-head"><span class="section-title">Top 10 Reels · Worldwide</span><span class="section-sub">Short-form, ranked</span></div>
+      <div class="reel-strip">
+        <div class="reel-card"><div class="reel-rank">01</div><div><div class="reel-label">Northern lights over three continents in one night</div><div class="reel-views">48.2M views</div></div></div>
+        <div class="reel-card" style="background:linear-gradient(160deg, var(--teal), #0e2b2a);"><div class="reel-rank">02</div><div><div class="reel-label">Street chef's 90-second dumpling fold</div><div class="reel-views">31.7M views</div></div></div>
+        <div class="reel-card" style="background:linear-gradient(160deg, var(--orange), #3a1f0a);"><div class="reel-rank">03</div><div><div class="reel-label">Robot dog learns stairs, faceplants gracefully</div><div class="reel-views">27.9M views</div></div></div>
+        <div class="reel-card" style="background:linear-gradient(160deg, var(--blue), #0d1f38);"><div class="reel-rank">04</div><div><div class="reel-label">Free-diver's silent descent to 40m</div><div class="reel-views">22.4M views</div></div></div>
+        <div class="reel-card" style="background:linear-gradient(160deg, var(--violet), #1c1030);"><div class="reel-rank">05</div><div><div class="reel-label">AI restores 1920s street footage in color</div><div class="reel-views">19.8M views</div></div></div>
+      </div>
+    </section>
+
+    <!-- GOOD TO KNOW -->
+    <section class="section" id="sec-gtk">
+      <div class="section-head"><span class="section-title">Good to Know</span><span class="section-sub">Useful, not urgent</span></div>
+
+      <a class="card" style="--accent:var(--gold)">
+        <div class="card-top"><span class="tag">Explainer</span><span class="dot"></span><span class="time">today</span></div>
+        <div class="headline">New credit-card rule kicks in next month — what changes for you</div>
+        <div class="dek">Billing-cycle and interest disclosure norms get simpler, mandatory statements.</div>
+      </a>
+      <a class="card" style="--accent:var(--gold)">
+        <div class="card-top"><span class="tag">Explainer</span><span class="dot"></span><span class="time">yesterday</span></div>
+        <div class="headline">Flight refund window extended for weather cancellations</div>
+        <div class="dek">Airlines must now process refunds within 7 working days, regulator says.</div>
+      </a>
+    </section>
+
+    <!-- MOVIES / WEB SERIES REVIEW -->
+    <section class="section" id="sec-reviews">
+      <div class="section-head"><span class="section-title">Movies | Web Series Review</span><span class="section-sub">Ratings at a glance</span></div>
+
+      <a class="card" style="--accent:var(--teal)">
+        <div class="card-top"><span class="tag">Movie Review</span><span class="dot"></span><span class="time">★ 4.1/5</span></div>
+        <div class="headline">"Kaal" — a taut thriller that trims the fat</div>
+        <div class="dek">Tight 2hr runtime, strong second half. Skips the usual interval-block padding.</div>
+      </a>
+      <a class="card" style="--accent:var(--teal)">
+        <div class="card-top"><span class="tag">Series Review</span><span class="dot"></span><span class="time">★ 3.6/5</span></div>
+        <div class="headline">Season 2 of "Undertow" trades pace for world-building</div>
+        <div class="dek">Slower start, but episodes 5–8 pay it off. Worth the binge.</div>
+      </a>
+    </section>
+
+    <!-- GROCERY -->
+    <section class="section" id="sec-grocery">
+      <div class="section-head"><span class="section-title">Grocery Rate Compare</span><span class="section-sub">Reliance · DMart · Blinkit · Flipkart · Amazon</span></div>
+      <div class="loc-bar">
+        <div class="loc-text" id="groceryLocText">Showing <b>city-average</b> rates · enable location for nearby store prices</div>
+        <button class="loc-btn" id="groceryLocBtn" onclick="detectLocation('grocery')">Use my location</button>
+      </div>
+
+      <div class="compare-tools">
+        <div class="compare-search">
+          <input id="compareSearchInput" type="search" placeholder="Search a product — e.g. atta, milk, oil" autocomplete="off">
+          <button id="compareSearchBtn" type="button">Search</button>
+        </div>
+        <div class="compare-label">Daily essentials</div>
+        <div class="compare-chips" id="dailyEssentialChips"></div>
+        <div class="compare-label">Recommended for you</div>
+        <div class="compare-chips" id="recommendedChips"><span class="compare-meta">Builds from your searches and comparisons</span></div>
+      </div>
+      <div class="compare-results" id="compareResults"></div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Cooking Oil (Sunflower)</span><span class="grocery-unit">per 1L</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">Reliance</div><div class="store-price">₹149</div></div>
+          <div class="store-chip best"><div class="store-name">DMart</div><div class="store-price">₹132</div></div>
+          <div class="store-chip"><div class="store-name">Blinkit</div><div class="store-price">₹155</div></div>
+          <div class="store-chip"><div class="store-name">Flipkart</div><div class="store-price">₹144</div></div>
+          <div class="store-chip"><div class="store-name">Amazon</div><div class="store-price">₹147</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>DMart ₹132</b> · ₹23 below highest</div>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Wheat Flour (Atta)</span><span class="grocery-unit">per 5kg</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">Reliance</div><div class="store-price">₹219</div></div>
+          <div class="store-chip best"><div class="store-name">DMart</div><div class="store-price">₹205</div></div>
+          <div class="store-chip"><div class="store-name">Blinkit</div><div class="store-price">₹228</div></div>
+          <div class="store-chip"><div class="store-name">Flipkart</div><div class="store-price">₹215</div></div>
+          <div class="store-chip"><div class="store-name">Amazon</div><div class="store-price">₹221</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>DMart ₹205</b> · ₹23 below highest</div>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Moong Dal</span><span class="grocery-unit">per 1kg</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">Reliance</div><div class="store-price">₹128</div></div>
+          <div class="store-chip"><div class="store-name">DMart</div><div class="store-price">₹119</div></div>
+          <div class="store-chip"><div class="store-name">Blinkit</div><div class="store-price">₹135</div></div>
+          <div class="store-chip best"><div class="store-name">Flipkart</div><div class="store-price">₹117</div></div>
+          <div class="store-chip"><div class="store-name">Amazon</div><div class="store-price">₹122</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>Flipkart ₹117</b> · ₹18 below highest</div>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Jeera (Cumin Seeds)</span><span class="grocery-unit">per 100g</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">Reliance</div><div class="store-price">₹48</div></div>
+          <div class="store-chip"><div class="store-name">DMart</div><div class="store-price">₹44</div></div>
+          <div class="store-chip best"><div class="store-name">Blinkit</div><div class="store-price">₹42</div></div>
+          <div class="store-chip"><div class="store-name">Flipkart</div><div class="store-price">₹46</div></div>
+          <div class="store-chip"><div class="store-name">Amazon</div><div class="store-price">₹47</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>Blinkit ₹42</b> · ₹6 below highest</div>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Salt (Iodised)</span><span class="grocery-unit">per 1kg</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">Reliance</div><div class="store-price">₹22</div></div>
+          <div class="store-chip best"><div class="store-name">DMart</div><div class="store-price">₹19</div></div>
+          <div class="store-chip"><div class="store-name">Blinkit</div><div class="store-price">₹24</div></div>
+          <div class="store-chip"><div class="store-name">Flipkart</div><div class="store-price">₹21</div></div>
+          <div class="store-chip"><div class="store-name">Amazon</div><div class="store-price">₹23</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>DMart ₹19</b> · ₹5 below highest</div>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Red Chilli Powder</span><span class="grocery-unit">per 500g</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">Reliance</div><div class="store-price">₹112</div></div>
+          <div class="store-chip"><div class="store-name">DMart</div><div class="store-price">₹105</div></div>
+          <div class="store-chip"><div class="store-name">Blinkit</div><div class="store-price">₹118</div></div>
+          <div class="store-chip best"><div class="store-name">Flipkart</div><div class="store-price">₹101</div></div>
+          <div class="store-chip"><div class="store-name">Amazon</div><div class="store-price">₹109</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>Flipkart ₹101</b> · ₹17 below highest</div>
+      </div>
+    </section>
+
+    <!-- TRADE ORDERS -->
+    <section class="section" id="sec-trade">
+      <div class="section-head"><span class="section-title">Trade Order Compare</span><span class="section-sub">Broker price &amp; order ticket</span></div>
+
+      <div class="trade-card">
+        <div class="trade-top"><span class="trade-symbol">RELIANCE</span><span class="trade-ltp">LTP ₹2,946.10 <span style="color:var(--green)">▲0.6%</span></span></div>
+        <div class="broker-row">
+          <div><div class="broker-name">Zerodha</div><div class="broker-sub">Brokerage ₹20/order · Delivery free</div></div>
+          <div class="order-actions"><button class="btn-order buy">Buy</button><button class="btn-order sell">Sell</button></div>
+        </div>
+        <div class="broker-row">
+          <div><div class="broker-name">Groww</div><div class="broker-sub">Brokerage ₹20/order · Delivery free</div></div>
+          <div class="order-actions"><button class="btn-order buy">Buy</button><button class="btn-order sell">Sell</button></div>
+        </div>
+        <div class="broker-row">
+          <div><div class="broker-name">Upstox</div><div class="broker-sub">Brokerage ₹0.03% · Lowest fee here</div></div>
+          <div class="order-actions"><button class="btn-order lowest">Buy</button><button class="btn-order sell">Sell</button></div>
+        </div>
+      </div>
+
+      <div class="trade-card">
+        <div class="trade-top"><span class="trade-symbol">DMART</span><span class="trade-ltp">LTP ₹4,112.55 <span style="color:var(--red)">▼0.2%</span></span></div>
+        <div class="broker-row">
+          <div><div class="broker-name">Zerodha</div><div class="broker-sub">Brokerage ₹20/order · Delivery free</div></div>
+          <div class="order-actions"><button class="btn-order buy">Buy</button><button class="btn-order sell">Sell</button></div>
+        </div>
+        <div class="broker-row">
+          <div><div class="broker-name">Groww</div><div class="broker-sub">Brokerage ₹20/order · Delivery free</div></div>
+          <div class="order-actions"><button class="btn-order lowest">Buy</button><button class="btn-order sell">Sell</button></div>
+        </div>
+        <div class="broker-row">
+          <div><div class="broker-name">Upstox</div><div class="broker-sub">Brokerage ₹0.03% · flat per order</div></div>
+          <div class="order-actions"><button class="btn-order buy">Buy</button><button class="btn-order sell">Sell</button></div>
+        </div>
+      </div>
+
+      <div class="grocery-note" style="padding:0 2px;">Prices &amp; brokerage are illustrative. Route each order to the broker showing the best net price after fees.</div>
+    </section>
+
+    <!-- FASHION BY AGE -->
+    <section class="section" id="sec-fashion">
+      <div class="section-head"><span class="section-title">Fashion Trends by Age</span><span class="section-sub">What's in, by decade</span></div>
+
+      <div class="age-tabs" id="ageTabs">
+        <button class="age-tab active" data-age="teen">13–19</button>
+        <button class="age-tab" data-age="twenties">20–29</button>
+        <button class="age-tab" data-age="thirties">30–39</button>
+        <button class="age-tab" data-age="forties">40+</button>
+      </div>
+
+      <div class="age-block" data-age="teen">
+        <div class="age-block-title">Teens · 13–19</div>
+        <div class="trend-scroll">
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#111"></span><span class="swatch" style="background:#E8DFC8"></span><span class="swatch" style="background:#C43D7C"></span></div>
+            <div class="trend-name">Baggy cargos + cropped tees</div>
+            <div class="trend-desc">Oversized silhouettes, chunky sneakers, layered chains.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#6B4EE6"></span><span class="swatch" style="background:#fff"></span><span class="swatch" style="background:#000"></span></div>
+            <div class="trend-name">Y2K revival</div>
+            <div class="trend-desc">Low-rise, mini bags, butterfly clips, glossy makeup.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#2A7D4F"></span><span class="swatch" style="background:#E0742A"></span></div>
+            <div class="trend-name">Streetwear thrift mix</div>
+            <div class="trend-desc">Second-hand graphic tees paired with new-season sneakers.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="age-block hidden" data-age="twenties">
+        <div class="age-block-title">Young Adults · 20–29</div>
+        <div class="trend-scroll">
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#1B1B1B"></span><span class="swatch" style="background:#B08A2E"></span></div>
+            <div class="trend-name">Quiet luxury basics</div>
+            <div class="trend-desc">Tailored trousers, minimal logos, investment outerwear.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#2F5FA8"></span><span class="swatch" style="background:#F7F5F0"></span></div>
+            <div class="trend-name">Office-to-evening co-ords</div>
+            <div class="trend-desc">Matching sets that move from desk to dinner with one swap.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#1F7A78"></span><span class="swatch" style="background:#C97A1E"></span></div>
+            <div class="trend-name">Technical outdoor crossover</div>
+            <div class="trend-desc">Hiking-grade fabrics reworked into everyday city wear.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="age-block hidden" data-age="thirties">
+        <div class="age-block-title">30s · 30–39</div>
+        <div class="trend-scroll">
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#4A5568"></span><span class="swatch" style="background:#EDEAE3"></span></div>
+            <div class="trend-name">Elevated capsule wardrobe</div>
+            <div class="trend-desc">Fewer, better pieces built around neutral tones that mix freely.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#C4402A"></span><span class="swatch" style="background:#1B1B1B"></span></div>
+            <div class="trend-name">Structured blazers, relaxed denim</div>
+            <div class="trend-desc">Sharp on top, easy on the bottom — built for work and weekend.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#6B4EE6"></span><span class="swatch" style="background:#B08A2E"></span></div>
+            <div class="trend-name">Occasion-wear rentals</div>
+            <div class="trend-desc">Renting statement pieces for events instead of buying one-time wear.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="age-block hidden" data-age="forties">
+        <div class="age-block-title">40 and above</div>
+        <div class="trend-scroll">
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#1F7A78"></span><span class="swatch" style="background:#EDEAE3"></span></div>
+            <div class="trend-name">Comfort-first tailoring</div>
+            <div class="trend-desc">Soft-structured fabrics that hold shape without stiffness.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#2A7D4F"></span><span class="swatch" style="background:#4A5568"></span></div>
+            <div class="trend-name">Classic silhouettes, updated fabric</div>
+            <div class="trend-desc">Familiar cuts in newer, easy-care performance fabrics.</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-swatches"><span class="swatch" style="background:#B08A2E"></span><span class="swatch" style="background:#111"></span></div>
+            <div class="trend-name">Statement accessories</div>
+            <div class="trend-desc">Understated outfits lifted by one strong watch, bag, or scarf.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUEL PRICES -->
+    <section class="section" id="sec-fuel">
+      <div class="section-head"><span class="section-title">Fuel Price Compare</span><span class="section-sub">By provider, per litre</span></div>
+      <div class="loc-bar">
+        <div class="loc-text" id="fuelLocText">Showing <b>city-average</b> rates · enable location for nearest pumps</div>
+        <button class="loc-btn" id="fuelLocBtn" onclick="detectLocation('fuel')">Use my location</button>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Petrol</span><span class="grocery-unit">per litre</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">IOCL</div><div class="store-price">₹96.72</div></div>
+          <div class="store-chip"><div class="store-name">BPCL</div><div class="store-price">₹96.68</div></div>
+          <div class="store-chip best"><div class="store-name">HPCL</div><div class="store-price">₹96.55</div></div>
+          <div class="store-chip"><div class="store-name">Shell</div><div class="store-price">₹104.20</div></div>
+          <div class="store-chip"><div class="store-name">Jio-BP</div><div class="store-price">₹97.10</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>HPCL ₹96.55</b> · Shell runs premium-grade only</div>
+      </div>
+
+      <div class="grocery-card">
+        <div class="grocery-top"><span class="grocery-item">Diesel</span><span class="grocery-unit">per litre</span></div>
+        <div class="store-grid">
+          <div class="store-chip"><div class="store-name">IOCL</div><div class="store-price">₹89.62</div></div>
+          <div class="store-chip best"><div class="store-name">BPCL</div><div class="store-price">₹89.51</div></div>
+          <div class="store-chip"><div class="store-name">HPCL</div><div class="store-price">₹89.58</div></div>
+          <div class="store-chip"><div class="store-name">Shell</div><div class="store-price">₹96.40</div></div>
+          <div class="store-chip"><div class="store-name">Jio-BP</div><div class="store-price">₹89.90</div></div>
+        </div>
+        <div class="grocery-note">Cheapest: <b>BPCL ₹89.51</b> · prices revised daily at 6 AM</div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="section" id="sec-settings">
+      <div class="section-head"><span class="section-title">Settings</span><span class="section-sub">Digest &amp; personalization</span></div>
+
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-label">Morning brief</div><div class="settings-sub">Daily digest at 10:00 AM</div></div>
+          <label class="switch"><input type="checkbox" checked id="toggleMorning"><span class="track"><span class="knob"></span></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Evening brief</div><div class="settings-sub">Daily digest at 5:00 PM</div></div>
+          <label class="switch"><input type="checkbox" checked id="toggleEvening"><span class="track"><span class="knob"></span></span></label>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-label">Pin sections you visit often</div><div class="settings-sub">Tap a category 5x in one session to pin it to top</div></div>
+          <label class="switch"><input type="checkbox" checked id="togglePin"><span class="track"><span class="knob"></span></span></label>
+        </div>
+        <div id="pinProgress"></div>
+        <button class="reset-btn" id="resetPinsBtn" onclick="resetPins()">Reset pinned sections</button>
+      </div>
+    </section>
+
+    <!-- TICKETS -->
+    <section class="section" id="sec-tickets">
+      <div class="section-head"><span class="section-title">Ticket Price Compare</span><span class="section-sub">Cinema &amp; showtime</span></div>
+      <div class="loc-bar">
+        <div class="loc-text" id="ticketsLocText">Showing <b>city-wide</b> cinemas · enable location for nearest first</div>
+        <button class="loc-btn" id="ticketsLocBtn" onclick="detectLocation('tickets')">Use my location</button>
+      </div>
+
+      <div class="ticket-card">
+        <div class="ticket-film">Kaal — 2D</div>
+        <div class="ticket-row"><div><div class="cinema-name">PVR Forum Mall</div><div class="cinema-time">6:45 PM · Recliner</div></div><span class="price-tag">₹380</span></div>
+        <div class="ticket-row"><div><div class="cinema-name">INOX Garuda</div><div class="cinema-time">7:10 PM · Standard</div></div><span class="price-tag best">₹220</span></div>
+        <div class="ticket-row"><div><div class="cinema-name">Cinepolis Nexus</div><div class="cinema-time">9:30 PM · Standard</div></div><span class="price-tag">₹260</span></div>
+      </div>
+      <div class="ticket-card">
+        <div class="ticket-film">Undertow S2 — Watch Party Screening</div>
+        <div class="ticket-row"><div><div class="cinema-name">PVR Forum Mall</div><div class="cinema-time">8:00 PM · Standard</div></div><span class="price-tag best">₹199</span></div>
+        <div class="ticket-row"><div><div class="cinema-name">INOX Garuda</div><div class="cinema-time">8:20 PM · Recliner</div></div><span class="price-tag">₹340</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active" data-target="all"><span class="glyph">▤</span>Feed</div>
+    <div class="nav-item" data-target="market"><span class="glyph">▲</span>Markets</div>
+    <div class="nav-item" data-target="reels"><span class="glyph">▶</span>Reels</div>
+    <div class="nav-item" data-target="reviews"><span class="glyph">★</span>Reviews</div>
+    <div class="nav-item" data-target="tickets"><span class="glyph">▦</span>Tickets</div>
+  </div>
+
+  <div class="section-screen" id="sectionScreen">
+    <div class="detail-header">
+      <button class="detail-back" id="sectionBackBtn" aria-label="Back to main list">← Home</button>
+      <span class="detail-source" id="sectionScreenTitle">Section</span>
+    </div>
+    <div class="section-screen-content" id="sectionScreenContent"></div>
+  </div>
+
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-header">
+      <button class="detail-back" id="detailBackBtn" aria-label="Back to feed">← Back</button>
+      <span class="detail-source" id="detailSource">Brief</span>
+    </div>
+    <div class="detail-body-wrap">
+      <span class="detail-tag" id="detailTag">Tag</span>
+      <div class="detail-headline" id="detailHeadline">Headline</div>
+      <div class="detail-meta">
+        <span id="detailTime">Just now</span>
+        <span id="detailSourcesCount"><b>0</b> sources</span>
+        <span id="detailReadTime">Read: 30s</span>
+      </div>
+      <div id="detailBody"></div>
+      <div class="detail-sources">
+        <div class="detail-sources-title">Also covered by</div>
+        <div id="detailSourceChips"></div>
+      </div>
+      <div class="detail-actions">
+        <button class="detail-action-btn primary">Save for later</button>
+        <button class="detail-action-btn">Share</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const sections = {
+    trending: document.getElementById('sec-trending'),
+    startup: document.getElementById('sec-startup'),
+    funding: document.getElementById('sec-funding'),
+    ai: document.getElementById('sec-ai'),
+    market: document.getElementById('sec-market'),
+    ipo: document.getElementById('sec-ipo'),
+    politics: document.getElementById('sec-politics'),
+    reels: document.getElementById('sec-reels'),
+    gtk: document.getElementById('sec-gtk'),
+    reviews: document.getElementById('sec-reviews'),
+    tickets: document.getElementById('sec-tickets'),
+    grocery: document.getElementById('sec-grocery'),
+    trade: document.getElementById('sec-trade'),
+    fashion: document.getElementById('sec-fashion'),
+    fuel: document.getElementById('sec-fuel'),
+    settings: document.getElementById('sec-settings'),
+  };
+
+  const sectionTitles = {
+    trending:'Trending Now', startup:'Startup.news', funding:'Funding Watch', ai:'AI News',
+    market:'Stock Market', ipo:'Upcoming IPO', politics:'Political News', reels:'Top 10 Reels · Worldwide',
+    gtk:'Good to Know', reviews:'Movies | Web Series', tickets:'Ticket Price Compare',
+    grocery:'Grocery Rate Compare', trade:'Trade Order Compare', fashion:'Fashion Trends by Age',
+    fuel:'Fuel Price Compare', settings:'Settings'
+  };
+
+  const originalOrder = Object.keys(sections);
+  let feedOrder = [...originalOrder];
+  let openScreenKey = null;
+
+  const feedEl = document.getElementById('feed');
+  const sectionScreen = document.getElementById('sectionScreen');
+  const sectionScreenContent = document.getElementById('sectionScreenContent');
+  const sectionScreenTitle = document.getElementById('sectionScreenTitle');
+
+  // Re-lays out #feed to match feedOrder, skipping whichever section is
+  // currently pulled into the full-screen view (if any) so it isn't yanked
+  // out from under the user mid-read.
+  function renderFeedOrder(){
+    feedOrder.forEach(k => {
+      if(k === openScreenKey) return;
+      if(sections[k]) feedEl.appendChild(sections[k]);
+    });
+  }
+  renderFeedOrder();
+
+  function setActiveNav(target){
+    document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.target === target));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === target));
+  }
+
+  // Opens a category as its own full screen, sliding in from the right,
+  // with a dedicated "← Home" back button to return to the main list.
+  function openSectionScreen(target){
+    const el = sections[target];
+    if(!el) return;
+    openScreenKey = target;
+    sectionScreenTitle.textContent = sectionTitles[target] || target;
+    sectionScreenContent.appendChild(el);
+    sectionScreen.classList.add('open');
+    sectionScreen.scrollTop = 0;
+    setActiveNav(target);
+    bindCardClicks();
+  }
+
+  function closeSectionScreen(){
+    const previous = openScreenKey;
+    openScreenKey = null;
+    sectionScreen.classList.remove('open');
+    if(previous) renderFeedOrder();
+    setActiveNav('all');
+    feedEl.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  document.getElementById('sectionBackBtn').addEventListener('click', closeSectionScreen);
+
+  document.querySelectorAll('.pill').forEach(p => p.addEventListener('click', () => {
+    trackTap(p.dataset.target);
+    if(p.dataset.target === 'all') closeSectionScreen();
+    else openSectionScreen(p.dataset.target);
+  }));
+  document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => {
+    if(n.dataset.target === 'all') closeSectionScreen();
+    else openSectionScreen(n.dataset.target);
+  }));
+
+  // ---- Collapsing header / flexible footer ----
+  // Usability rules:
+  //  - Past a small threshold, secondary masthead info (eyebrow, tagline, mood row) tucks
+  //    away so the compact logo+date bar stays pinned without eating reading space.
+  //  - Ticker + category tabs are only needed while browsing, not while reading — they
+  //    slide out on scroll-down and slide back the instant the user scrolls up, so
+  //    navigation is always one small gesture away, never fully lost.
+  //  - Footer nav follows the same reveal-on-scroll-up pattern to keep max content visible.
+  //  - A small "back to top" chip appears once the header is collapsed, as a shortcut.
+  (function(){
+    const header = document.getElementById('appHeader');
+    const bottomNavEl = document.querySelector('.bottom-nav');
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    function update(){
+      const y = window.scrollY;
+      const goingDown = y > lastY;
+      const goingUp = y < lastY;
+
+      if(y > 8){
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+
+      // Only toggle tabs/footer visibility once we're past the header's own
+      // height, so it never flickers while the masthead itself is on screen —
+      // and only react to a real, deliberate scroll (avoids jitter on tiny moves).
+      const delta = Math.abs(y - lastY);
+      if(y > 140 && delta > 4){
+        if(goingDown){
+          header.classList.add('tabs-hidden');
+          bottomNavEl.classList.add('nav-hidden');
+        } else if(goingUp){
+          header.classList.remove('tabs-hidden');
+          bottomNavEl.classList.remove('nav-hidden');
+        }
+      } else if(y <= 140){
+        header.classList.remove('tabs-hidden');
+        bottomNavEl.classList.remove('nav-hidden');
+      }
+
+      scrollTopBtn.classList.toggle('visible', y > 260);
+
+      lastY = y;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if(!ticking){
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive:true });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top:0, behavior:'smooth' });
+    });
+  })();
+
+  // live-ish date
+  const d = new Date();
+  const opts = { weekday:'short', month:'short', day:'numeric' };
+  document.getElementById('dateLine').textContent = d.toLocaleDateString('en-US', opts).toUpperCase();
+
+  // Edition number — derived from day-of-year so it increments daily, like a real running circular
+  const startOfYear = new Date(d.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((d - startOfYear) / 86400000);
+  document.getElementById('editionLine').textContent = 'EDITION No. ' + (100 + dayOfYear);
+
+  // Time-of-day feel
+  const hr = d.getHours();
+  const timeFeelText = hr < 5 ? 'Late-night read'
+    : hr < 11 ? 'Morning read'
+    : hr < 16 ? 'Afternoon check-in'
+    : hr < 20 ? 'Evening wind-down'
+    : 'Late-night scroll';
+  document.getElementById('timeFeel').textContent = timeFeelText;
+
+  // Weather mood — manual toggle, ties accent color + caption across masthead/ticker
+  const moodCaptions = {
+    clear: 'Clear skies, sharp focus — your briefing is ready. Est. read: 4 min.',
+    rainy: 'Rainy day picks: slower reads, comfort stories, extra time for the deep-dives.',
+    winter: 'Crisp winter read — the short, sharp stories that matter, nothing extra.',
+    summer: 'Bright summer skim — fast headlines so you can get back outside.'
+  };
+  const moodEmoji = { clear:'☀️ Clear', rainy:'🌧️ Rainy', winter:'❄️ Winter', summer:'🌤️ Summer' };
+  const appFrame = document.getElementById('appFrame');
+  const moodSummaryText = document.getElementById('moodSummaryText');
+
+  function updateMoodSummary(mood){
+    moodSummaryText.textContent = `${moodEmoji[mood]} · ${timeFeelText} · Est. 4 min`;
+  }
+  updateMoodSummary('clear');
+
+  document.querySelectorAll('.mood-chip[data-mood]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const mood = chip.dataset.mood;
+      appFrame.dataset.mood = mood;
+      document.querySelectorAll('.mood-chip[data-mood]').forEach(c => c.classList.toggle('active', c === chip));
+      document.getElementById('moodCaption').textContent = moodCaptions[mood];
+      updateMoodSummary(mood);
+    });
+  });
+
+  // Mood summary line is collapsed by default — tap to reveal the full mood
+  // picker only when the user actually wants to change it.
+  const moodSummaryBtn = document.getElementById('moodSummaryBtn');
+  const moodPanel = document.getElementById('moodPanel');
+  moodSummaryBtn.addEventListener('click', () => {
+    const expanded = moodPanel.classList.toggle('expanded');
+    moodSummaryBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  });
+
+  // Fashion age tabs
+  document.querySelectorAll('.age-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const age = tab.dataset.age;
+      document.querySelectorAll('.age-tab').forEach(t => t.classList.toggle('active', t === tab));
+      document.querySelectorAll('.age-block').forEach(b => b.classList.toggle('hidden', b.dataset.age !== age));
+    });
+  });
+
+  // Location-based nearby pricing (grocery, fuel, tickets)
+  // NOTE: prototype — distances are simulated locally from device coordinates
+  // rather than pulled from a real store/cinema database.
+  function seededOffset(seed, salt){
+    const x = Math.sin(seed * 999 + salt * 37.1) * 10000;
+    return x - Math.floor(x);
+  }
+
+  function detectLocation(scope){
+    const btn = document.getElementById(scope + 'LocBtn');
+    const text = document.getElementById(scope + 'LocText');
+    if(!navigator.geolocation){
+      text.innerHTML = 'Location not available in this browser.';
+      return;
+    }
+    btn.textContent = 'Locating…';
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const seed = Math.abs(pos.coords.latitude + pos.coords.longitude);
+        btn.textContent = 'Located ✓';
+        btn.classList.add('on');
+        text.innerHTML = 'Showing rates from ' + (scope === 'tickets' ? 'cinemas' : 'stores') + ' <b>nearest you</b>';
+        applyNearby(scope, seed);
+        if(scope === 'grocery'){
+          const userId = localStorage.getItem('brief_user_id');
+          if(userId){
+            fetch('/api/compare/location',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId,latitude:pos.coords.latitude,longitude:pos.coords.longitude})}).catch(()=>{});
+          }
+        }
+      },
+      err => {
+        btn.textContent = 'Use my location';
+        text.innerHTML = 'Location permission denied · showing city-average rates';
+      },
+      { enableHighAccuracy:false, timeout:8000 }
+    );
+  }
+
+  function applyNearby(scope, seed){
+    if(scope === 'grocery' || scope === 'fuel'){
+      const containerSel = scope === 'grocery' ? '#sec-grocery' : '#sec-fuel';
+      document.querySelectorAll(containerSel + ' .store-chip').forEach((chip, i) => {
+        const km = (0.4 + seededOffset(seed, i) * 4.2).toFixed(1);
+        let dist = chip.querySelector('.dist-chip');
+        if(!dist){
+          dist = document.createElement('div');
+          dist.className = 'dist-chip';
+          chip.appendChild(dist);
+        }
+        dist.textContent = km + ' km';
+      });
+    }
+    if(scope === 'tickets'){
+      document.querySelectorAll('#sec-tickets .cinema-name').forEach((el, i) => {
+        const km = (0.6 + seededOffset(seed, i + 50) * 6).toFixed(1);
+        let dist = el.parentElement.querySelector('.dist-chip');
+        if(!dist){
+          dist = document.createElement('span');
+          dist.className = 'dist-chip';
+          dist.style.marginLeft = '6px';
+          el.parentElement.querySelector('.cinema-time').appendChild(dist);
+        }
+        dist.textContent = ' · ' + km + ' km away';
+      });
+    }
+  }
+
+  // ---- Tap-to-pin: tap a category 5x in this session and it jumps to top ----
+  const TAP_THRESHOLD = 5;
+  const tapCounts = {};
+  const pinned = new Set();
+
+  function trackTap(target){
+    if(target === 'all' || !sections[target]) return;
+    if(document.getElementById('togglePin') && !document.getElementById('togglePin').checked) return;
+    tapCounts[target] = (tapCounts[target] || 0) + 1;
+    updatePinProgress();
+    if(tapCounts[target] >= TAP_THRESHOLD && !pinned.has(target)){
+      pinSection(target);
+    }
+  }
+
+  function pinSection(target){
+    pinned.add(target);
+    const el = sections[target];
+    el.classList.add('pinned-section');
+    if(!el.querySelector('.pinned-badge')){
+      const badge = document.createElement('div');
+      badge.className = 'pinned-badge';
+      badge.textContent = '📌 Pinned to top — you check this often';
+      el.insertBefore(badge, el.children[1] || null);
+    }
+    feedOrder = [target, ...feedOrder.filter(k => k !== target)];
+    renderFeedOrder();
+  }
+
+  function updatePinProgress(){
+    const box = document.getElementById('pinProgress');
+    if(!box) return;
+    const entries = Object.entries(tapCounts).filter(([k,v]) => v > 0 && !pinned.has(k));
+    if(entries.length === 0){ box.innerHTML = ''; return; }
+    box.innerHTML = entries
+      .sort((a,b) => b[1]-a[1])
+      .slice(0,4)
+      .map(([k,v]) => `<div class="pin-progress-row"><span>${k}</span><span><b>${Math.min(v,TAP_THRESHOLD)}</b>/${TAP_THRESHOLD} taps</span></div>`)
+      .join('');
+  }
+
+  function resetPins(){
+    pinned.forEach(target => {
+      const el = sections[target];
+      el.classList.remove('pinned-section');
+      const badge = el.querySelector('.pinned-badge');
+      if(badge) badge.remove();
+    });
+    pinned.clear();
+    Object.keys(tapCounts).forEach(k => tapCounts[k] = 0);
+    feedOrder = [...originalOrder];
+    renderFeedOrder();
+    updatePinProgress();
+  }
+
+  // ---- Trending: runtime refresh simulation ----
+  const incomingTrending = [
+    { accent:'var(--amber)', tag:'Funding', headline:'Two-year-old edtech startup closes $18M round led by a global fund', dek:'Company plans to use the capital to expand into three new states.', sources:7, read:'25s' },
+    { accent:'var(--blue)', tag:'IPO', headline:'Battery-tech firm sets price band for upcoming ₹1,400 Cr IPO', dek:'Issue opens next week; anchor allotment scheduled two days prior.', sources:11, read:'30s' },
+    { accent:'var(--teal)', tag:'Movies', headline:'Weekend box office: new release opens strong in metro multiplexes', dek:"Early estimates put day-one collections ahead of the director's last release.", sources:14, read:'20s' }
+  ];
+  let trendingTick = 0;
+
+  function refreshTrending(){
+    // age existing timestamps
+    document.querySelectorAll('#trendingList .time').forEach(t => {
+      const mins = parseInt(t.dataset.mins || '0', 10) + 3;
+      t.dataset.mins = mins;
+      t.textContent = mins < 60 ? mins + ' min ago' : Math.floor(mins/60) + ' hr ago';
+    });
+
+    trendingTick++;
+    if(trendingTick % 3 === 0 && incomingTrending.length){
+      const item = incomingTrending.shift();
+      const list = document.getElementById('trendingList');
+      const card = document.createElement('a');
+      card.className = 'card skeleton';
+      card.style.setProperty('--accent', item.accent);
+      card.innerHTML = `
+        <div class="card-top"><span class="tag">${item.tag}</span><span class="dot"></span><span class="time" data-mins="0">just now</span></div>
+        <div class="headline">${item.headline}</div>
+        <div class="dek">${item.dek}</div>
+        <div class="meta-row"><span><b>${item.sources}</b> sources</span><span>Read: ${item.read}</span></div>`;
+      list.insertBefore(card, list.firstChild);
+      setTimeout(() => card.classList.remove('skeleton'), 700);
+    }
+
+    const note = document.getElementById('trendingRefreshNote');
+    if(note) note.textContent = 'Auto-updates as new stories break · last refresh: just now';
+  }
+
+  setInterval(refreshTrending, 15000);
+
+  // ---- Settings: notification preference (mock) ----
+  ['toggleMorning','toggleEvening'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('change', () => {
+      // In production this would register/cancel a push-notification schedule
+      // with the backend for 10:00 AM / 5:00 PM local time.
+    });
+  });
+  // ---- Article detail overlay ----
+  const detailOverlay = document.getElementById('detailOverlay');
+  const sourceNames = ['Reuters', 'PTI', 'Economic Times', 'Moneycontrol', 'LiveMint', 'Hindustan Times', 'NDTV', 'Business Standard', 'The Hindu', 'Bloomberg'];
+
+  function fillerParagraphs(headline, dek){
+    const p2 = `Officials familiar with the matter say further details are expected over the next few days, as reactions continue to come in from stakeholders directly affected by the development.`;
+    const p3 = `This is a developing story. Brief will update this card automatically as more verified reporting comes in from its source network.`;
+    return [dek || headline, p2, p3];
+  }
+
+  function openDetail(card){
+    const tagEl = card.querySelector('.tag');
+    const timeEl = card.querySelector('.time');
+    const headlineEl = card.querySelector('.headline');
+    const dekEl = card.querySelector('.dek');
+    const metaSpans = card.querySelectorAll('.meta-row span');
+
+    const accent = getComputedStyle(card).getPropertyValue('--accent').trim() || '#1B1B1B';
+    detailOverlay.style.setProperty('--accent-d', accent);
+
+    document.getElementById('detailTag').textContent = tagEl ? tagEl.textContent : 'News';
+    document.getElementById('detailHeadline').textContent = headlineEl ? headlineEl.textContent : 'Untitled story';
+    document.getElementById('detailTime').textContent = timeEl ? timeEl.textContent : 'Just now';
+
+    let sourcesCount = '12';
+    if(metaSpans.length){
+      const m = metaSpans[0].textContent.match(/\d+/);
+      if(m) sourcesCount = m[0];
+    }
+    document.getElementById('detailSourcesCount').innerHTML = `<b>${sourcesCount}</b> sources`;
+    document.getElementById('detailReadTime').textContent = metaSpans[1] ? metaSpans[1].textContent : 'Read: 30s';
+
+    const bodyWrap = document.getElementById('detailBody');
+    bodyWrap.innerHTML = fillerParagraphs(
+      headlineEl ? headlineEl.textContent : '',
+      dekEl ? dekEl.textContent : ''
+    ).map(p => `<p class="detail-para">${p}</p>`).join('');
+
+    const shuffled = [...sourceNames].sort(() => 0.5 - Math.random());
+    const chipCount = Math.min(parseInt(sourcesCount, 10) || 5, 6);
+    document.getElementById('detailSourceChips').innerHTML = shuffled
+      .slice(0, Math.max(3, Math.min(chipCount, 6)))
+      .map(s => `<span class="detail-source-chip">${s}</span>`)
+      .join('');
+
+    detailOverlay.classList.add('open');
+    detailOverlay.scrollTop = 0;
+  }
+
+  function closeDetail(){
+    detailOverlay.classList.remove('open');
+  }
+
+  document.getElementById('detailBackBtn').addEventListener('click', closeDetail);
+
+  function bindCardClicks(){
+    document.querySelectorAll('.card').forEach(card => {
+      if(card.dataset.bound) return;
+      card.dataset.bound = '1';
+      card.addEventListener('click', e => {
+        e.preventDefault();
+        openDetail(card);
+      });
+    });
+  }
+  bindCardClicks();
+
+  // re-bind whenever a new card is injected by the live trending refresh
+  const feedObserver = new MutationObserver(bindCardClicks);
+  feedObserver.observe(document.getElementById('trendingList'), { childList:true });
+  // ---- Live data integration ----
+  // Calls the backend for real news/markets/weather/prices. If the backend
+  // isn't running or a provider is unavailable, the page keeps working and
+  // market cards show an explicit unavailable state rather than stale prices.
+  (function(){
+    async function loadAnalytics(){
+      try{
+        const cfg = await fetch('/api/config').then(r => r.ok ? r.json() : null);
+        if(!cfg || !cfg.analyticsEnabled) return;
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(cfg.gaMeasurementId);
+        document.head.appendChild(script);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){ dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', cfg.gaMeasurementId, { anonymize_ip: true });
+      }catch(e){}
+    }
+    loadAnalytics();
+
+    async function tryFetch(url){
+      try{
+        const res = await fetch(url);
+        if(!res.ok) return null;
+        return await res.json();
+      }catch(e){ return null; }
+    }
+
+    const compareUserId = (() => {
+      const key = 'brief_user_id';
+      let id = localStorage.getItem(key);
+      if(!id){ id = (crypto.randomUUID ? crypto.randomUUID() : 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2)); localStorage.setItem(key, id); }
+      return id;
+    })();
+    let compareLocation = { lat:null, lng:null };
+
+    async function compareFetch(url, options){
+      try{
+        const res = await fetch(url, options);
+        if(!res.ok) return null;
+        return await res.json();
+      }catch(e){ return null; }
+    }
+
+    function renderCompareResult(item){
+      const prices = Object.entries(item.prices || {}).filter(([,v]) => Number.isFinite(Number(v)));
+      prices.sort((a,b) => Number(a[1]) - Number(b[1]));
+      const best = prices[0];
+      const highest = prices.length ? Math.max(...prices.map(([,v]) => Number(v))) : null;
+      const saving = best && highest !== null ? Math.max(0, highest - Number(best[1])) : 0;
+      const chips = prices.map(([store,price], idx) => `<div class="store-chip ${idx===0?'best':''}"><div class="store-name">${store}</div><div class="store-price">₹${Number(price).toFixed(2)}</div></div>`).join('');
+      return `<div class="compare-result" data-product-id="${item.id || ''}">
+        <div class="compare-result-head"><span class="compare-result-name">${item.name}</span>${best ? `<span class="compare-best">BEST: ${best[0]} ₹${Number(best[1]).toFixed(2)}</span>` : ''}</div>
+        <div class="compare-meta">${item.unit || ''}${saving ? ` · Save up to ₹${saving.toFixed(2)}` : ''}</div>
+        ${prices.length ? `<div class="store-grid" style="margin-top:8px">${chips}</div>` : '<div class="compare-empty">No price data available yet.</div>'}
+      </div>`;
+    }
+
+    async function runProductSearch(query){
+      const q = String(query || '').trim();
+      if(!q) return;
+      const data = await compareFetch(`/api/compare/search?q=${encodeURIComponent(q)}&userId=${encodeURIComponent(compareUserId)}${compareLocation.lat !== null ? `&lat=${compareLocation.lat}&lng=${compareLocation.lng}` : ''}`);
+      const results = document.getElementById('compareResults');
+      if(!results) return;
+      if(!data || !data.items || !data.items.length){ results.innerHTML = '<div class="compare-empty">No matching product found. Try a broader search.</div>'; return; }
+      results.innerHTML = data.items.map(renderCompareResult).join('');
+      data.items.forEach(item => { if(item.id) compareFetch('/api/compare/activity',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:compareUserId,productId:item.id,type:'compare_count'})}); });
+      loadRecommendations();
+    }
+
+    async function loadDailyEssentials(){
+      const data = await compareFetch('/api/compare/defaults');
+      const wrap = document.getElementById('dailyEssentialChips');
+      if(!wrap || !data) return;
+      wrap.innerHTML = (data.items || []).map(item => `<button class="compare-chip" type="button" data-product-name="${item.name.replace(/"/g,'&quot;')}">${item.name}</button>`).join('');
+      wrap.querySelectorAll('.compare-chip').forEach(btn => btn.addEventListener('click', () => { document.getElementById('compareSearchInput').value = btn.dataset.productName; runProductSearch(btn.dataset.productName); }));
+    }
+
+    async function loadRecommendations(){
+      const data = await compareFetch(`/api/compare/recommendations?userId=${encodeURIComponent(compareUserId)}&limit=8`);
+      const wrap = document.getElementById('recommendedChips');
+      if(!wrap || !data) return;
+      if(!data.items || !data.items.length){ wrap.innerHTML = '<span class="compare-meta">No recommendations yet — search or compare a few products.</span>'; return; }
+      wrap.innerHTML = data.items.map(item => `<button class="compare-chip" type="button" data-product-name="${String(item.name).replace(/"/g,'&quot;')}">${item.name}</button>`).join('');
+      wrap.querySelectorAll('.compare-chip').forEach(btn => btn.addEventListener('click', () => { document.getElementById('compareSearchInput').value = btn.dataset.productName; runProductSearch(btn.dataset.productName); }));
+    }
+
+    function setupComparison(){
+      const input = document.getElementById('compareSearchInput');
+      const button = document.getElementById('compareSearchBtn');
+      if(!input || !button) return;
+      button.addEventListener('click', () => runProductSearch(input.value));
+      input.addEventListener('keydown', e => { if(e.key === 'Enter') runProductSearch(input.value); });
+      loadDailyEssentials();
+      loadRecommendations();
+    }
+
+    async function saveCompareLocation(position){
+      compareLocation = {lat:position.coords.latitude,lng:position.coords.longitude};
+      const text = document.getElementById('groceryLocText');
+      if(text) text.innerHTML = 'Using <b>your location</b> for local recommendations · location is only stored after permission';
+      await compareFetch('/api/compare/location',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:compareUserId,latitude:compareLocation.lat,longitude:compareLocation.lng})});
+      loadRecommendations();
+    }
+
+    setupComparison();
+
+    async function loadLiveNews(){
+      const data = await tryFetch('/api/news/trending');
+      if(!data || !data.articles || !data.articles.length) return;
+      const list = document.getElementById('trendingList');
+      list.innerHTML = data.articles.slice(0, 6).map(a => `
+        <a class="card" style="--accent:var(--red)" href="${a.url}" target="_blank" rel="noopener">
+          <div class="card-top"><span class="tag">${a.tag}</span><span class="dot"></span><span class="time">${new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>
+          <div class="headline">${a.headline}</div>
+          <div class="dek">${a.dek || ''}</div>
+          <div class="meta-row"><span>${a.source}</span></div>
+        </a>`).join('');
+      bindCardClicks();
+    }
+
+    async function loadLiveMarkets(){
+      const data = await tryFetch('/api/markets');
+      if(!data || !data.quotes) return;
+      const bySymbol = {};
+      data.quotes.forEach(q => { if(!q.error) bySymbol[q.symbol] = q; });
+      const order = ['sensex', 'nifty', 'banknifty', 'nasdaq'];
+      document.querySelectorAll('.idx-card').forEach((card, i) => {
+        const q = bySymbol[order[i]];
+        const valEl = card.querySelector('.idx-val');
+        const chgEl = card.querySelector('.idx-chg');
+        if(!q || typeof q.price !== 'number') {
+          if(valEl) valEl.textContent = '--';
+          if(chgEl) {
+            chgEl.className = 'idx-chg';
+            chgEl.textContent = 'Market data unavailable';
+          }
+          return;
+        }
+        if(valEl) valEl.textContent = q.price.toLocaleString();
+        if(chgEl && typeof q.changePercent === 'number'){
+          const up = q.changePercent >= 0;
+          chgEl.className = 'idx-chg ' + (up ? 'up' : 'down');
+          chgEl.textContent = (up ? '▲ ' : '▼ ') + Math.abs(q.changePercent).toFixed(2) + '%';
+        }
+      });
+
+      // Keep the trade cards in sync with the same backend market feed.
+      const tradeQuotes = document.querySelectorAll('.trade-ltp');
+      ['reliance', 'dmart'].forEach((key, i) => {
+        const q = bySymbol[key];
+        const el = tradeQuotes[i];
+        if(!el || !q || typeof q.price !== 'number') return;
+        const up = Number(q.changePercent) >= 0;
+        el.innerHTML = `LTP ₹${q.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span style="color:var(${up ? '--green' : '--red'})">${up ? '▲' : '▼'}${Math.abs(q.changePercent).toFixed(2)}%</span>`;
+      });
+    }
+
+    async function loadLiveWeatherMood(){
+      const data = await tryFetch('/api/weather');
+      if(!data || !data.mood) return;
+      const chip = document.querySelector(`.mood-chip[data-mood="${data.mood}"]`);
+      if(chip) chip.click(); // reuses the existing mood handler so summary/caption/ribbon all stay in sync
+    }
+
+    async function loadLivePrices(kind, sectionSelector){
+      const data = await tryFetch(`/api/prices/${kind}`);
+      if(!data || !data.items) return;
+      const cards = document.querySelectorAll(`${sectionSelector} .grocery-card`);
+      data.items.forEach((item, i) => {
+        const card = cards[i];
+        if(!card) return;
+        const entries = Object.entries(item.prices);
+        const min = Math.min(...entries.map(([, v]) => v));
+        const bestStore = entries.find(([, v]) => v === min)[0];
+        const grid = card.querySelector('.store-grid');
+        if(grid){
+          grid.innerHTML = entries.map(([store, price]) => `
+            <div class="store-chip ${price === min ? 'best' : ''}"><div class="store-name">${store}</div><div class="store-price">₹${price}</div></div>
+          `).join('');
+        }
+        const note = card.querySelector('.grocery-note');
+        if(note) note.innerHTML = `Cheapest: <b>${bestStore} ₹${min}</b> · ${data.source === 'manual' ? 'manual data' : 'source: ' + (data.source || 'backend')}`;
+      });
+    }
+
+    loadLiveNews();
+    loadLiveMarkets();
+    loadLiveWeatherMood();
+    loadLivePrices('grocery', '#sec-grocery');
+    loadLivePrices('fuel', '#sec-fuel');
+  })();
+</script>
+</body>
+</html>

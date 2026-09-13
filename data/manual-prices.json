@@ -1,0 +1,16 @@
+{
+  "grocery": [
+    { "item": "Cooking Oil (Sunflower)", "unit": "per 1L", "prices": { "Reliance": 149, "DMart": 132, "Blinkit": 155, "Flipkart": 144, "Amazon": 147 } },
+    { "item": "Wheat Flour (Atta)", "unit": "per 5kg", "prices": { "Reliance": 219, "DMart": 205, "Blinkit": 228, "Flipkart": 215, "Amazon": 221 } },
+    { "item": "Moong Dal", "unit": "per 1kg", "prices": { "Reliance": 128, "DMart": 119, "Blinkit": 135, "Flipkart": 117, "Amazon": 122 } },
+    { "item": "Jeera (Cumin Seeds)", "unit": "per 100g", "prices": { "Reliance": 48, "DMart": 44, "Blinkit": 42, "Flipkart": 46, "Amazon": 47 } },
+    { "item": "Salt (Iodised)", "unit": "per 1kg", "prices": { "Reliance": 22, "DMart": 19, "Blinkit": 24, "Flipkart": 21, "Amazon": 23 } },
+    { "item": "Red Chilli Powder", "unit": "per 500g", "prices": { "Reliance": 112, "DMart": 105, "Blinkit": 118, "Flipkart": 101, "Amazon": 109 } }
+  ],
+  "fuel": [
+    { "item": "Petrol", "unit": "per litre", "prices": { "IOCL": 96.72, "BPCL": 96.68, "HPCL": 96.55, "Shell": 104.20, "Jio-BP": 97.10 } },
+    { "item": "Diesel", "unit": "per litre", "prices": { "IOCL": 89.62, "BPCL": 89.51, "HPCL": 89.58, "Shell": 96.40, "Jio-BP": 89.90 } }
+  ],
+  "lastUpdated": "2026-08-16T00:00:00.000Z",
+  "source": "manual — update this file, or replace with a real vendor feed if you strike a data partnership"
+}
