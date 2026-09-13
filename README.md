@@ -1,6 +1,6 @@
-# BRIEF v1
+# BURBREEK v1
 
-Launchable Phase 1 build of BRIEF: news, markets, weather, and product comparison with a PostgreSQL-backed activity foundation.
+Launchable Phase 1 build of BURBREEK: news, markets, weather, and product comparison with a PostgreSQL-backed activity foundation.
 
 ## Requirements
 - Node.js 18+

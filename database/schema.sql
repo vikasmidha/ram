@@ -1,4 +1,4 @@
--- BRIEF v1 production schema
+-- BURBREEK v1 production schema
 -- PostgreSQL 14+
 
 CREATE TABLE IF NOT EXISTS users (

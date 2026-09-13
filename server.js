@@ -72,5 +72,5 @@ app.use((err, req, res, next) => {
       process.exit(1);
     }
   }
-  app.listen(PORT, () => console.log(`BRIEF v1 listening on port ${PORT}`));
+  app.listen(PORT, () => console.log(`BURBREEK v1 listening on port ${PORT}`));
 })();
