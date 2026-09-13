@@ -1,7 +1,7 @@
 {
-  "name": "brief-backend",
+  "name": "burbreek-backend",
   "version": "1.0.0",
-  "description": "Backend API for the BRIEF news app \u2014 aggregates real news, markets, and weather data.",
+  "description": "Backend API for the BURBREEK news app \u2014 aggregates real news, markets, and weather data.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
