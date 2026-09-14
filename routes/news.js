@@ -5,10 +5,6 @@ const cache = require('../cache');
 const router = express.Router();
 
 // Maps the app's internal category keys to NewsAPI query terms.
-// NewsAPI's /everything endpoint takes a free-text query; /top-headlines
-// takes a category enum. We use /everything for the topical sections since
-// NewsAPI's fixed categories (business, technology, etc.) don't line up
-// cleanly with "startup", "ai", "politics", etc.
 const CATEGORY_QUERIES = {
   trending: 'India OR world news',
   startup: 'startup funding India',
@@ -18,46 +14,128 @@ const CATEGORY_QUERIES = {
   gtk: 'explainer OR "what you need to know"',
 };
 
-async function fetchNews(category) {
+// Supported languages.
+// NewsAPI expects ISO 639-1 language codes.
+const SUPPORTED_LANGUAGES = ['en', 'hi'];
+
+function getLanguage(req) {
+  const lang = String(req.query.lang || 'en').toLowerCase().trim();
+
+  return SUPPORTED_LANGUAGES.includes(lang) ? lang : 'en';
+}
+
+async function fetchNews(category, lang) {
   const key = process.env.NEWSAPI_KEY;
+
   if (!key || key.includes('your_newsapi_key')) {
-    throw new Error('NEWSAPI_KEY not configured — add a real key to .env');
+    throw new Error(
+      'NEWSAPI_KEY not configured — add a real key to .env'
+    );
   }
 
-  const cacheKey = `news:${category}`;
-  const cached = cache.get(cacheKey);
-  if (cached) return cached;
+  /*
+   * IMPORTANT:
+   * Language is part of the cache key.
+   *
+   * Without this:
+   * news:trending
+   *
+   * Hindi and English requests could receive the same cached response.
+   */
+  const cacheKey = `news:${category}:${lang}`;
 
-  const q = CATEGORY_QUERIES[category] || CATEGORY_QUERIES.trending;
-  const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&language=en&sortBy=publishedAt&pageSize=10&apiKey=${key}`;
+  const cached = cache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const q =
+    CATEGORY_QUERIES[category] ||
+    CATEGORY_QUERIES.trending;
+
+  const url =
+    `https://newsapi.org/v2/everything` +
+    `?q=${encodeURIComponent(q)}` +
+    `&language=${lang}` +
+    `&sortBy=publishedAt` +
+    `&pageSize=10` +
+    `&apiKey=${key}`;
 
   const res = await fetch(url);
+
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`NewsAPI error ${res.status}: ${body}`);
+
+    throw new Error(
+      `NewsAPI error ${res.status}: ${body}`
+    );
   }
+
   const data = await res.json();
 
-  const mapped = (data.articles || []).map((a) => ({
-    tag: category.toUpperCase(),
-    headline: a.title,
-    dek: a.description || '',
-    source: a.source?.name || 'Unknown',
-    url: a.url,
-    time: a.publishedAt,
-    imageUrl: a.urlToImage || null,
-  }));
+  const mapped = (data.articles || [])
+    .filter((article) => article.title)
+    .map((article) => ({
+      tag: category.toUpperCase(),
 
-  cache.set(cacheKey, mapped, 300); // 5 min cache — respects free-tier rate limits
+      headline: article.title,
+
+      dek: article.description || '',
+
+      source:
+        article.source?.name ||
+        'Unknown',
+
+      url: article.url,
+
+      time: article.publishedAt,
+
+      imageUrl:
+        article.urlToImage ||
+        null,
+    }));
+
+  /*
+   * Cache separately for each language.
+   * 5 minutes keeps API usage under control.
+   */
+  cache.set(
+    cacheKey,
+    mapped,
+    300
+  );
+
   return mapped;
 }
 
 router.get('/:category', async (req, res) => {
   try {
-    const articles = await fetchNews(req.params.category);
-    res.json({ category: req.params.category, articles });
+    const category =
+      String(req.params.category || 'trending')
+        .toLowerCase()
+        .trim();
+
+    const lang = getLanguage(req);
+
+    const articles =
+      await fetchNews(category, lang);
+
+    res.json({
+      category,
+      language: lang,
+      articles,
+    });
   } catch (err) {
-    res.status(502).json({ error: err.message });
+    console.error(
+      '[news]',
+      err.message
+    );
+
+    res.status(502).json({
+      error: 'Unable to fetch news',
+      details: err.message,
+    });
   }
 });
 
