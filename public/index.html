@@ -17,7 +17,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="theme-color" content="#EDEAE3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#EDEAE3;
@@ -71,9 +71,7 @@
     flex:none;
     transition:border-color .4s ease, color .4s ease;
   }
-  .masthead-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:92px;}
-  html[lang^="hi"] body{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
-  html[lang^="hi"] .edition-line,html[lang^="hi"] .date-line,html[lang^="hi"] .section-sub,html[lang^="hi"] .time,html[lang^="hi"] .tag,html[lang^="hi"] .meta-row,html[lang^="hi"] .global-loc-sub{font-family:'JetBrains Mono','Noto Sans Devanagari',monospace;}
+  .masthead-right{text-align:right;}
   .edition-line{
     font-family:'JetBrains Mono',monospace;
     font-size:8.5px;
@@ -168,7 +166,7 @@
     display:flex;
     flex-direction:column;
     box-shadow:0 0 40px rgba(0,0,0,0.15);
-    overflow:hidden;
+    overflow-x:hidden;
   }
 
   /* ---------- Masthead ---------- */
@@ -674,8 +672,6 @@
 
   /* Section screen — full category view with back-to-home navigation */
   .section-screen{
-    visibility:hidden;
-    pointer-events:none;
     position:absolute;
     inset:0;
     background:var(--paper);
@@ -686,7 +682,7 @@
     transition:transform .26s cubic-bezier(.2,.7,.3,1);
     overflow-y:auto;
   }
-  .section-screen.open{transform:translateX(0); visibility:visible; pointer-events:auto;}
+  .section-screen.open{transform:translateX(0);}
   .section-screen-content{
     padding:14px 16px calc(40px + env(safe-area-inset-bottom, 0px));
   }
@@ -695,8 +691,6 @@
   /* Article detail overlay */
   .card{cursor:pointer;}
   .detail-overlay{
-    visibility:hidden;
-    pointer-events:none;
     position:absolute;
     inset:0;
     background:var(--paper);
@@ -707,7 +701,7 @@
     transition:transform .28s cubic-bezier(.2,.7,.3,1);
     overflow-y:auto;
   }
-  .detail-overlay.open{transform:translateY(0); visibility:visible; pointer-events:auto;}
+  .detail-overlay.open{transform:translateY(0);}
   .detail-header{
     position:sticky;
     top:0;
@@ -968,6 +962,7 @@
   .idx-name{font-family:'JetBrains Mono',monospace; font-size:9px; color:#B9B5A8;}
   .idx-val{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:16px; margin-top:2px;}
   .idx-chg{font-family:'JetBrains Mono',monospace; font-size:10px; margin-top:1px;}
+.idx-updated{font-family:'JetBrains Mono',monospace; font-size:8px; color:#B9B5A8; margin-top:4px; line-height:1.2;}
   .up{color:#5FBE87;}
   .down{color:#E6786A;}
 
@@ -1069,12 +1064,10 @@
 </style>
 
 <style id="burbreek-language-toggle-css">
-#languageToggle{display:inline-flex;align-items:center;gap:2px;margin:0;padding:2px;border:1px solid #A9A396;border-radius:999px;background:#F7F5F0;box-shadow:0 1px 3px rgba(0,0,0,.08);}
-#languageToggle button{border:0;background:transparent;color:#1B1B1B;min-width:34px;padding:4px 8px;border-radius:999px;cursor:pointer;font-family:'Inter','Noto Sans Devanagari',sans-serif;font-size:11px;font-weight:700;line-height:1}
-#languageToggle button.active{background:#1B1B1B;color:#fff}
-#languageToggle button:hover:not(.active){background:#E5E1D8}
-#languageToggle button:focus-visible{outline:2px solid #1B1B1B;outline-offset:2px}
-@media(max-width:600px){#languageToggle button{min-width:31px;padding:4px 7px;font-size:10px}}
+#languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:transparent}
+#languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:.82rem}
+#languageToggle button.active{background:currentColor;color:#fff}
+@media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:.75rem}}
 </style>
 <script type="application/ld+json">
 {
@@ -1086,105 +1079,6 @@
   ]
 }
 </script>
-
-<style id="burbreek-usability-v2">
-  /* Worldwide usability pass: touch, keyboard, contrast, motion, responsive layouts */
-  html{scroll-behavior:smooth;scroll-padding-top:74px;}
-  body{overflow-x:hidden;}
-  button,a,input{font:inherit;}
-  button,a,.nav-item,.pill,.age-tab,.mood-chip,.store-chip,.compare-chip{touch-action:manipulation;}
-
-  .skip-link{
-    position:fixed;left:12px;top:12px;z-index:200;
-    transform:translateY(-160%);transition:transform .18s ease;
-    background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:4px;
-    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
-    text-decoration:none;box-shadow:0 3px 12px rgba(0,0,0,.25);
-  }
-  .skip-link:focus{transform:translateY(0);}
-
-  :where(button,a,.nav-item,.pill,.age-tab,.mood-chip,.store-chip,.compare-chip,input):focus-visible{
-    outline:3px solid var(--mood-a);
-    outline-offset:2px;
-  }
-
-  /* 44px minimum touch target for primary controls */
-  .pill,.age-tab,.mood-chip{min-height:44px;}
-  .global-loc-btn{min-height:44px;}
-  .detail-back,.detail-action-btn,.reset-btn{min-height:44px;}
-  #languageToggle button{min-height:36px;}
-  .nav-item{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;background:transparent;color:#8B8778;}
-  .nav-item:active{transform:translateY(1px);}
-
-  .pill-row,.age-tabs,.trend-scroll,.market-strip{
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-inline:contain;
-    scroll-snap-type:x proximity;
-  }
-  .pill,.age-tab,.trend-card,.idx-card{scroll-snap-align:start;}
-
-  .global-loc-bar{min-height:64px;}
-  .global-loc-title{font-size:15px;}
-  .global-loc-sub{font-size:9.5px;}
-  .global-loc-btn{font-size:10px;padding:9px 12px;}
-
-  .card{display:block;text-decoration:none;color:inherit;}
-  .card:hover{transform:translateY(-1px);}
-  .card{transition:transform .14s ease,box-shadow .14s ease;}
-
-  .section-head{gap:10px;}
-  .section-title{line-height:1.15;}
-
-  .detail-overlay,.section-screen{overscroll-behavior:contain;}
-  .detail-header{min-height:56px;}
-
-  /* Don't hide navigation while the user is using keyboard/focus navigation. */
-  .bottom-nav.nav-hidden:focus-within{transform:translateY(0);}
-  .app-header.tabs-hidden:focus-within .ticker-wrap,
-  .app-header.tabs-hidden:focus-within .pill-row{max-height:60px;opacity:1;}
-
-  /* Small screens: avoid cramped two-column controls. */
-  @media (max-width:380px){
-    .masthead{padding-left:12px;padding-right:12px;}
-    .brand-logo{width:132px;}
-    .global-loc-bar{align-items:flex-start;}
-    .global-loc-title{font-size:14px;}
-    .global-loc-sub{font-size:8.5px;}
-    .global-loc-btn{padding-left:9px;padding-right:9px;}
-    .detail-body-wrap{padding-left:14px;padding-right:14px;}
-  }
-
-  /* Tablet / desktop: retain the editorial mobile-first feel but make the app easier to read. */
-  @media (min-width:700px){
-    body{padding:18px 0;}
-    .frame{min-height:calc(100vh - 36px);max-width:560px;border-radius:8px;overflow:hidden;}
-    .bottom-nav{border-radius:0 0 8px 8px;}
-    .feed{padding-left:20px;padding-right:20px;}
-    .pill-row{padding-left:20px;padding-right:20px;}
-    .masthead{padding-left:20px;padding-right:20px;}
-    .global-loc-bar{margin-left:0;margin-right:0;}
-    .scroll-top-btn{right:max(24px,calc(50% - 250px));}
-  }
-
-  @media (min-width:1000px){
-    .frame{max-width:680px;}
-    .feed{padding-left:24px;padding-right:24px;}
-    .pill-row{padding-left:24px;padding-right:24px;}
-    .masthead{padding-left:24px;padding-right:24px;}
-    .scroll-top-btn{right:max(28px,calc(50% - 320px));}
-  }
-
-  @media (prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto;}
-    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
-  }
-
-  @media (forced-colors:active){
-    .pill,.age-tab,.mood-chip,.global-loc-btn,.detail-action-btn,.reset-btn,
-    #languageToggle,.scroll-top-btn{border:1px solid ButtonText;}
-    .nav-item.active{border-top-color:Highlight;}
-  }
-</style>
 </head>
 <body>
 <div class="frame" id="appFrame" data-mood="clear">
@@ -1253,9 +1147,9 @@
 
   <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Back to top">↑ Top</button>
 
-  <main class="feed" id="feed" tabindex="-1">
+  <div class="feed" id="feed">
 
-    <div class="global-loc-bar" id="globalLocationBar" role="region" aria-live="polite">
+    <div class="global-loc-bar" id="globalLocationBar">
       <div class="global-loc-copy">
         <div class="global-loc-title" id="globalLocationTitle">Use your location for nearby prices &amp; recommendations</div>
         <div class="global-loc-sub" id="globalLocationSub">One permission. Used across grocery, fuel, tickets and local comparisons.</div>
@@ -1727,19 +1621,19 @@
       </div>
     </section>
 
-  </main>
+  </div>
 
-  <nav class="bottom-nav" aria-label="Primary navigation">
-    <button type="button" class="nav-item active" data-target="all" aria-current="page"><span class="glyph" aria-hidden="true">▤</span><span>Feed</span></button>
-    <button type="button" class="nav-item" data-target="market"><span class="glyph" aria-hidden="true">▲</span><span>Markets</span></button>
-    <button type="button" class="nav-item" data-target="reels"><span class="glyph" aria-hidden="true">▶</span><span>Reels</span></button>
-    <button type="button" class="nav-item" data-target="reviews"><span class="glyph" aria-hidden="true">★</span><span>Reviews</span></button>
-    <button type="button" class="nav-item" data-target="tickets"><span class="glyph" aria-hidden="true">▦</span><span>Tickets</span></button>
-  </nav>
+  <div class="bottom-nav">
+    <div class="nav-item active" data-target="all"><span class="glyph">▤</span>Feed</div>
+    <div class="nav-item" data-target="market"><span class="glyph">▲</span>Markets</div>
+    <div class="nav-item" data-target="reels"><span class="glyph">▶</span>Reels</div>
+    <div class="nav-item" data-target="reviews"><span class="glyph">★</span>Reviews</div>
+    <div class="nav-item" data-target="tickets"><span class="glyph">▦</span>Tickets</div>
+  </div>
 
   <div class="section-screen" id="sectionScreen">
     <div class="detail-header">
-      <button type="button" class="detail-back" id="sectionBackBtn" aria-label="Back to main list">← Home</button>
+      <button class="detail-back" id="sectionBackBtn" aria-label="Back to main list">← Home</button>
       <span class="detail-source" id="sectionScreenTitle">Section</span>
     </div>
     <div class="section-screen-content" id="sectionScreenContent"></div>
@@ -1747,7 +1641,7 @@
 
   <div class="detail-overlay" id="detailOverlay">
     <div class="detail-header">
-      <button type="button" class="detail-back" id="detailBackBtn" aria-label="Back to feed">← Back</button>
+      <button class="detail-back" id="detailBackBtn" aria-label="Back to feed">← Back</button>
       <span class="detail-source" id="detailSource">Brief</span>
     </div>
     <div class="detail-body-wrap">
@@ -1821,16 +1715,8 @@
   renderFeedOrder();
 
   function setActiveNav(target){
-    document.querySelectorAll('.pill').forEach(p => {
-      const active = p.dataset.target === target;
-      p.classList.toggle('active', active);
-      p.setAttribute('aria-pressed', active ? 'true' : 'false');
-    });
-    document.querySelectorAll('.nav-item').forEach(n => {
-      const active = n.dataset.target === target;
-      n.classList.toggle('active', active);
-      if(active) n.setAttribute('aria-current','page'); else n.removeAttribute('aria-current');
-    });
+    document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.target === target));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === target));
   }
 
   // Opens a category as its own full screen, sliding in from the right,
@@ -1858,7 +1744,6 @@
 
   document.getElementById('sectionBackBtn').addEventListener('click', closeSectionScreen);
 
-  document.querySelectorAll('.pill').forEach(p => { p.setAttribute('aria-pressed', p.classList.contains('active') ? 'true' : 'false'); });
   document.querySelectorAll('.pill').forEach(p => p.addEventListener('click', () => {
     trackTap(p.dataset.target);
     if(p.dataset.target === 'all') closeSectionScreen();
@@ -2256,22 +2141,11 @@
 
   document.getElementById('detailBackBtn').addEventListener('click', closeDetail);
 
-  // Keyboard-friendly navigation: Escape closes the active overlay.
-  document.addEventListener('keydown', (e) => {
-    if(e.key !== 'Escape') return;
-    const detail = document.getElementById('detailOverlay');
-    const section = document.getElementById('sectionScreen');
-    if(detail?.classList.contains('open')) closeDetail();
-    else if(section?.classList.contains('open')) closeSectionScreen();
-  });
-
   function bindCardClicks(){
     document.querySelectorAll('.card').forEach(card => {
       if(card.dataset.bound) return;
       card.dataset.bound = '1';
       card.addEventListener('click', e => {
-        const href = card.getAttribute('href');
-        if(href && href !== '#' && card.dataset.external === 'true') return;
         e.preventDefault();
         openDetail(card);
       });
@@ -2289,30 +2163,17 @@
   (function(){
     async function loadAnalytics(){
       try{
-        // GA4 measurement IDs are public client identifiers. Use the backend
-        // value when Render has GA_MEASUREMENT_ID configured, with the project
-        // production ID as a safe frontend fallback so analytics still loads
-        // if /api/config is cached or the Render variable was omitted.
-        const FALLBACK_GA_ID = 'G-L0Z5HSE1EC';
-        let measurementId = FALLBACK_GA_ID;
-        try{
-          const cfg = await fetch('/api/config', {cache:'no-store'}).then(r => r.ok ? r.json() : null);
-          if(cfg && cfg.gaMeasurementId) measurementId = cfg.gaMeasurementId;
-        }catch(e){}
-        if(!/^G-[A-Z0-9]+$/.test(measurementId)) return;
-        if(document.querySelector('script[data-burbreek-ga="1"]')) return;
+        const cfg = await fetch('/api/config').then(r => r.ok ? r.json() : null);
+        if(!cfg || !cfg.analyticsEnabled) return;
         const script = document.createElement('script');
         script.async = true;
-        script.dataset.burbreekGa = '1';
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(cfg.gaMeasurementId);
         document.head.appendChild(script);
         window.dataLayer = window.dataLayer || [];
-        window.gtag = window.gtag || function(){ dataLayer.push(arguments); };
+        window.gtag = function(){ dataLayer.push(arguments); };
         window.gtag('js', new Date());
-        window.gtag('config', measurementId, { anonymize_ip: true, send_page_view: true });
-        window.__BURBREEK_GA_ID = measurementId;
-        console.info('[BURBREEK] GA4 active:', measurementId);
-      }catch(e){ console.warn('[BURBREEK] GA4 init failed', e); }
+        window.gtag('config', cfg.gaMeasurementId, { anonymize_ip: true });
+      }catch(e){}
     }
     loadAnalytics();
 
@@ -2358,12 +2219,6 @@
     async function runProductSearch(query){
       const q = String(query || '').trim();
       if(!q) return;
-      try{
-        const saved = JSON.parse(localStorage.getItem('burbreek_location_v1') || 'null');
-        if(saved && Number.isFinite(saved.lat) && Number.isFinite(saved.lng) && saved.confirmed){
-          compareLocation = {lat:saved.lat,lng:saved.lng};
-        }
-      }catch(e){}
       const data = await compareFetch(`/api/compare/search?q=${encodeURIComponent(q)}&userId=${encodeURIComponent(compareUserId)}${compareLocation.lat !== null ? `&lat=${compareLocation.lat}&lng=${compareLocation.lng}` : ''}`);
       const results = document.getElementById('compareResults');
       if(!results) return;
@@ -2411,16 +2266,12 @@
     setupComparison();
 
     function localizedArticleField(article, field, lang){
-      if(lang !== 'hi') return article[field] ?? (field === 'headline' ? article.title : field === 'dek' ? article.description : field === 'source' ? article.source?.name : '') ?? '';
-      const hi = article.hi || article.translations?.hi || article.translation?.hi || {};
+      if(lang !== 'hi') return article[field] ?? '';
       return article[`${field}_hi`]
         ?? article[`${field}Hi`]
-        ?? hi[field]
-        ?? hi[field === 'headline' ? 'title' : field === 'dek' ? 'description' : field]
+        ?? article.translations?.hi?.[field]
+        ?? article.hi?.[field]
         ?? article[field]
-        ?? (field === 'headline' ? article.title : '')
-        ?? (field === 'dek' ? article.description : '')
-        ?? (field === 'source' ? article.source?.name : '')
         ?? '';
     }
 
@@ -2435,7 +2286,7 @@
         const dek = localizedArticleField(a, 'dek', lang);
         const source = localizedArticleField(a, 'source', lang);
         return `
-        <a class="card" data-external="true" style="--accent:var(--red)" href="${a.url || '#'}" target="_blank" rel="noopener">
+        <a class="card" style="--accent:var(--red)" href="${a.url || '#'}" target="_blank" rel="noopener">
           <div class="card-top"><span class="tag">${tag}</span><span class="dot"></span><span class="time">${a.time ? new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</span></div>
           <div class="headline">${headline}</div>
           <div class="dek">${dek}</div>
@@ -2470,6 +2321,20 @@
           const up = q.changePercent >= 0;
           chgEl.className = 'idx-chg ' + (up ? 'up' : 'down');
           chgEl.textContent = (up ? '▲ ' : '▼ ') + Math.abs(q.changePercent).toFixed(2) + '%';
+        }
+        let updatedEl = card.querySelector('.idx-updated');
+        if(!updatedEl){
+          updatedEl = document.createElement('div');
+          updatedEl.className = 'idx-updated';
+          card.appendChild(updatedEl);
+        }
+        if(q.asOf){
+          const d = new Date(q.asOf);
+          updatedEl.textContent = !Number.isNaN(d.getTime())
+            ? 'Updated ' + d.toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata'}) + ' IST'
+            : 'Update time unavailable';
+        }else{
+          updatedEl.textContent = 'Update time unavailable';
         }
       });
 
@@ -2525,19 +2390,30 @@
   const KEY='burbreek_language';
   const dict={
     en:{
-      'All':'All','Trending':'Trending','Startup':'Startup','Funding':'Funding','AI':'AI','Markets':'Markets','IPO':'IPO','Politics':'Politics','Reels':'Reels','Good to Know':'Good to Know','Reviews':'Reviews','Tickets':'Tickets','Grocery Rates':'Grocery Rates','Trade Orders':'Trade Orders','Fashion by Age':'Fashion by Age','Fuel Prices':'Fuel Prices','Settings':'Settings',
-      'Trending Now':'Trending Now','Startup.news':'Startup.news','Funding Watch':'Funding Watch','AI News':'AI News','Stock Market':'Stock Market','Upcoming IPO':'Upcoming IPO','Political News':'Political News','Top 10 Reels · Worldwide':'Top 10 Reels · Worldwide','Good to Know':'Good to Know','Movies | Web Series Review':'Movies | Web Series Review','Ticket Price Compare':'Ticket Price Compare','Grocery Rate Compare':'Grocery Rate Compare','Trade Order Compare':'Trade Order Compare','Fashion Trends by Age':'Fashion Trends by Age','Fuel Price Compare':'Fuel Price Compare',
-      'Feed':'Feed','Markets':'Markets','Reels':'Reels','Reviews':'Reviews','Tickets':'Tickets','Back':'Back','Home':'Home','Save for later':'Save for later','Share':'Share','Also covered by':'Also covered by','sources':'sources','Live':'Live','Read':'Read','Source':'Source','Headline':'Headline','Settings':'Settings','Digest & personalization':'Digest & personalization','Morning brief':'Morning brief','Evening brief':'Evening brief','Pin sections you visit often':'Pin sections you visit often','Reset pinned sections':'Reset pinned sections',
-      'Use my location':'Use my location','Local results enabled':'Local results enabled','Location on ✓':'Location on ✓','Use your location for nearby prices & recommendations':'Use your location for nearby prices & recommendations','One permission. Used across grocery, fuel, tickets and local comparisons.':'One permission. Used across grocery, fuel, tickets and local comparisons.','Your confirmed location is used across nearby prices and comparisons.':'Your confirmed location is used across nearby prices and comparisons.'
+      News:'News',Markets:'Markets',IPOs:'IPOs',Grocery:'Grocery',Fuel:'Fuel',Fashion:'Fashion',Movies:'Movies',Settings:'Settings',
+      Live:'Live',Read:'Read',Source:'Source',English:'English',Hindi:'Hindi',Feed:'Feed',Trending:'Trending',Startup:'Startup',Funding:'Funding',
+      AI:'AI',IPO:'IPO',Politics:'Politics',Reels:'Reels','Good to Know':'Good to Know',Reviews:'Reviews',Tickets:'Tickets',Headline:'Headline',
+      Back:'Back',Home:'Home','Save for later':'Save for later',Share:'Share','Also covered by':'Also covered by',Sources:'sources'
     },
     hi:{
-      'All':'सभी','Trending':'ट्रेंडिंग','Startup':'स्टार्टअप','Funding':'फंडिंग','AI':'एआई','Markets':'बाज़ार','IPO':'आईपीओ','Politics':'राजनीति','Reels':'रील्स','Good to Know':'जानने योग्य','Reviews':'रिव्यू','Tickets':'टिकट्स','Grocery Rates':'किराना दरें','Trade Orders':'ट्रेड ऑर्डर','Fashion by Age':'उम्र के अनुसार फैशन','Fuel Prices':'ईंधन कीमतें','Settings':'सेटिंग्स',
-      'Trending Now':'अभी ट्रेंडिंग','Startup.news':'स्टार्टअप न्यूज़','Funding Watch':'फंडिंग वॉच','AI News':'एआई न्यूज़','Stock Market':'शेयर बाज़ार','Upcoming IPO':'आगामी आईपीओ','Political News':'राजनीतिक समाचार','Top 10 Reels · Worldwide':'दुनिया की टॉप 10 रील्स','Good to Know':'जानने योग्य','Movies | Web Series Review':'फ़िल्म | वेब सीरीज़ रिव्यू','Ticket Price Compare':'टिकट कीमत तुलना','Grocery Rate Compare':'किराना दर तुलना','Trade Order Compare':'ट्रेड ऑर्डर तुलना','Fashion Trends by Age':'उम्र के अनुसार फैशन ट्रेंड','Fuel Price Compare':'ईंधन कीमत तुलना',
-      'Feed':'फ़ीड','Markets':'बाज़ार','Reels':'रील्स','Reviews':'रिव्यू','Tickets':'टिकट्स','Back':'वापस','Home':'होम','Save for later':'बाद के लिए सेव करें','Share':'शेयर करें','Also covered by':'इन स्रोतों ने भी कवर किया','sources':'स्रोत','Live':'लाइव','Read':'पढ़ें','Source':'स्रोत','Headline':'शीर्षक','Settings':'सेटिंग्स','Digest & personalization':'डाइजेस्ट और निजीकरण','Morning brief':'सुबह का ब्रीफ','Evening brief':'शाम का ब्रीफ','Pin sections you visit often':'अक्सर देखे जाने वाले सेक्शन पिन करें','Reset pinned sections':'पिन किए गए सेक्शन रीसेट करें',
-      'Use my location':'मेरी लोकेशन इस्तेमाल करें','Local results enabled':'लोकल रिज़ल्ट चालू हैं','Location on ✓':'लोकेशन चालू ✓','Use your location for nearby prices & recommendations':'नज़दीकी कीमतों और सुझावों के लिए अपनी लोकेशन इस्तेमाल करें','One permission. Used across grocery, fuel, tickets and local comparisons.':'एक अनुमति। किराना, ईंधन, टिकट और लोकल तुलना में उपयोग होगी।','Your confirmed location is used across nearby prices and comparisons.':'आपकी पुष्टि की गई लोकेशन नज़दीकी कीमतों और तुलना में उपयोग होगी।'
+      News:'समाचार',Markets:'बाज़ार',IPOs:'आईपीओ',Grocery:'किराना',Fuel:'ईंधन',Fashion:'फैशन',Movies:'फ़िल्में',Settings:'सेटिंग्स',
+      Live:'लाइव',Read:'पढ़ें',Source:'स्रोत',English:'अंग्रेज़ी',Hindi:'हिंदी',Feed:'फ़ीड',Trending:'ट्रेंडिंग',Startup:'स्टार्टअप',Funding:'फंडिंग',
+      AI:'एआई',IPO:'आईपीओ',Politics:'राजनीति',Reels:'रील्स','Good to Know':'जानने योग्य',Reviews:'रिव्यू',Tickets:'टिकट्स',Headline:'शीर्षक',
+      Back:'वापस',Home:'होम','Save for later':'बाद के लिए सेव करें',Share:'शेयर करें','Also covered by':'इन स्रोतों ने भी कवर किया',Sources:'स्रोत'
     }
   };
+  const exactNodes=Object.keys(dict.en);
   const originals=new WeakMap();
+
+  const style=document.createElement('style');
+  style.textContent=`
+    #languageToggle{display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.14);border-radius:999px;background:rgba(255,255,255,.72);font-family:inherit}
+    #languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:11px;font-weight:700;line-height:1}
+    #languageToggle button.active{background:#181818;color:#fff}
+    #languageToggle button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+    @media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:10px}}
+  `;
+  document.head.appendChild(style);
 
   function translateStaticText(lang){
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
@@ -2546,9 +2422,11 @@
     nodes.forEach(n=>{
       if(n.parentElement?.closest('#languageToggle')) return;
       if(!originals.has(n)) originals.set(n,n.nodeValue);
-      const raw=originals.get(n), t=raw.trim();
-      if(Object.prototype.hasOwnProperty.call(dict.en,t)){
-        n.nodeValue=raw.replace(t,dict[lang][t] ?? t);
+      const raw=originals.get(n);
+      const t=raw.trim();
+      if(exactNodes.includes(t)){
+        const translated=dict[lang][t]||t;
+        n.nodeValue=raw.replace(t,translated);
       }
     });
   }
@@ -2565,19 +2443,16 @@
     });
     translateStaticText(lang);
     window.dispatchEvent(new CustomEvent('burbreek-language-change',{detail:{lang}}));
-    document.body.classList.toggle('is-hindi', lang === 'hi');
   }
 
   function init(){
-    const host=document.querySelector('.masthead-right') || document.querySelector('header');
+    const host=document.querySelector('.masthead-right') || document.querySelector('header') || document.body;
     if(host && !document.getElementById('languageToggle')){
-      const el=document.createElement('span');
-      el.innerHTML='<span id="languageToggle" role="group" aria-label="Language"><button type="button" data-lang="en" aria-label="English">EN</button><button type="button" data-lang="hi" aria-label="Hindi">हिंदी</button></span>';
-      host.appendChild(el.firstElementChild);
+      const wrap=document.createElement('span');
+      wrap.innerHTML='<span id="languageToggle" role="group" aria-label="Language"><button type="button" data-lang="en" aria-label="English">EN</button><button type="button" data-lang="hi" aria-label="Hindi">हिंदी</button></span>';
+      host.appendChild(wrap.firstElementChild);
     }
-    document.querySelectorAll('#languageToggle button').forEach(b=>{
-      b.addEventListener('click',()=>setLang(b.dataset.lang));
-    });
+    document.querySelectorAll('#languageToggle button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
     setLang(localStorage.getItem(KEY)||'en');
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
