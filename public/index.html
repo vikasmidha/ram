@@ -17,7 +17,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="theme-color" content="#EDEAE3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#EDEAE3;
@@ -71,7 +71,9 @@
     flex:none;
     transition:border-color .4s ease, color .4s ease;
   }
-  .masthead-right{text-align:right;}
+  .masthead-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:92px;}
+  html[lang^="hi"] body{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  html[lang^="hi"] .edition-line,html[lang^="hi"] .date-line,html[lang^="hi"] .section-sub,html[lang^="hi"] .time,html[lang^="hi"] .tag,html[lang^="hi"] .meta-row,html[lang^="hi"] .global-loc-sub{font-family:'JetBrains Mono','Noto Sans Devanagari',monospace;}
   .edition-line{
     font-family:'JetBrains Mono',monospace;
     font-size:8.5px;
@@ -1067,10 +1069,12 @@
 </style>
 
 <style id="burbreek-language-toggle-css">
-#languageToggle{display:inline-flex;align-items:center;gap:2px;margin-top:5px;margin-left:8px;padding:2px;border:1px solid rgba(0,0,0,.18);border-radius:999px;background:rgba(255,255,255,.72);}
-#languageToggle button{border:0;background:transparent;padding:4px 8px;border-radius:999px;cursor:pointer;font:inherit;font-size:.82rem}
-#languageToggle button.active{background:currentColor;color:#fff}
-@media(max-width:600px){#languageToggle{margin-left:4px}#languageToggle button{padding:3px 6px;font-size:.75rem}}
+#languageToggle{display:inline-flex;align-items:center;gap:2px;margin:0;padding:2px;border:1px solid #A9A396;border-radius:999px;background:#F7F5F0;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+#languageToggle button{border:0;background:transparent;color:#1B1B1B;min-width:34px;padding:4px 8px;border-radius:999px;cursor:pointer;font-family:'Inter','Noto Sans Devanagari',sans-serif;font-size:11px;font-weight:700;line-height:1}
+#languageToggle button.active{background:#1B1B1B;color:#fff}
+#languageToggle button:hover:not(.active){background:#E5E1D8}
+#languageToggle button:focus-visible{outline:2px solid #1B1B1B;outline-offset:2px}
+@media(max-width:600px){#languageToggle button{min-width:31px;padding:4px 7px;font-size:10px}}
 </style>
 <script type="application/ld+json">
 {
@@ -1152,7 +1156,7 @@
 
   <div class="feed" id="feed">
 
-    <div class="global-loc-bar" id="globalLocationBar">
+    <div class="global-loc-bar" id="globalLocationBar" role="region" aria-live="polite">
       <div class="global-loc-copy">
         <div class="global-loc-title" id="globalLocationTitle">Use your location for nearby prices &amp; recommendations</div>
         <div class="global-loc-sub" id="globalLocationSub">One permission. Used across grocery, fuel, tickets and local comparisons.</div>
@@ -2149,6 +2153,8 @@
       if(card.dataset.bound) return;
       card.dataset.bound = '1';
       card.addEventListener('click', e => {
+        const href = card.getAttribute('href');
+        if(href && href !== '#' && card.dataset.external === 'true') return;
         e.preventDefault();
         openDetail(card);
       });
@@ -2166,17 +2172,30 @@
   (function(){
     async function loadAnalytics(){
       try{
-        const cfg = await fetch('/api/config').then(r => r.ok ? r.json() : null);
-        if(!cfg || !cfg.analyticsEnabled || !cfg.gaMeasurementId) { console.info('[BURBREEK] GA4 not enabled: set GA_MEASUREMENT_ID in Render environment variables.'); return; }
+        // GA4 measurement IDs are public client identifiers. Use the backend
+        // value when Render has GA_MEASUREMENT_ID configured, with the project
+        // production ID as a safe frontend fallback so analytics still loads
+        // if /api/config is cached or the Render variable was omitted.
+        const FALLBACK_GA_ID = 'G-L0Z5HSE1EC';
+        let measurementId = FALLBACK_GA_ID;
+        try{
+          const cfg = await fetch('/api/config', {cache:'no-store'}).then(r => r.ok ? r.json() : null);
+          if(cfg && cfg.gaMeasurementId) measurementId = cfg.gaMeasurementId;
+        }catch(e){}
+        if(!/^G-[A-Z0-9]+$/.test(measurementId)) return;
+        if(document.querySelector('script[data-burbreek-ga="1"]')) return;
         const script = document.createElement('script');
         script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(cfg.gaMeasurementId);
+        script.dataset.burbreekGa = '1';
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
         document.head.appendChild(script);
         window.dataLayer = window.dataLayer || [];
-        window.gtag = function(){ dataLayer.push(arguments); };
+        window.gtag = window.gtag || function(){ dataLayer.push(arguments); };
         window.gtag('js', new Date());
-        window.gtag('config', cfg.gaMeasurementId, { anonymize_ip: true });
-      }catch(e){}
+        window.gtag('config', measurementId, { anonymize_ip: true, send_page_view: true });
+        window.__BURBREEK_GA_ID = measurementId;
+        console.info('[BURBREEK] GA4 active:', measurementId);
+      }catch(e){ console.warn('[BURBREEK] GA4 init failed', e); }
     }
     loadAnalytics();
 
@@ -2275,11 +2294,12 @@
     setupComparison();
 
     function localizedArticleField(article, field, lang){
-      if(lang !== 'hi') return article[field] ?? '';
+      if(lang !== 'hi') return article[field] ?? (field === 'headline' ? article.title : field === 'dek' ? article.description : field === 'source' ? article.source?.name : '') ?? '';
+      const hi = article.hi || article.translations?.hi || article.translation?.hi || {};
       return article[`${field}_hi`]
         ?? article[`${field}Hi`]
-        ?? article.translations?.hi?.[field]
-        ?? article.hi?.[field]
+        ?? hi[field]
+        ?? hi[field === 'headline' ? 'title' : field === 'dek' ? 'description' : field]
         ?? article[field]
         ?? (field === 'headline' ? article.title : '')
         ?? (field === 'dek' ? article.description : '')
@@ -2298,7 +2318,7 @@
         const dek = localizedArticleField(a, 'dek', lang);
         const source = localizedArticleField(a, 'source', lang);
         return `
-        <a class="card" style="--accent:var(--red)" href="${a.url || '#'}" target="_blank" rel="noopener">
+        <a class="card" data-external="true" style="--accent:var(--red)" href="${a.url || '#'}" target="_blank" rel="noopener">
           <div class="card-top"><span class="tag">${tag}</span><span class="dot"></span><span class="time">${a.time ? new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</span></div>
           <div class="headline">${headline}</div>
           <div class="dek">${dek}</div>
@@ -2428,6 +2448,7 @@
     });
     translateStaticText(lang);
     window.dispatchEvent(new CustomEvent('burbreek-language-change',{detail:{lang}}));
+    document.body.classList.toggle('is-hindi', lang === 'hi');
   }
 
   function init(){
