@@ -149,7 +149,7 @@
     font-weight:500;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{background:#DAD5C8; height:100%;}
+  html,body{background:#DAD5C8; height:100%; min-height:100%; overflow:hidden;}
   body{
     font-family:'Inter',sans-serif;
     color:var(--ink);
@@ -160,13 +160,14 @@
   .frame{
     width:100%;
     max-width:430px;
+    height:100dvh;
     min-height:100vh;
     background:var(--paper);
     position:relative;
     display:flex;
     flex-direction:column;
     box-shadow:0 0 40px rgba(0,0,0,0.15);
-    overflow-x:hidden;
+    overflow:hidden;
   }
 
   /* ---------- Masthead ---------- */
@@ -272,10 +273,19 @@
 
   /* ---------- Feed ---------- */
   .feed{
-    flex:1;
-    padding:14px 16px calc(100px + env(safe-area-inset-bottom, 0px));
+    flex:1 1 auto;
+    min-height:0;
+    padding:14px 16px calc(92px + env(safe-area-inset-bottom, 0px));
     overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    scrollbar-color:#AAA397 transparent;
   }
+  .feed::-webkit-scrollbar{width:6px;}
+  .feed::-webkit-scrollbar-track{background:transparent;}
+  .feed::-webkit-scrollbar-thumb{background:#AAA397;border-radius:6px;}
   .section{
     margin-bottom:26px;
   }
@@ -674,15 +684,24 @@
   .section-screen{
     position:absolute;
     inset:0;
+    width:100%;
+    height:100%;
     background:var(--paper);
     z-index:40;
     display:flex;
     flex-direction:column;
     transform:translateX(100%);
-    transition:transform .26s cubic-bezier(.2,.7,.3,1);
+    visibility:hidden;
+    pointer-events:none;
+    transition:transform .26s cubic-bezier(.2,.7,.3,1), visibility 0s linear .26s;
     overflow-y:auto;
   }
-  .section-screen.open{transform:translateX(0);}
+  .section-screen.open{
+    transform:translateX(0);
+    visibility:visible;
+    pointer-events:auto;
+    transition:transform .26s cubic-bezier(.2,.7,.3,1), visibility 0s linear 0s;
+  }
   .section-screen-content{
     padding:14px 16px calc(40px + env(safe-area-inset-bottom, 0px));
   }
@@ -693,15 +712,24 @@
   .detail-overlay{
     position:absolute;
     inset:0;
+    width:100%;
+    height:100%;
     background:var(--paper);
     z-index:50;
     display:flex;
     flex-direction:column;
     transform:translateY(100%);
-    transition:transform .28s cubic-bezier(.2,.7,.3,1);
+    visibility:hidden;
+    pointer-events:none;
+    transition:transform .28s cubic-bezier(.2,.7,.3,1), visibility 0s linear .28s;
     overflow-y:auto;
   }
-  .detail-overlay.open{transform:translateY(0);}
+  .detail-overlay.open{
+    transform:translateY(0);
+    visibility:visible;
+    pointer-events:auto;
+    transition:transform .28s cubic-bezier(.2,.7,.3,1), visibility 0s linear 0s;
+  }
   .detail-header{
     position:sticky;
     top:0;
@@ -1029,8 +1057,11 @@
   .bottom-nav{transition:transform .22s ease;}
   .bottom-nav.nav-hidden{transform:translateY(100%);}
   .bottom-nav{
-    position:sticky;
+    position:absolute;
+    left:0;
+    right:0;
     bottom:0;
+    z-index:35;
     display:flex;
     background:var(--ink);
     border-top:3px solid var(--ink);
@@ -1739,7 +1770,7 @@
     sectionScreen.classList.remove('open');
     if(previous) renderFeedOrder();
     setActiveNav('all');
-    feedEl.scrollIntoView({behavior:'smooth', block:'start'});
+    feedEl.scrollTo({top:0, behavior:'smooth'});
   }
 
   document.getElementById('sectionBackBtn').addEventListener('click', closeSectionScreen);
@@ -1754,65 +1785,52 @@
     else openSectionScreen(n.dataset.target);
   }));
 
-  // ---- Collapsing header / flexible footer ----
-  // Usability rules:
-  //  - Past a small threshold, secondary masthead info (eyebrow, tagline, mood row) tucks
-  //    away so the compact logo+date bar stays pinned without eating reading space.
-  //  - Ticker + category tabs are only needed while browsing, not while reading — they
-  //    slide out on scroll-down and slide back the instant the user scrolls up, so
-  //    navigation is always one small gesture away, never fully lost.
-  //  - Footer nav follows the same reveal-on-scroll-up pattern to keep max content visible.
-  //  - A small "back to top" chip appears once the header is collapsed, as a shortcut.
+  // ---- Feed scrolling / compact header / footer ----
+  // The app uses one real scroll container (#feed). This avoids the old
+  // window+sticky combination that could leave blank space after returning
+  // from a section/article and keeps overlays independent from feed scroll.
   (function(){
     const header = document.getElementById('appHeader');
     const bottomNavEl = document.querySelector('.bottom-nav');
     const scrollTopBtn = document.getElementById('scrollTopBtn');
-    let lastY = window.scrollY;
+    const scroller = feedEl;
+    let lastY = scroller.scrollTop;
     let ticking = false;
 
     function update(){
-      const y = window.scrollY;
+      const y = scroller.scrollTop;
       const goingDown = y > lastY;
       const goingUp = y < lastY;
-
-      if(y > 8){
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-
-      // Only toggle tabs/footer visibility once we're past the header's own
-      // height, so it never flickers while the masthead itself is on screen —
-      // and only react to a real, deliberate scroll (avoids jitter on tiny moves).
       const delta = Math.abs(y - lastY);
+
+      header.classList.toggle('scrolled', y > 8);
+
       if(y > 140 && delta > 4){
-        if(goingDown){
-          header.classList.add('tabs-hidden');
-          bottomNavEl.classList.add('nav-hidden');
-        } else if(goingUp){
+        header.classList.toggle('tabs-hidden', goingDown);
+        bottomNavEl.classList.toggle('nav-hidden', goingDown);
+        if(goingUp){
           header.classList.remove('tabs-hidden');
           bottomNavEl.classList.remove('nav-hidden');
         }
-      } else if(y <= 140){
+      }else if(y <= 140){
         header.classList.remove('tabs-hidden');
         bottomNavEl.classList.remove('nav-hidden');
       }
 
       scrollTopBtn.classList.toggle('visible', y > 260);
-
       lastY = y;
       ticking = false;
     }
 
-    window.addEventListener('scroll', () => {
+    scroller.addEventListener('scroll', () => {
       if(!ticking){
         window.requestAnimationFrame(update);
         ticking = true;
       }
-    }, { passive:true });
+    }, {passive:true});
 
     scrollTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top:0, behavior:'smooth' });
+      scroller.scrollTo({top:0, behavior:'smooth'});
     });
   })();
 
@@ -2137,6 +2155,8 @@
 
   function closeDetail(){
     detailOverlay.classList.remove('open');
+    // Never leave the detail layer at an old scroll offset for the next story.
+    requestAnimationFrame(() => { detailOverlay.scrollTop = 0; });
   }
 
   document.getElementById('detailBackBtn').addEventListener('click', closeDetail);
