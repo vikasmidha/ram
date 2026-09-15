@@ -847,7 +847,7 @@
   .detail-action-btn.primary{background:var(--ink); color:var(--paper);}
 
   /* Compact live weather — intentionally kept to one row */
-  .weather-strip{display:flex;align-items:center;gap:10px;min-width:0;margin:8px 0 9px;padding:7px 10px;background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;line-height:1;overflow:hidden;}
+  .weather-strip{display:flex;align-items:center;gap:10px;min-width:0;margin:7px 0 0;padding:7px 10px;background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;line-height:1;overflow:hidden;}
   .weather-strip-main{display:flex;align-items:center;gap:8px;min-width:0;flex:1;}
   .weather-icon{font-size:19px;line-height:1;flex:none;}
   .weather-place{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;text-transform:uppercase;letter-spacing:.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;}
@@ -1274,20 +1274,6 @@
       <span class="weather-days" id="weatherDays"></span>
     </div>
 
-    <button class="mood-summary" id="moodSummaryBtn" aria-expanded="false">
-      <span id="moodSummaryText">☀️ Clear · Morning read · Est. 4 min</span>
-      <span class="mood-chevron" id="moodChevron">▾</span>
-    </button>
-    <div class="mood-panel" id="moodPanel">
-      <span class="mood-caption" id="moodCaption">Clear skies, sharp focus — your briefing is ready. Est. read: 4 min.</span>
-      <div class="mood-chips" id="moodChips">
-        <button class="mood-chip active" data-mood="clear">☀️ Clear</button>
-        <button class="mood-chip" data-mood="rainy">🌧️ Rainy</button>
-        <button class="mood-chip" data-mood="winter">❄️ Winter</button>
-        <button class="mood-chip" data-mood="summer">🌤️ Summer</button>
-        <span class="mood-chip time-feel" id="timeFeel">Morning read</span>
-      </div>
-    </div>
   </div>
 
   <div class="ticker-wrap">
@@ -1996,42 +1982,9 @@
     : hr < 16 ? 'Afternoon check-in'
     : hr < 20 ? 'Evening wind-down'
     : 'Late-night scroll';
-  document.getElementById('timeFeel').textContent = timeFeelText;
-
-  // Weather mood — manual toggle, ties accent color + caption across masthead/ticker
-  const moodCaptions = {
-    clear: 'Clear skies, sharp focus — your briefing is ready. Est. read: 4 min.',
-    rainy: 'Rainy day picks: slower reads, comfort stories, extra time for the deep-dives.',
-    winter: 'Crisp winter read — the short, sharp stories that matter, nothing extra.',
-    summer: 'Bright summer skim — fast headlines so you can get back outside.'
-  };
-  const moodEmoji = { clear:'☀️ Clear', rainy:'🌧️ Rainy', winter:'❄️ Winter', summer:'🌤️ Summer' };
-  const appFrame = document.getElementById('appFrame');
-  const moodSummaryText = document.getElementById('moodSummaryText');
-
-  function updateMoodSummary(mood){
-    moodSummaryText.textContent = `${moodEmoji[mood]} · ${timeFeelText} · Est. 4 min`;
-  }
-  updateMoodSummary('clear');
-
-  document.querySelectorAll('.mood-chip[data-mood]').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const mood = chip.dataset.mood;
-      appFrame.dataset.mood = mood;
-      document.querySelectorAll('.mood-chip[data-mood]').forEach(c => c.classList.toggle('active', c === chip));
-      document.getElementById('moodCaption').textContent = moodCaptions[mood];
-      updateMoodSummary(mood);
-    });
-  });
-
-  // Mood summary line is collapsed by default — tap to reveal the full mood
-  // picker only when the user actually wants to change it.
-  const moodSummaryBtn = document.getElementById('moodSummaryBtn');
-  const moodPanel = document.getElementById('moodPanel');
-  moodSummaryBtn.addEventListener('click', () => {
-    const expanded = moodPanel.classList.toggle('expanded');
-    moodSummaryBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  });
+  // Time-of-day is retained for internal/editorial logic, but the old
+  // second weather/mood row is intentionally removed. Real weather now
+  // occupies the single compact weather strip in the masthead.
 
   // Fashion age tabs
   document.querySelectorAll('.age-tab').forEach(tab => {
@@ -2516,15 +2469,77 @@
       });
     }
 
+    function weatherInfoFromCode(code){
+      const c = Number(code);
+      if(c === 0) return {condition:'Clear sky', icon:'☀️'};
+      if([1,2].includes(c)) return {condition:'Partly cloudy', icon:'🌤️'};
+      if(c === 3) return {condition:'Overcast', icon:'☁️'};
+      if([45,48].includes(c)) return {condition:'Foggy', icon:'🌫️'};
+      if([51,53,55,56,57].includes(c)) return {condition:'Drizzle', icon:'🌦️'};
+      if([61,63,65,66,67,80,81,82].includes(c)) return {condition:'Rain', icon:'🌧️'};
+      if([71,73,75,77,85,86].includes(c)) return {condition:'Snow', icon:'❄️'};
+      if([95,96,99].includes(c)) return {condition:'Thunderstorm', icon:'⛈️'};
+      return {condition:'Mixed conditions', icon:'🌥️'};
+    }
+
+    async function fetchBrowserWeather(lat, lon){
+      const url = new URL('https://api.open-meteo.com/v1/forecast');
+      url.searchParams.set('latitude', lat);
+      url.searchParams.set('longitude', lon);
+      url.searchParams.set('current', 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m');
+      url.searchParams.set('daily', 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max');
+      url.searchParams.set('timezone', 'auto');
+      url.searchParams.set('forecast_days', '5');
+      url.searchParams.set('temperature_unit', 'celsius');
+      url.searchParams.set('wind_speed_unit', 'kmh');
+      url.searchParams.set('precipitation_unit', 'mm');
+      const res = await fetch(url.toString(), {headers:{Accept:'application/json'}});
+      if(!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
+      const raw = await res.json();
+      if(!raw.current || !raw.daily) throw new Error('Incomplete weather response');
+      return {
+        locationLabel: 'Local weather',
+        condition: weatherInfoFromCode(raw.current.weather_code).condition,
+        icon: weatherInfoFromCode(raw.current.weather_code).icon,
+        current: {
+          temperatureC: raw.current.temperature_2m,
+          apparentTemperatureC: raw.current.apparent_temperature,
+          humidity: raw.current.relative_humidity_2m,
+          windKmh: raw.current.wind_speed_10m,
+          precipitationMm: raw.current.precipitation,
+          weatherCode: raw.current.weather_code
+        },
+        daily: (raw.daily.time || []).map((date, i) => ({
+          date,
+          maxC: raw.daily.temperature_2m_max?.[i],
+          minC: raw.daily.temperature_2m_min?.[i],
+          rainProbability: raw.daily.precipitation_probability_max?.[i]
+        })),
+        source: 'Open-Meteo browser fallback',
+        updatedAt: new Date().toISOString()
+      };
+    }
+
     async function loadLiveWeather(){
       const saved = getSavedLocation();
-      const qs = saved ? `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}` : '';
-      const data = await tryFetch('/api/weather' + qs);
-      if(!data) return;
       const set = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
       const strip = document.getElementById('weatherStrip');
+      let data = null;
+
+      // Prefer our backend, but do not leave the UI empty when the server-side
+      // provider is temporarily returning 502. Open-Meteo supports browser CORS.
+      if(saved){
+        const qs = `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}`;
+        data = await tryFetch('/api/weather' + qs);
+        if(!data){
+          try { data = await fetchBrowserWeather(saved.lat, saved.lng); }
+          catch(e) { console.warn('[weather] backend and browser fallback failed', e); }
+        }
+      }
+
+      if(!data) return;
       const today = Array.isArray(data.daily) && data.daily[0] ? data.daily[0] : null;
-      set('weatherPlace', data.locationLabel || (saved ? 'Local weather' : 'Local weather'));
+      set('weatherPlace', data.locationLabel || 'Local weather');
       set('weatherCondition', data.condition || 'Weather unavailable');
       set('weatherIcon', data.icon || '🌤️');
       set('weatherTemp', Number.isFinite(Number(data.current?.temperatureC)) ? Math.round(Number(data.current.temperatureC)) + '°' : '--°');
@@ -2536,7 +2551,6 @@
       set('weatherRain', today && Number.isFinite(Number(today.rainProbability)) ? Math.round(Number(today.rainProbability)) + '%' : (Number.isFinite(Number(data.current?.precipitationMm)) ? Number(data.current.precipitationMm).toFixed(1) + 'mm' : '--'));
       set('weatherUpdated', data.updatedAt ? 'Updated ' + new Date(data.updatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : 'Live weather');
       if(strip) strip.classList.remove('unavailable');
-      if(data.mood){ const chip = document.querySelector(`.mood-chip[data-mood="${data.mood}"]`); if(chip) chip.click(); }
     }
 
     async function loadLivePrices(kind, sectionSelector){
