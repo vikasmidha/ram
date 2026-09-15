@@ -846,6 +846,23 @@
   }
   .detail-action-btn.primary{background:var(--ink); color:var(--paper);}
 
+  /* Live weather */
+  .weather-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:13px 14px;margin-bottom:10px;}
+  .weather-main{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .weather-place{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.3px;}
+  .weather-condition{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;margin-top:4px;}
+  .weather-temp{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:42px;line-height:1;}
+  .weather-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;}
+  .weather-stats div{border-top:1px dashed var(--line);padding-top:7px;}
+  .weather-stats span{display:block;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);text-transform:uppercase;}
+  .weather-stats b{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:3px;}
+  .weather-days{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px;}
+  .weather-day{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:7px 3px;text-align:center;}
+  .weather-day-name{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);text-transform:uppercase;}
+  .weather-day-icon{font-size:15px;margin:4px 0;}
+  .weather-day-temp{font-family:'JetBrains Mono',monospace;font-size:8.5px;}
+  .weather-updated{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-top:9px;}
+
   /* Live badge */
   .live-badge{
     display:inline-flex;
@@ -1212,60 +1229,6 @@
   ]
 }
 </script>
-<style id="burbreek-font-usability-v2">
-/* BURBREEK typography system v2: prioritize comfortable reading over condensed display type. */
-:root{
-  --font-ui:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-reading:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-hi:'Noto Sans Devanagari','Noto Sans',Inter,system-ui,sans-serif;
-  --font-data:'JetBrains Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
-}
-body,button,input,textarea,select{font-family:var(--font-ui);}
-.headline,.detail-headline,.dek,.section-title,.section-sub,.tag,.card-title,.compare-result-name,.ticket-film,.grocery-item,.trend-name,.age-block-title,.reel-label,.pill,.age-tab{font-family:var(--font-reading);}
-.headline{font-size:clamp(17px,3.7vw,19px);font-weight:700;line-height:1.32;letter-spacing:-.01em;}
-.dek{font-size:14px;line-height:1.52;}
-.detail-headline{font-size:clamp(25px,6vw,30px);line-height:1.24;letter-spacing:-.012em;}
-.detail-para{font-family:var(--font-reading);font-size:15px;line-height:1.68;}
-.section-title{font-size:17px;line-height:1.25;}
-.pill{font-size:12px;font-weight:650;min-height:36px;padding:7px 12px;}
-.mood-chip,.loc-btn,.compare-search button,.compare-chip,.btn-order,.detail-action-btn,.detail-back,.reset-btn{min-height:40px;}
-.loc-btn,.btn-order,.detail-action-btn,.reset-btn{padding:8px 12px;}
-.card{padding:12px 13px;margin-bottom:9px;}
-.card-top{margin-bottom:7px;}
-.meta-row{line-height:1.35;}
-/* Hindi gets script-appropriate metrics and more breathing room. */
-html[lang^="hi"] body,
-html[lang^="hi"] .headline,
-html[lang^="hi"] .dek,
-html[lang^="hi"] .detail-headline,
-html[lang^="hi"] .detail-para,
-html[lang^="hi"] .section-title,
-html[lang^="hi"] .ticket-film,
-html[lang^="hi"] .grocery-item,
-html[lang^="hi"] .trend-name,
-html[lang^="hi"] .age-block-title,
-html[lang^="hi"] .reel-label,
-html[lang^="hi"] button,
-html[lang^="hi"] input,
-html[lang^="hi"] textarea,
-html[lang^="hi"] select{font-family:var(--font-hi);}
-html[lang^="hi"] .headline{font-size:clamp(18px,4vw,20px);line-height:1.48;font-weight:700;letter-spacing:0;}
-html[lang^="hi"] .dek{font-size:14px;line-height:1.7;}
-html[lang^="hi"] .detail-headline{line-height:1.42;letter-spacing:0;}
-html[lang^="hi"] .detail-para{line-height:1.78;}
-/* Data remains compact and aligned. */
-.edition-line,.date-line,.time,.meta-row,.idx-name,.idx-val,.idx-chg,.idx-updated,.store-name,.store-price,.grocery-unit,.grocery-note,.cinema-time,.compare-label,.compare-meta,.compare-best,.broker-sub,.trade-ltp,.reel-views{font-family:var(--font-data);}
-/* Avoid tiny controls and accidental overflow. */
-button,a,input,select{touch-action:manipulation;}
-.headline,.dek,.detail-headline,.detail-para,.source,.card{overflow-wrap:anywhere;}
-@media (max-width:430px){
-  .feed{padding-left:14px;padding-right:14px;}
-  .headline{font-size:17px;}
-  .dek{font-size:13.5px;}
-  .detail-body-wrap{padding-left:16px;padding-right:16px;}
-}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important;}}
-</style>
 </head>
 <body>
 <div class="frame" id="appFrame" data-mood="clear">
@@ -1343,6 +1306,28 @@ button,a,input,select{touch-action:manipulation;}
       </div>
       <button class="global-loc-btn" id="globalLocationBtn" type="button">Use my location</button>
     </div>
+
+    <!-- LIVE WEATHER -->
+    <section class="section weather-section" id="sec-weather">
+      <div class="section-head"><span class="section-title">Weather</span><span class="live-badge"><span class="live-dot"></span>Live</span></div>
+      <div class="weather-card" id="weatherCard">
+        <div class="weather-main">
+          <div>
+            <div class="weather-place" id="weatherPlace">Set your location</div>
+            <div class="weather-condition" id="weatherCondition">Live weather will appear here</div>
+          </div>
+          <div class="weather-temp" id="weatherTemp">--°</div>
+        </div>
+        <div class="weather-stats">
+          <div><span>Feels</span><b id="weatherFeels">--</b></div>
+          <div><span>Humidity</span><b id="weatherHumidity">--</b></div>
+          <div><span>Wind</span><b id="weatherWind">--</b></div>
+          <div><span>Rain</span><b id="weatherRain">--</b></div>
+        </div>
+        <div class="weather-days" id="weatherDays"></div>
+        <div class="weather-updated" id="weatherUpdated">Weather data unavailable</div>
+      </div>
+    </section>
 
     <!-- TRENDING -->
     <section class="section" id="sec-trending">
@@ -2107,6 +2092,7 @@ button,a,input,select{touch-action:manipulation;}
         const saved = {lat,lng,confirmed:true,confirmedAt:new Date().toISOString()};
         localStorage.setItem(LOCATION_KEY, JSON.stringify(saved));
         setGlobalLocationUI(saved);
+        window.dispatchEvent(new CustomEvent('burbreek-location-confirmed'));
         const seed = Math.abs(lat + lng);
         ['grocery','fuel','tickets'].forEach(scope => applyNearby(scope, seed));
         const userId = localStorage.getItem('brief_user_id');
@@ -2473,6 +2459,7 @@ button,a,input,select{touch-action:manipulation;}
     }
 
     window.addEventListener('burbreek-language-change', () => loadLiveNews());
+    window.addEventListener('burbreek-location-confirmed', () => loadLiveWeather());
 
     async function loadLiveMarkets(){
       const data = await tryFetch('/api/markets');
@@ -2525,11 +2512,23 @@ button,a,input,select{touch-action:manipulation;}
       });
     }
 
-    async function loadLiveWeatherMood(){
-      const data = await tryFetch('/api/weather');
-      if(!data || !data.mood) return;
-      const chip = document.querySelector(`.mood-chip[data-mood="${data.mood}"]`);
-      if(chip) chip.click(); // reuses the existing mood handler so summary/caption/ribbon all stay in sync
+    async function loadLiveWeather(){
+      const saved = getSavedLocation();
+      const qs = saved ? `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}` : '';
+      const data = await tryFetch('/api/weather' + qs);
+      if(!data) return;
+      const set = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+      set('weatherPlace', data.locationLabel || (saved ? 'Your confirmed location' : 'Set your location'));
+      set('weatherCondition', data.condition || 'Weather unavailable');
+      set('weatherTemp', Number.isFinite(Number(data.current?.temperatureC)) ? Math.round(Number(data.current.temperatureC)) + '°' : '--°');
+      set('weatherFeels', Number.isFinite(Number(data.current?.apparentTemperatureC)) ? Math.round(Number(data.current.apparentTemperatureC)) + '°' : '--');
+      set('weatherHumidity', Number.isFinite(Number(data.current?.humidity)) ? Math.round(Number(data.current.humidity)) + '%' : '--');
+      set('weatherWind', Number.isFinite(Number(data.current?.windKmh)) ? Math.round(Number(data.current.windKmh)) + ' km/h' : '--');
+      set('weatherRain', Number.isFinite(Number(data.current?.precipitationMm)) ? Number(data.current.precipitationMm).toFixed(1) + ' mm' : '--');
+      const days = document.getElementById('weatherDays');
+      if(days && Array.isArray(data.daily)) days.innerHTML = data.daily.slice(0,5).map(d => `<div class="weather-day"><div class="weather-day-name">${d.day}</div><div class="weather-day-icon">${d.icon}</div><div class="weather-day-temp">${Math.round(d.maxC)}° / ${Math.round(d.minC)}°</div></div>`).join('');
+      set('weatherUpdated', data.updatedAt ? 'Updated ' + new Date(data.updatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : 'Live weather');
+      if(data.mood){ const chip = document.querySelector(`.mood-chip[data-mood="${data.mood}"]`); if(chip) chip.click(); }
     }
 
     async function loadLivePrices(kind, sectionSelector){
@@ -2555,7 +2554,7 @@ button,a,input,select{touch-action:manipulation;}
 
     loadLiveNews();
     loadLiveMarkets();
-    loadLiveWeatherMood();
+    loadLiveWeather();
     loadLivePrices('grocery', '#sec-grocery');
     loadLivePrices('fuel', '#sec-fuel');
   })();
