@@ -846,22 +846,29 @@
   }
   .detail-action-btn.primary{background:var(--ink); color:var(--paper);}
 
-  /* Live weather */
-  .weather-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:13px 14px;margin-bottom:10px;}
-  .weather-main{display:flex;justify-content:space-between;align-items:center;gap:12px;}
-  .weather-place{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.3px;}
-  .weather-condition{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;margin-top:4px;}
-  .weather-temp{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:42px;line-height:1;}
-  .weather-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;}
-  .weather-stats div{border-top:1px dashed var(--line);padding-top:7px;}
-  .weather-stats span{display:block;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);text-transform:uppercase;}
-  .weather-stats b{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:3px;}
-  .weather-days{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px;}
-  .weather-day{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:7px 3px;text-align:center;}
-  .weather-day-name{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);text-transform:uppercase;}
-  .weather-day-icon{font-size:15px;margin:4px 0;}
-  .weather-day-temp{font-family:'JetBrains Mono',monospace;font-size:8.5px;}
-  .weather-updated{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-top:9px;}
+  /* Compact live weather — intentionally kept to one row */
+  .weather-strip{display:flex;align-items:center;gap:10px;min-width:0;margin:8px 0 9px;padding:7px 10px;background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;line-height:1;overflow:hidden;}
+  .weather-strip-main{display:flex;align-items:center;gap:8px;min-width:0;flex:1;}
+  .weather-icon{font-size:19px;line-height:1;flex:none;}
+  .weather-place{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;text-transform:uppercase;letter-spacing:.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;}
+  .weather-temp{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:700;white-space:nowrap;}
+  .weather-condition{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:var(--ink-soft);white-space:nowrap;}
+  .weather-divider{width:1px;height:18px;background:var(--line);flex:none;}
+  .weather-detail{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--ink-soft);white-space:nowrap;}
+  .weather-detail strong{color:var(--ink);font-weight:500;}
+  .weather-chevron{margin-left:auto;font-size:14px;color:var(--ink-soft);flex:none;}
+  .weather-updated,.weather-stats,.weather-days{display:none!important;}
+  .weather-strip.unavailable{opacity:.75;}
+  @media(max-width:700px){
+    .weather-strip{gap:7px;margin:7px 0 8px;padding:7px 8px;}
+    .weather-icon{font-size:17px;}
+    .weather-temp{font-size:23px;}
+    .weather-condition{display:none;}
+    .weather-place{max-width:78px;}
+    .weather-detail{font-size:8px;}
+    .weather-detail.wind,.weather-detail.rain{display:none;}
+    .weather-divider{height:16px;}
+  }
 
   /* Live badge */
   .live-badge{
@@ -1248,6 +1255,25 @@
     </div>
     <div class="tagline">Every story. Ten seconds. No fluff. <span class="tagline-sub">Prepared exclusively for you.</span></div>
 
+    <div class="weather-strip unavailable" id="weatherStrip" aria-label="Live weather">
+      <div class="weather-strip-main">
+        <span class="weather-icon" id="weatherIcon">☀️</span>
+        <span class="weather-place" id="weatherPlace">Local weather</span>
+        <span class="weather-temp" id="weatherTemp">--°</span>
+        <span class="weather-condition" id="weatherCondition">Loading</span>
+      </div>
+      <span class="weather-divider"></span>
+      <span class="weather-detail"><strong>H:</strong> <span id="weatherHigh">--°</span></span>
+      <span class="weather-detail"><strong>L:</strong> <span id="weatherLow">--°</span></span>
+      <span class="weather-divider"></span>
+      <span class="weather-detail rain"><strong>💧</strong> <span id="weatherRain">--</span></span>
+      <span class="weather-detail wind"><strong>↝</strong> <span id="weatherWind">--</span></span>
+      <span class="weather-chevron" aria-hidden="true">›</span>
+      <span class="weather-updated" id="weatherUpdated">Live weather</span>
+      <span class="weather-stats"><b id="weatherFeels">--</b><b id="weatherHumidity">--</b></span>
+      <span class="weather-days" id="weatherDays"></span>
+    </div>
+
     <button class="mood-summary" id="moodSummaryBtn" aria-expanded="false">
       <span id="moodSummaryText">☀️ Clear · Morning read · Est. 4 min</span>
       <span class="mood-chevron" id="moodChevron">▾</span>
@@ -1306,28 +1332,6 @@
       </div>
       <button class="global-loc-btn" id="globalLocationBtn" type="button">Use my location</button>
     </div>
-
-    <!-- LIVE WEATHER -->
-    <section class="section weather-section" id="sec-weather">
-      <div class="section-head"><span class="section-title">Weather</span><span class="live-badge"><span class="live-dot"></span>Live</span></div>
-      <div class="weather-card" id="weatherCard">
-        <div class="weather-main">
-          <div>
-            <div class="weather-place" id="weatherPlace">Set your location</div>
-            <div class="weather-condition" id="weatherCondition">Live weather will appear here</div>
-          </div>
-          <div class="weather-temp" id="weatherTemp">--°</div>
-        </div>
-        <div class="weather-stats">
-          <div><span>Feels</span><b id="weatherFeels">--</b></div>
-          <div><span>Humidity</span><b id="weatherHumidity">--</b></div>
-          <div><span>Wind</span><b id="weatherWind">--</b></div>
-          <div><span>Rain</span><b id="weatherRain">--</b></div>
-        </div>
-        <div class="weather-days" id="weatherDays"></div>
-        <div class="weather-updated" id="weatherUpdated">Weather data unavailable</div>
-      </div>
-    </section>
 
     <!-- TRENDING -->
     <section class="section" id="sec-trending">
@@ -2518,16 +2522,20 @@
       const data = await tryFetch('/api/weather' + qs);
       if(!data) return;
       const set = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
-      set('weatherPlace', data.locationLabel || (saved ? 'Your confirmed location' : 'Set your location'));
+      const strip = document.getElementById('weatherStrip');
+      const today = Array.isArray(data.daily) && data.daily[0] ? data.daily[0] : null;
+      set('weatherPlace', data.locationLabel || (saved ? 'Local weather' : 'Local weather'));
       set('weatherCondition', data.condition || 'Weather unavailable');
+      set('weatherIcon', data.icon || '🌤️');
       set('weatherTemp', Number.isFinite(Number(data.current?.temperatureC)) ? Math.round(Number(data.current.temperatureC)) + '°' : '--°');
+      set('weatherHigh', today && Number.isFinite(Number(today.maxC)) ? Math.round(Number(today.maxC)) + '°' : '--°');
+      set('weatherLow', today && Number.isFinite(Number(today.minC)) ? Math.round(Number(today.minC)) + '°' : '--°');
       set('weatherFeels', Number.isFinite(Number(data.current?.apparentTemperatureC)) ? Math.round(Number(data.current.apparentTemperatureC)) + '°' : '--');
       set('weatherHumidity', Number.isFinite(Number(data.current?.humidity)) ? Math.round(Number(data.current.humidity)) + '%' : '--');
       set('weatherWind', Number.isFinite(Number(data.current?.windKmh)) ? Math.round(Number(data.current.windKmh)) + ' km/h' : '--');
-      set('weatherRain', Number.isFinite(Number(data.current?.precipitationMm)) ? Number(data.current.precipitationMm).toFixed(1) + ' mm' : '--');
-      const days = document.getElementById('weatherDays');
-      if(days && Array.isArray(data.daily)) days.innerHTML = data.daily.slice(0,5).map(d => `<div class="weather-day"><div class="weather-day-name">${d.day}</div><div class="weather-day-icon">${d.icon}</div><div class="weather-day-temp">${Math.round(d.maxC)}° / ${Math.round(d.minC)}°</div></div>`).join('');
+      set('weatherRain', today && Number.isFinite(Number(today.rainProbability)) ? Math.round(Number(today.rainProbability)) + '%' : (Number.isFinite(Number(data.current?.precipitationMm)) ? Number(data.current.precipitationMm).toFixed(1) + 'mm' : '--'));
       set('weatherUpdated', data.updatedAt ? 'Updated ' + new Date(data.updatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : 'Live weather');
+      if(strip) strip.classList.remove('unavailable');
       if(data.mood){ const chip = document.querySelector(`.mood-chip[data-mood="${data.mood}"]`); if(chip) chip.click(); }
     }
 
