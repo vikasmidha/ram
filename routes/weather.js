@@ -38,7 +38,7 @@ async function fetchWeather(lat, lon, label) {
   url.searchParams.set('latitude', lat);
   url.searchParams.set('longitude', lon);
   url.searchParams.set('current', 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m');
-  url.searchParams.set('daily', 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum');
+  url.searchParams.set('daily', 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max');
   url.searchParams.set('timezone', 'auto');
   url.searchParams.set('forecast_days', '5');
   url.searchParams.set('temperature_unit', 'celsius');
@@ -55,6 +55,7 @@ async function fetchWeather(lat, lon, label) {
     locationLabel: label || `Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)}`,
     timezone: data.timezone || null,
     condition: info.condition,
+    icon: info.icon,
     mood: info.mood,
     current: {
       temperatureC: number(data.current.temperature_2m),
@@ -71,6 +72,7 @@ async function fetchWeather(lat, lon, label) {
       maxC: number(data.daily.temperature_2m_max?.[i]),
       minC: number(data.daily.temperature_2m_min?.[i]),
       precipitationMm: number(data.daily.precipitation_sum?.[i]),
+      rainProbability: number(data.daily.precipitation_probability_max?.[i]),
     })),
     source: 'Open-Meteo',
     updatedAt: new Date().toISOString(),
