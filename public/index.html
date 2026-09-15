@@ -1212,6 +1212,60 @@
   ]
 }
 </script>
+<style id="burbreek-font-usability-v2">
+/* BURBREEK typography system v2: prioritize comfortable reading over condensed display type. */
+:root{
+  --font-ui:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-reading:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-hi:'Noto Sans Devanagari','Noto Sans',Inter,system-ui,sans-serif;
+  --font-data:'JetBrains Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+body,button,input,textarea,select{font-family:var(--font-ui);}
+.headline,.detail-headline,.dek,.section-title,.section-sub,.tag,.card-title,.compare-result-name,.ticket-film,.grocery-item,.trend-name,.age-block-title,.reel-label,.pill,.age-tab{font-family:var(--font-reading);}
+.headline{font-size:clamp(17px,3.7vw,19px);font-weight:700;line-height:1.32;letter-spacing:-.01em;}
+.dek{font-size:14px;line-height:1.52;}
+.detail-headline{font-size:clamp(25px,6vw,30px);line-height:1.24;letter-spacing:-.012em;}
+.detail-para{font-family:var(--font-reading);font-size:15px;line-height:1.68;}
+.section-title{font-size:17px;line-height:1.25;}
+.pill{font-size:12px;font-weight:650;min-height:36px;padding:7px 12px;}
+.mood-chip,.loc-btn,.compare-search button,.compare-chip,.btn-order,.detail-action-btn,.detail-back,.reset-btn{min-height:40px;}
+.loc-btn,.btn-order,.detail-action-btn,.reset-btn{padding:8px 12px;}
+.card{padding:12px 13px;margin-bottom:9px;}
+.card-top{margin-bottom:7px;}
+.meta-row{line-height:1.35;}
+/* Hindi gets script-appropriate metrics and more breathing room. */
+html[lang^="hi"] body,
+html[lang^="hi"] .headline,
+html[lang^="hi"] .dek,
+html[lang^="hi"] .detail-headline,
+html[lang^="hi"] .detail-para,
+html[lang^="hi"] .section-title,
+html[lang^="hi"] .ticket-film,
+html[lang^="hi"] .grocery-item,
+html[lang^="hi"] .trend-name,
+html[lang^="hi"] .age-block-title,
+html[lang^="hi"] .reel-label,
+html[lang^="hi"] button,
+html[lang^="hi"] input,
+html[lang^="hi"] textarea,
+html[lang^="hi"] select{font-family:var(--font-hi);}
+html[lang^="hi"] .headline{font-size:clamp(18px,4vw,20px);line-height:1.48;font-weight:700;letter-spacing:0;}
+html[lang^="hi"] .dek{font-size:14px;line-height:1.7;}
+html[lang^="hi"] .detail-headline{line-height:1.42;letter-spacing:0;}
+html[lang^="hi"] .detail-para{line-height:1.78;}
+/* Data remains compact and aligned. */
+.edition-line,.date-line,.time,.meta-row,.idx-name,.idx-val,.idx-chg,.idx-updated,.store-name,.store-price,.grocery-unit,.grocery-note,.cinema-time,.compare-label,.compare-meta,.compare-best,.broker-sub,.trade-ltp,.reel-views{font-family:var(--font-data);}
+/* Avoid tiny controls and accidental overflow. */
+button,a,input,select{touch-action:manipulation;}
+.headline,.dek,.detail-headline,.detail-para,.source,.card{overflow-wrap:anywhere;}
+@media (max-width:430px){
+  .feed{padding-left:14px;padding-right:14px;}
+  .headline{font-size:17px;}
+  .dek{font-size:13.5px;}
+  .detail-body-wrap{padding-left:16px;padding-right:16px;}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important;}}
+</style>
 </head>
 <body>
 <div class="frame" id="appFrame" data-mood="clear">
