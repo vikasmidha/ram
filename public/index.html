@@ -17,7 +17,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="theme-color" content="#EDEAE3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#EDEAE3;
@@ -1082,6 +1082,108 @@
   .nav-item .glyph{display:block; font-size:14px; margin-bottom:2px;}
   .nav-item.active{color:var(--paper); border-top-color:#F0A93B;}
   .hidden{display:none !important;}
+
+  /* =========================================================
+     BURBREEK TYPOGRAPHY + USABILITY PASS
+     ========================================================= */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Editorial headings: less cramped than an all-condensed interface. */
+  .headline,
+  .section-title,
+  .detail-headline,
+  .card-title,
+  .compare-result-name {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+  }
+
+  .headline { font-size: clamp(16px, 2.9vw, 19px); }
+  .dek { font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; }
+
+  /* Hindi needs its own script-optimized font and slightly more line height. */
+  html[lang^="hi"] body,
+  html[lang^="hi"] .headline,
+  html[lang^="hi"] .dek,
+  html[lang^="hi"] .section-title,
+  html[lang^="hi"] .detail-headline,
+  html[lang^="hi"] .card-title,
+  html[lang^="hi"] button,
+  html[lang^="hi"] input,
+  html[lang^="hi"] textarea,
+  html[lang^="hi"] select {
+    font-family: 'Noto Sans Devanagari', 'Noto Sans', 'Inter', sans-serif;
+  }
+  html[lang^="hi"] .headline,
+  html[lang^="hi"] .detail-headline { line-height: 1.42; letter-spacing: 0; font-weight: 700; }
+  html[lang^="hi"] .dek { line-height: 1.62; }
+
+  /* Keep numbers/timestamps compact and precise. */
+  .edition-line,
+  .time,
+  .meta-row,
+  .idx-val,
+  .idx-chg,
+  .market-updated,
+  .compare-meta,
+  .compare-label,
+  .store-price { font-family: 'JetBrains Mono', monospace; }
+
+  /* Comfortable reading width and spacing. */
+  .card { min-height: 44px; }
+  .dek { max-width: 68ch; }
+
+  /* Touch targets: aim for a comfortable minimum on mobile. */
+  button,
+  a,
+  .pill,
+  .nav-item,
+  .compare-chip,
+  .store-chip { touch-action: manipulation; }
+
+  .nav-item,
+  .pill { min-height: 44px; }
+
+  button:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  /* Avoid accidental horizontal overflow from long headlines/URLs. */
+  .headline,
+  .dek,
+  .meta-row,
+  .detail-headline,
+  .detail-body,
+  .source,
+  .card { overflow-wrap: anywhere; }
+
+  /* Respect users who prefer less motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      transition-duration: .01ms !important;
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .headline { font-size: 17px; line-height: 1.32; }
+    .dek { font-size: 14px; line-height: 1.52; }
+    html[lang^="hi"] .headline { font-size: 18px; line-height: 1.45; }
+    html[lang^="hi"] .dek { font-size: 14px; line-height: 1.65; }
+  }
+
 </style>
 
 <style id="burbreek-global-location-css">
