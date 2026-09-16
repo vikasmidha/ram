@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const newsRoutes = require('./routes/news');
 const marketsRoutes = require('./routes/markets');
 const weatherRoutes = require('./routes/weather');
+const fuelRoutes = require('./routes/fuel');
 const manualDataRoutes = require('./routes/manualData');
 const compareRoutes = require('./routes/compare');
 const db = require('./db');
