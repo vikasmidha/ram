@@ -870,6 +870,11 @@
     .weather-divider{height:16px;}
   }
 
+
+  /* Live fuel cards */
+  .fuel-source-note{margin-top:2px;line-height:1.4;}
+  #sec-fuel .store-chip.best .store-name{color:var(--green);}
+
   /* Live badge */
   .live-badge{
     display:inline-flex;
@@ -1714,30 +1719,35 @@
 
     <!-- FUEL PRICES -->
     <section class="section" id="sec-fuel">
-      <div class="section-head"><span class="section-title">Fuel Price Compare</span><span class="section-sub">By provider, per litre</span></div>
-
-      <div class="grocery-card">
-        <div class="grocery-top"><span class="grocery-item">Petrol</span><span class="grocery-unit">per litre</span></div>
-        <div class="store-grid">
-          <div class="store-chip"><div class="store-name">IOCL</div><div class="store-price">₹96.72</div></div>
-          <div class="store-chip"><div class="store-name">BPCL</div><div class="store-price">₹96.68</div></div>
-          <div class="store-chip best"><div class="store-name">HPCL</div><div class="store-price">₹96.55</div></div>
-          <div class="store-chip"><div class="store-name">Shell</div><div class="store-price">₹104.20</div></div>
-          <div class="store-chip"><div class="store-name">Jio-BP</div><div class="store-price">₹97.10</div></div>
-        </div>
-        <div class="grocery-note">Cheapest: <b>HPCL ₹96.55</b> · Shell runs premium-grade only</div>
+      <div class="section-head">
+        <span class="section-title">Fuel Price Compare</span>
+        <span class="section-sub" id="fuelSectionSub">Live city prices</span>
       </div>
 
-      <div class="grocery-card">
-        <div class="grocery-top"><span class="grocery-item">Diesel</span><span class="grocery-unit">per litre</span></div>
-        <div class="store-grid">
-          <div class="store-chip"><div class="store-name">IOCL</div><div class="store-price">₹89.62</div></div>
-          <div class="store-chip best"><div class="store-name">BPCL</div><div class="store-price">₹89.51</div></div>
-          <div class="store-chip"><div class="store-name">HPCL</div><div class="store-price">₹89.58</div></div>
-          <div class="store-chip"><div class="store-name">Shell</div><div class="store-price">₹96.40</div></div>
-          <div class="store-chip"><div class="store-name">Jio-BP</div><div class="store-price">₹89.90</div></div>
+      <div class="grocery-card" id="fuelPetrolCard">
+        <div class="grocery-top">
+          <span class="grocery-item">Petrol</span>
+          <span class="grocery-unit">per litre</span>
         </div>
-        <div class="grocery-note">Cheapest: <b>BPCL ₹89.51</b> · prices revised daily at 6 AM</div>
+        <div class="store-grid" id="fuelPetrolGrid">
+          <div class="store-chip"><div class="store-name">Loading</div><div class="store-price">--</div></div>
+        </div>
+        <div class="grocery-note" id="fuelPetrolNote">Fetching live city price…</div>
+      </div>
+
+      <div class="grocery-card" id="fuelDieselCard">
+        <div class="grocery-top">
+          <span class="grocery-item">Diesel</span>
+          <span class="grocery-unit">per litre</span>
+        </div>
+        <div class="store-grid" id="fuelDieselGrid">
+          <div class="store-chip"><div class="store-name">Loading</div><div class="store-price">--</div></div>
+        </div>
+        <div class="grocery-note" id="fuelDieselNote">Fetching live city price…</div>
+      </div>
+
+      <div class="grocery-note fuel-source-note" id="fuelSourceNote">
+        Source: live fuel-price provider · prices can vary by outlet within a city.
       </div>
     </section>
 
@@ -2553,6 +2563,62 @@
       if(strip) strip.classList.remove('unavailable');
     }
 
+    function renderFuelBlock(type, payload){
+      const grid = document.getElementById(type === 'petrol' ? 'fuelPetrolGrid' : 'fuelDieselGrid');
+      const note = document.getElementById(type === 'petrol' ? 'fuelPetrolNote' : 'fuelDieselNote');
+      if(!grid || !note) return;
+
+      if(!payload || payload.status !== 'ok' || typeof payload.price !== 'number'){
+        grid.innerHTML = '<div class="store-chip"><div class="store-name">Live data</div><div class="store-price">--</div></div>';
+        note.textContent = 'Live fuel data is temporarily unavailable.';
+        return;
+      }
+
+      grid.innerHTML = `
+        <div class="store-chip best">
+          <div class="store-name">${payload.provider || 'City price'}</div>
+          <div class="store-price">₹${Number(payload.price).toFixed(2)}</div>
+        </div>
+        <div class="store-chip">
+          <div class="store-name">${payload.unitLabel || 'Per litre'}</div>
+          <div class="store-price">${payload.city || 'Local'}</div>
+        </div>
+      `;
+
+      const stamp = payload.updatedAt
+        ? new Date(payload.updatedAt).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata'})
+        : '';
+      note.innerHTML = `Live city price · Updated ${stamp || 'recently'} · <b>${payload.source || 'provider'}</b>`;
+    }
+
+    async function loadLiveFuel(){
+      const saved = getSavedLocation();
+      if(!saved) return;
+
+      const qs = `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}`;
+      const data = await tryFetch('/api/fuel' + qs);
+
+      if(!data){
+        document.getElementById('fuelSectionSub').textContent = 'Live data unavailable';
+        renderFuelBlock('petrol', null);
+        renderFuelBlock('diesel', null);
+        return;
+      }
+
+      document.getElementById('fuelSectionSub').textContent =
+        data.city ? `${data.city} · live` : 'Live city prices';
+
+      renderFuelBlock('petrol', data.petrol);
+      renderFuelBlock('diesel', data.diesel);
+
+      const sourceNote = document.getElementById('fuelSourceNote');
+      if(sourceNote){
+        sourceNote.textContent = data.source
+          ? `Source: ${data.source} · official city prices may vary by outlet.`
+          : 'Source: live fuel-price provider · prices may vary by outlet.';
+      }
+    }
+
     async function loadLivePrices(kind, sectionSelector){
       const data = await tryFetch(`/api/prices/${kind}`);
       if(!data || !data.items) return;
@@ -2578,7 +2644,7 @@
     loadLiveMarkets();
     loadLiveWeather();
     loadLivePrices('grocery', '#sec-grocery');
-    loadLivePrices('fuel', '#sec-fuel');
+    loadLiveFuel();
   })();
 </script>
 
