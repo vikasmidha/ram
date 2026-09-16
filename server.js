@@ -49,6 +49,7 @@ app.get('/api/config', (req, res) => res.json({ version: '1.0.0', analyticsEnabl
 app.use('/api/news', newsRoutes);
 app.use('/api/markets', marketsRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/fuel', fuelRoutes);
 app.use('/api/prices', manualDataRoutes);
 app.use('/api/compare', compareRoutes);
 
