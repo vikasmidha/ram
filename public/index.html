@@ -2534,12 +2534,13 @@
       const saved = getSavedLocation();
       const set = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
       const strip = document.getElementById('weatherStrip');
+      const frame = document.getElementById('appFrame');
       let data = null;
 
-      // Prefer our backend, but do not leave the UI empty when the server-side
-      // provider is temporarily returning 502. Open-Meteo supports browser CORS.
+      // Prefer our backend. The backend now combines wttr.is + Open-Meteo so
+      // localized rain is less likely to be missed. Keep browser fallback too.
       if(saved){
-        const qs = `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}`;
+        const qs = `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}&_=${Date.now()}`;
         data = await tryFetch('/api/weather' + qs);
         if(!data){
           try { data = await fetchBrowserWeather(saved.lat, saved.lng); }
@@ -2549,6 +2550,9 @@
 
       if(!data) return;
       const today = Array.isArray(data.daily) && data.daily[0] ? data.daily[0] : null;
+      const rainNow = Number(data.current?.rainMm ?? data.current?.precipitationMm ?? 0);
+      const rainingNow = data.current?.rainingNow === true || rainNow > 0 || /rain|drizzle|shower|thunder|storm/i.test(String(data.condition || ''));
+
       set('weatherPlace', data.locationLabel || 'Local weather');
       set('weatherCondition', data.condition || 'Weather unavailable');
       set('weatherIcon', data.icon || '🌤️');
@@ -2558,10 +2562,20 @@
       set('weatherFeels', Number.isFinite(Number(data.current?.apparentTemperatureC)) ? Math.round(Number(data.current.apparentTemperatureC)) + '°' : '--');
       set('weatherHumidity', Number.isFinite(Number(data.current?.humidity)) ? Math.round(Number(data.current.humidity)) + '%' : '--');
       set('weatherWind', Number.isFinite(Number(data.current?.windKmh)) ? Math.round(Number(data.current.windKmh)) + ' km/h' : '--');
-      set('weatherRain', today && Number.isFinite(Number(today.rainProbability)) ? Math.round(Number(today.rainProbability)) + '%' : (Number.isFinite(Number(data.current?.precipitationMm)) ? Number(data.current.precipitationMm).toFixed(1) + 'mm' : '--'));
+      set('weatherRain', rainingNow
+        ? (rainNow > 0 ? rainNow.toFixed(1) + 'mm now' : 'Raining')
+        : (today && Number.isFinite(Number(today.rainProbability)) ? Math.round(Number(today.rainProbability)) + '%' : '--'));
       set('weatherUpdated', data.updatedAt ? 'Updated ' + new Date(data.updatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : 'Live weather');
-      if(strip) strip.classList.remove('unavailable');
+      if(frame && data.mood) frame.dataset.mood = data.mood;
+      if(strip){
+        strip.classList.remove('unavailable');
+        strip.setAttribute('aria-label', rainingNow ? 'Live weather — raining now' : 'Live weather');
+      }
     }
+
+    // Weather can change quickly, especially during showers. Refresh periodically
+    // while the page remains open and bypass the browser's HTTP cache.
+    setInterval(loadLiveWeather, 5 * 60 * 1000);
 
     function renderFuelBlock(type, payload){
       const grid = document.getElementById(type === 'petrol' ? 'fuelPetrolGrid' : 'fuelDieselGrid');
