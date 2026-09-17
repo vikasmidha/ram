@@ -873,7 +873,6 @@
 
   /* Live fuel cards */
   .fuel-source-note{margin-top:2px;line-height:1.4;}
-  #sec-fuel .store-chip.best .store-name{color:var(--green);}
 
   /* Live badge */
   .live-badge{
@@ -1307,7 +1306,6 @@
     <button class="pill" data-target="grocery">Grocery Rates</button>
     <button class="pill" data-target="trade">Trade Orders</button>
     <button class="pill" data-target="fashion">Fashion by Age</button>
-    <button class="pill" data-target="fuel">Fuel Prices</button>
     <button class="pill" data-target="settings">Settings</button>
   </div>
 </header>
@@ -1717,40 +1715,6 @@
       </div>
     </section>
 
-    <!-- FUEL PRICES -->
-    <section class="section" id="sec-fuel">
-      <div class="section-head">
-        <span class="section-title">Fuel Price Compare</span>
-        <span class="section-sub" id="fuelSectionSub">Live city prices</span>
-      </div>
-
-      <div class="grocery-card" id="fuelPetrolCard">
-        <div class="grocery-top">
-          <span class="grocery-item">Petrol</span>
-          <span class="grocery-unit">per litre</span>
-        </div>
-        <div class="store-grid" id="fuelPetrolGrid">
-          <div class="store-chip"><div class="store-name">Loading</div><div class="store-price">--</div></div>
-        </div>
-        <div class="grocery-note" id="fuelPetrolNote">Fetching live city price…</div>
-      </div>
-
-      <div class="grocery-card" id="fuelDieselCard">
-        <div class="grocery-top">
-          <span class="grocery-item">Diesel</span>
-          <span class="grocery-unit">per litre</span>
-        </div>
-        <div class="store-grid" id="fuelDieselGrid">
-          <div class="store-chip"><div class="store-name">Loading</div><div class="store-price">--</div></div>
-        </div>
-        <div class="grocery-note" id="fuelDieselNote">Fetching live city price…</div>
-      </div>
-
-      <div class="grocery-note fuel-source-note" id="fuelSourceNote">
-        Source: live fuel-price provider · prices can vary by outlet within a city.
-      </div>
-    </section>
-
     <!-- SETTINGS -->
     <section class="section" id="sec-settings">
       <div class="section-head"><span class="section-title">Settings</span><span class="section-sub">Digest &amp; personalization</span></div>
@@ -1854,7 +1818,6 @@
     grocery: document.getElementById('sec-grocery'),
     trade: document.getElementById('sec-trade'),
     fashion: document.getElementById('sec-fashion'),
-    fuel: document.getElementById('sec-fuel'),
     settings: document.getElementById('sec-settings'),
   };
 
@@ -1863,7 +1826,7 @@
     market:'Stock Market', ipo:'Upcoming IPO', politics:'Political News', reels:'Top 10 Reels · Worldwide',
     gtk:'Good to Know', reviews:'Movies | Web Series', tickets:'Ticket Price Compare',
     grocery:'Grocery Rate Compare', trade:'Trade Order Compare', fashion:'Fashion Trends by Age',
-    fuel:'Fuel Price Compare', settings:'Settings'
+    settings:'Settings'
   };
 
   const originalOrder = Object.keys(sections);
@@ -2080,12 +2043,12 @@
   if(savedLocation){
     setGlobalLocationUI(savedLocation);
     const savedSeed = Math.abs(savedLocation.lat + savedLocation.lng);
-    ['grocery','fuel','tickets'].forEach(scope => applyNearby(scope, savedSeed));
+    ['grocery','tickets'].forEach(scope => applyNearby(scope, savedSeed));
   }
 
   function applyNearby(scope, seed){
-    if(scope === 'grocery' || scope === 'fuel'){
-      const containerSel = scope === 'grocery' ? '#sec-grocery' : '#sec-fuel';
+    if(scope === 'grocery'){
+      const containerSel = '#sec-grocery';
       document.querySelectorAll(containerSel + ' .store-chip').forEach((chip, i) => {
         const km = (0.4 + seededOffset(seed, i) * 4.2).toFixed(1);
         let dist = chip.querySelector('.dist-chip');
@@ -2426,7 +2389,7 @@
     }
 
     window.addEventListener('burbreek-language-change', () => loadLiveNews());
-    window.addEventListener('burbreek-location-confirmed', () => { loadLiveWeather(); loadLiveFuel(); });
+    window.addEventListener('burbreek-location-confirmed', () => { loadLiveWeather(); });
 
     async function loadLiveMarkets(){
       const data = await tryFetch('/api/markets');
@@ -2563,68 +2526,6 @@
       if(strip) strip.classList.remove('unavailable');
     }
 
-    function renderFuelBlock(type, payload){
-      const grid = document.getElementById(type === 'petrol' ? 'fuelPetrolGrid' : 'fuelDieselGrid');
-      const note = document.getElementById(type === 'petrol' ? 'fuelPetrolNote' : 'fuelDieselNote');
-      if(!grid || !note) return;
-
-      if(!payload || payload.status !== 'ok' || typeof payload.price !== 'number'){
-        grid.innerHTML = '<div class="store-chip"><div class="store-name">Live data</div><div class="store-price">--</div></div>';
-        note.textContent = 'Live fuel data is temporarily unavailable.';
-        return;
-      }
-
-      grid.innerHTML = `
-        <div class="store-chip best">
-          <div class="store-name">${payload.provider || 'City price'}</div>
-          <div class="store-price">₹${Number(payload.price).toFixed(2)}</div>
-        </div>
-        <div class="store-chip">
-          <div class="store-name">${payload.unitLabel || 'Per litre'}</div>
-          <div class="store-price">${payload.city || 'Local'}</div>
-        </div>
-      `;
-
-      const stamp = payload.updatedAt
-        ? new Date(payload.updatedAt).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata'})
-        : '';
-      note.innerHTML = `Daily city rate · Checked ${stamp || 'recently'} · <b>${payload.source || 'provider'}</b>`;
-    }
-
-    async function loadLiveFuel(){
-      const saved = getSavedLocation();
-      if(!saved){
-        const sub = document.getElementById('fuelSectionSub');
-        if(sub) sub.textContent = 'Set location to load fuel rates';
-        renderFuelBlock('petrol', null);
-        renderFuelBlock('diesel', null);
-        return;
-      }
-
-      const qs = `?lat=${encodeURIComponent(saved.lat)}&lon=${encodeURIComponent(saved.lng)}`;
-      const data = await tryFetch('/api/fuel' + qs);
-
-      if(!data){
-        document.getElementById('fuelSectionSub').textContent = 'Live data unavailable';
-        renderFuelBlock('petrol', null);
-        renderFuelBlock('diesel', null);
-        return;
-      }
-
-      document.getElementById('fuelSectionSub').textContent =
-        data.city ? `${data.city} · daily rate` : 'Live city prices';
-
-      renderFuelBlock('petrol', data.petrol);
-      renderFuelBlock('diesel', data.diesel);
-
-      const sourceNote = document.getElementById('fuelSourceNote');
-      if(sourceNote){
-        sourceNote.textContent = data.source
-          ? `Source: ${data.source} · rates may vary by pump.`
-          : 'Source: fuel-price provider · rates may vary by pump.';
-      }
-    }
-
     async function loadLivePrices(kind, sectionSelector){
       const data = await tryFetch(`/api/prices/${kind}`);
       if(!data || !data.items) return;
@@ -2650,8 +2551,6 @@
     loadLiveMarkets();
     loadLiveWeather();
     loadLivePrices('grocery', '#sec-grocery');
-    loadLiveFuel();
-    setInterval(loadLiveFuel, 30 * 60 * 1000);
   })();
 </script>
 
