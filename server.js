@@ -7,7 +7,6 @@ const crypto = require('crypto');
 const newsRoutes = require('./routes/news');
 const marketsRoutes = require('./routes/markets');
 const weatherRoutes = require('./routes/weather');
-const fuelRoutes = require('./routes/fuel');
 const manualDataRoutes = require('./routes/manualData');
 const compareRoutes = require('./routes/compare');
 const db = require('./db');
@@ -41,7 +40,7 @@ app.get('/health', (req, res) => {
     database: db.isConfigured(),
     openweather: Boolean(process.env.OPENWEATHER_KEY) && !process.env.OPENWEATHER_KEY.includes('your_'),
   };
-  const ready = db.isConfigured() ? db.isReady() : true; // DB is optional for the launch fallback.
+  const ready = db.isConfigured() ? db.isReady() : true;
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'degraded', version: '1.0.0', environment: process.env.NODE_ENV || 'development', ready, configured, databaseError: db.getError() });
 });
 
@@ -50,7 +49,6 @@ app.get('/api/config', (req, res) => res.json({ version: '1.0.0', analyticsEnabl
 app.use('/api/news', newsRoutes);
 app.use('/api/markets', marketsRoutes);
 app.use('/api/weather', weatherRoutes);
-app.use('/api/fuel', fuelRoutes);
 app.use('/api/prices', manualDataRoutes);
 app.use('/api/compare', compareRoutes);
 
