@@ -1,13 +1,13 @@
 {
   "name": "brief-backend",
   "version": "1.0.0",
-  "description": "Backend API for the BRIEF news app \u2014 aggregates real news, markets, and weather data.",
+  "description": "Backend API for the BURBREEK app \u2014 aggregates real news, markets, weather, comparisons and railway utilities.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --check server.js && node --check db.js && node --check routes/news.js && node --check routes/markets.js && node --check routes/weather.js && node --check routes/manualData.js && node --check routes/compare.js"
+    "test": "node --check server.js && node --check db.js && node --check routes/news.js && node --check routes/markets.js && node --check routes/weather.js && node --check routes/manualData.js && node --check routes/compare.js && node --check routes/railway.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -15,7 +15,8 @@
     "express": "^4.19.2",
     "node-cron": "^3.0.3",
     "node-fetch": "^2.7.0",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "railkit": "^4.0.2"
   },
   "engines": {
     "node": ">=18"
