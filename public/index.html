@@ -13,8 +13,10 @@
 <meta property="og:description" content="Track prices, compare everyday products, and stay informed with BURBREEK.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://burbreek.com/">
-<meta property="og:image" content="https://burbreek.com/logo.svg">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:image" content="https://burbreek.com/app-logo.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+<link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#EDEAE3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -52,6 +54,22 @@
     display:flex;
     align-items:center;
     gap:10px;
+  }
+  .app-logo{
+    width:42px;
+    height:42px;
+    object-fit:cover;
+    border-radius:11px;
+    display:block;
+    flex:none;
+  }
+  .brand-wordmark{
+    font-family:'DM Sans',sans-serif;
+    font-size:25px;
+    line-height:1;
+    font-weight:800;
+    letter-spacing:-.055em;
+    color:var(--ink);
   }
   .brand-logo{
     width:150px;
@@ -1301,7 +1319,8 @@
   <div class="masthead">
     <div class="masthead-top">
       <div class="logo-row">
-        <img class="brand-logo" src="/logo.svg" alt="BURBREEK — Live Price Tracker" width="150" height="36">
+        <img class="app-logo" src="/app-logo.png" alt="BURBREEK app logo" width="42" height="42">
+        <div class="brand-wordmark" aria-label="BURBREEK">BURBREEK</div>
       </div>
       <div class="masthead-right">
         <div class="edition-line" id="editionLine">EDITION No. 214</div>
