@@ -942,6 +942,82 @@
     .detail-hero{max-height:240px;}
   }
 
+
+  /* Header quick railway tools */
+  .railway-quick{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:var(--paper-raised);padding:7px 8px;}
+  .railway-quick-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .railway-quick-title{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;}
+  .railway-quick-live{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:8px;text-transform:uppercase;color:var(--red);}
+  .railway-quick-live .live-dot{width:5px;height:5px;}
+  .railway-quick-row{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:5px;}
+  .railway-quick-row input{min-width:0;width:100%;height:34px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--ink);padding:7px 9px;font-family:'JetBrains Mono',monospace;font-size:10px;outline:none;}
+  .railway-quick-row input:focus{border-color:var(--ink);box-shadow:0 0 0 2px rgba(27,27,27,.08);}
+  .railway-quick-btn{min-height:34px;border:1px solid var(--ink);border-radius:5px;background:var(--ink);color:var(--paper);padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;}
+  .railway-quick-btn:disabled{opacity:.55;cursor:wait;}
+  .railway-quick-result{margin-top:6px;}
+  .railway-quick-result:empty{display:none;}
+  .railway-quick-result .railway-card{margin-top:5px;padding:8px;border-radius:6px;}
+  .railway-quick-result .railway-meta-grid,.railway-quick-result .railway-passenger-list,.railway-quick-result .railway-timeline{display:none;}
+
+  /* Market news */
+  .market-news-wrap{display:grid;gap:8px;margin-top:10px;}
+  .market-news-wrap .card{margin-bottom:0;}
+  .market-news-wrap .news-thumb{height:138px;}
+  .market-news-updated{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--ink-soft);}
+
+  /* Latest movies */
+  .movie-live-status{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--ink-soft);margin:-3px 0 9px;}
+  .movie-group-title{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;margin:10px 0 7px;text-transform:uppercase;letter-spacing:.02em;}
+  .movie-group-gap{margin-top:15px;}
+  .movie-strip{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:5px;-webkit-overflow-scrolling:touch;}
+  .movie-strip::-webkit-scrollbar{display:none;}
+  .movie-card{flex:0 0 145px;background:var(--paper-raised);border:1px solid var(--line);border-radius:7px;overflow:hidden;color:var(--ink);text-decoration:none;}
+  .movie-card img{display:block;width:100%;height:207px;object-fit:cover;background:var(--paper);}
+  .movie-card-body{padding:8px 9px 10px;}
+  .movie-card-title{font-family:'DM Sans',sans-serif;font-size:11px;line-height:1.28;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .movie-card-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-top:5px;line-height:1.35;}
+  .movie-rating{color:var(--ink);font-weight:700;}
+  .movie-disclaimer{font-family:'JetBrains Mono',monospace;font-size:8px;line-height:1.45;color:var(--ink-soft);margin-top:10px;padding-top:7px;border-top:1px dashed var(--line);}
+
+  /* Live ticket lookup */
+  .ticket-live-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:7px;padding:11px 12px;}
+  .ticket-live-title{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;}
+  .ticket-live-copy{font-size:11px;color:var(--ink-soft);line-height:1.4;margin-top:5px;}
+  .ticket-live-actions{display:flex;gap:7px;margin-top:9px;}
+  .ticket-live-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 11px;border-radius:5px;border:1px solid var(--ink);background:transparent;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:800;text-decoration:none;cursor:pointer;}
+  .ticket-live-btn.primary{background:var(--ink);color:var(--paper);}
+  .ticket-movie-list{display:grid;gap:7px;}
+  .ticket-movie-item{display:grid;grid-template-columns:54px 1fr auto;gap:8px;align-items:center;background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:7px;}
+  .ticket-movie-item img{width:54px;height:77px;border-radius:4px;object-fit:cover;background:var(--paper);}
+  .ticket-movie-name{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;line-height:1.25;}
+  .ticket-movie-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-top:4px;}
+  .ticket-book-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 9px;border-radius:5px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:800;text-decoration:none;white-space:nowrap;}
+
+  /* Vertical Shorts viewer */
+  .media-single{display:flex;flex-direction:column;gap:10px;width:100%;}
+  .shorts-feed{height:100%;width:100%;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .shorts-feed::-webkit-scrollbar{display:none;}
+  .short-slide{position:relative;min-height:calc(100dvh - 54px);height:calc(100dvh - 54px);scroll-snap-align:start;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;}
+  .short-slide-slot{width:100%;aspect-ratio:9/16;max-height:100%;display:flex;align-items:center;justify-content:center;background:#000;}
+  .short-slide-slot iframe{width:100%;height:100%;border:0;display:block;}
+  .short-slide-info{position:absolute;left:0;right:0;bottom:0;padding:38px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.9));color:#fff;pointer-events:none;}
+  .short-slide-rank{font-family:'JetBrains Mono',monospace;font-size:8px;opacity:.75;text-transform:uppercase;}
+  .short-slide-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;line-height:1.25;margin-top:4px;max-width:85%;}
+  .short-slide-meta{font-family:'JetBrains Mono',monospace;font-size:8px;opacity:.75;margin-top:5px;}
+  .short-slide-open{position:absolute;right:12px;bottom:13px;z-index:3;min-height:36px;display:inline-flex;align-items:center;justify-content:center;padding:7px 9px;border:1px solid rgba(255,255,255,.55);border-radius:6px;background:rgba(0,0,0,.5);color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:800;}
+  .media-viewer-body.short-mode{padding:0;overflow:hidden;justify-content:stretch;}
+  @media(max-width:640px){
+    .railway-quick-row{grid-template-columns:1fr auto;}
+    .railway-quick-btn{padding-left:9px;padding-right:9px;}
+    .movie-card{flex-basis:132px;}
+    .movie-card img{height:188px;}
+    .ticket-live-actions{flex-direction:column;}
+    .ticket-live-btn{width:100%;}
+    .ticket-movie-item{grid-template-columns:48px 1fr;}
+    .ticket-movie-item img{width:48px;height:69px;}
+    .ticket-book-btn{grid-column:2;justify-self:start;}
+  }
+
   /* Live fuel cards */
   .fuel-source-note{margin-top:2px;line-height:1.4;}
 
@@ -1380,8 +1456,6 @@
         <div class="date-line" id="dateLine">SUN, AUG 16</div>
       </div>
     </div>
-    <div class="tagline">Every story. Ten seconds. No fluff. <span class="tagline-sub">Prepared exclusively for you.</span></div>
-
     <div class="weather-strip unavailable" id="weatherStrip" aria-label="Live weather">
       <div class="weather-strip-main">
         <span class="weather-icon" id="weatherIcon">☀️</span>
@@ -1401,15 +1475,30 @@
       <span class="weather-days" id="weatherDays"></span>
     </div>
 
+    <div class="railway-quick" id="railwayQuick" aria-label="Railway quick tools">
+      <div class="railway-quick-head">
+        <span class="railway-quick-title">Indian Railways</span>
+        <span class="railway-quick-live"><span class="live-dot"></span> Live</span>
+      </div>
+      <form class="railway-quick-row" id="quickPnrForm">
+        <input id="quickPnrInput" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit PNR" aria-label="10-digit PNR" autocomplete="off">
+        <button type="submit" class="railway-quick-btn">Check PNR</button>
+      </form>
+      <form class="railway-quick-row" id="quickTrainForm">
+        <input id="quickTrainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Train number e.g. 12987" aria-label="5-digit train number" autocomplete="off">
+        <button type="submit" class="railway-quick-btn">Track your train</button>
+      </form>
+      <div class="railway-quick-result" id="railwayQuickResult" aria-live="polite"></div>
+    </div>
   </div>
 
   <div class="ticker-wrap">
     <div class="ticker-track">
-      <b>BREAKING</b>Parliament winter session dates announced<span class="sep">//</span>
-      <b>MARKET</b>Nifty closes flat, IT stocks drag<span class="sep">//</span>
-      <b>AI</b>New open-weight model tops reasoning charts<span class="sep">//</span>
-      <b>IPO</b>Logistics-tech firm files DRHP for ₹2,200 Cr issue<span class="sep">//</span>
-      <b>STARTUP</b>Foodtech platform raises Series B<span class="sep">//</span>
+      <b>BREAKING</b><span id="tickerBreaking">Live headlines loading…</span><span class="sep">//</span>
+      <b>MARKET</b><span id="tickerMarket">Live market news loading…</span><span class="sep">//</span>
+      <b>AI</b><span id="tickerAi">AI news loading…</span><span class="sep">//</span>
+      <b>IPO</b><span id="tickerIpo">IPO news loading…</span><span class="sep">//</span>
+      <b>STARTUP</b><span id="tickerStartup">Startup news loading…</span><span class="sep">//</span>
     </div>
   </div>
 
@@ -1532,11 +1621,9 @@
         <div class="idx-card"><div class="idx-name">BANK NIFTY</div><div class="idx-val">--</div><div class="idx-chg">Waiting for market data</div></div>
         <div class="idx-card"><div class="idx-name">NASDAQ</div><div class="idx-val">--</div><div class="idx-chg">Waiting for market data</div></div>
       </div>
-      <a class="card" style="--accent:var(--green)">
-        <div class="card-top"><span class="tag">Markets</span><span class="dot"></span><span class="time">1 hr ago</span></div>
-        <div class="headline">FIIs turn net buyers after six straight sessions of selling</div>
-        <div class="dek">₹2,340 Cr inflow led by financials and auto; DIIs stayed net sellers.</div>
-      </a>
+      <div class="market-news-wrap" id="marketNewsList">
+        <div class="media-status">Loading latest stock-market news…</div>
+      </div>
     </section>
 
     <!-- IPO -->
@@ -1603,14 +1690,13 @@
 
     <!-- MOVIES / WEB SERIES REVIEW -->
     <section class="section" id="sec-reviews">
-      <div class="section-head"><span class="section-title">Movies | Web Series Reviews</span><span class="section-sub">Ratings at a glance</span></div>
-      <div class="media-status" style="margin-bottom:10px">Live IMDb ratings are not yet connected. IMDb currently offers commercial data licensing/API access, and its non-commercial datasets cannot be republished for a commercial BURBREEK service. We will connect the licensed IMDb feed rather than scrape IMDb.</div>
-      <a class="card" style="--accent:var(--teal)" href="https://www.imdb.com/" target="_blank" rel="noopener" data-external="true">
-        <div class="card-top"><span class="tag">IMDb</span><span class="dot"></span><span class="time">Official site</span></div>
-        <div class="headline">Check IMDb ratings and title details</div>
-        <div class="dek">BURBREEK will show verified IMDb ratings here once the commercial data connection is licensed.</div>
-        <div class="meta-row"><span>Open IMDb ↗</span></div>
-      </a>
+      <div class="section-head"><span class="section-title">Latest Movies &amp; Web Series</span><span class="section-sub">Now playing · Upcoming</span></div>
+      <div class="movie-live-status" id="movieLiveStatus">Loading latest movie data…</div>
+      <div class="movie-group-title">Now Playing · India</div>
+      <div class="movie-strip" id="movieNowPlaying"><div class="media-status">Fetching current theatrical releases…</div></div>
+      <div class="movie-group-title movie-group-gap">Upcoming · India</div>
+      <div class="movie-strip" id="movieUpcoming"><div class="media-status">Fetching upcoming releases…</div></div>
+      <div class="movie-disclaimer">Ratings shown here are TMDB ratings. IMDb ratings remain separate until a licensed IMDb data connection is available.</div>
     </section>
 
     <!-- RAILWAY -->
@@ -1910,19 +1996,18 @@
 
     <!-- TICKETS -->
     <section class="section" id="sec-tickets">
-      <div class="section-head"><span class="section-title">Ticket Price Compare</span><span class="section-sub">Cinema &amp; showtime</span></div>
-
-      <div class="ticket-card">
-        <div class="ticket-film">Kaal — 2D</div>
-        <div class="ticket-row"><div><div class="cinema-name">PVR Forum Mall</div><div class="cinema-time">6:45 PM · Recliner</div></div><span class="price-tag">₹380</span></div>
-        <div class="ticket-row"><div><div class="cinema-name">INOX Garuda</div><div class="cinema-time">7:10 PM · Standard</div></div><span class="price-tag best">₹220</span></div>
-        <div class="ticket-row"><div><div class="cinema-name">Cinepolis Nexus</div><div class="cinema-time">9:30 PM · Standard</div></div><span class="price-tag">₹260</span></div>
+      <div class="section-head"><span class="section-title">Ticket Price Compare</span><span class="section-sub">Live showtime lookup</span></div>
+      <div class="ticket-live-card">
+        <div class="ticket-live-title">Avoid stale ticket prices</div>
+        <div class="ticket-live-copy">Movie ticket prices change by city, cinema, format and showtime. BURBREEK no longer shows hard-coded prices.</div>
+        <div class="ticket-live-actions">
+          <a class="ticket-live-btn primary" href="https://in.bookmyshow.com/movies" target="_blank" rel="noopener noreferrer">Find live tickets ↗</a>
+          <button type="button" class="ticket-live-btn" id="ticketRefreshMovies">Refresh movies</button>
+        </div>
       </div>
-      <div class="ticket-card">
-        <div class="ticket-film">Undertow S2 — Watch Party Screening</div>
-        <div class="ticket-row"><div><div class="cinema-name">PVR Forum Mall</div><div class="cinema-time">8:00 PM · Standard</div></div><span class="price-tag best">₹199</span></div>
-        <div class="ticket-row"><div><div class="cinema-name">INOX Garuda</div><div class="cinema-time">8:20 PM · Recliner</div></div><span class="price-tag">₹340</span></div>
-      </div>
+      <div class="movie-group-title">Latest titles to book</div>
+      <div class="ticket-movie-list" id="ticketMovieList"><div class="media-status">Loading current movies…</div></div>
+      <div class="movie-disclaimer">Exact ticket prices are not hard-coded here; the live cinema price source still needs a licensed/working ticket-data feed.</div>
     </section>
 
   </div>
@@ -1948,10 +2033,13 @@
       <button class="media-viewer-back" id="mediaViewerBack" type="button" aria-label="Back">← Back</button>
       <div class="media-viewer-title" id="mediaViewerTitle">YouTube</div>
     </div>
-    <div class="media-viewer-body">
-      <div class="media-player-wrap" id="mediaPlayerWrap"></div>
-      <div class="media-viewer-meta" id="mediaViewerMeta"></div>
-      <a class="media-open-youtube" id="mediaOpenYoutube" href="#" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+    <div class="media-viewer-body" id="mediaViewerBody">
+      <div class="media-single" id="mediaSingle">
+        <div class="media-player-wrap" id="mediaPlayerWrap"></div>
+        <div class="media-viewer-meta" id="mediaViewerMeta"></div>
+        <a class="media-open-youtube" id="mediaOpenYoutube" href="#" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+      </div>
+      <div class="shorts-feed" id="shortsFeed" hidden></div>
     </div>
   </div>
 
@@ -2005,7 +2093,7 @@
 
   const sectionTitles = {
     trending:'Trending Now', startup:'Startup.news', funding:'Funding Watch', ai:'AI News',
-    market:'Stock Market', ipo:'Upcoming IPO', politics:'Political News', reels:'Top 10 Reels · Worldwide',
+    market:'Stock Market', ipo:'Upcoming IPO', politics:'Political News', reels:'Trending Music & Shorts',
     gtk:'Good to Know', reviews:'Movies | Web Series', tickets:'Ticket Price Compare', railway:'Indian Railways',
     grocery:'Grocery Rate Compare', trade:'Trade Order Compare', fashion:'Fashion Trends by Age',
     settings:'Settings'
@@ -2348,7 +2436,8 @@
     if(note) note.textContent = 'Auto-updates as new stories break · last refresh: just now';
   }
 
-  setInterval(refreshTrending, 15000);
+  // Disabled the old demo-only fake-news injector. Live news is refreshed from the backend below.
+
 
   // ---- Settings: notification preference (mock) ----
   ['toggleMorning','toggleEvening'].forEach(id => {
@@ -2395,20 +2484,101 @@
   const mediaViewerMeta=document.getElementById('mediaViewerMeta');
   const mediaPlayerWrap=document.getElementById('mediaPlayerWrap');
   const mediaOpenYoutube=document.getElementById('mediaOpenYoutube');
+  const mediaViewerBody=document.getElementById('mediaViewerBody');
+  const mediaSingle=document.getElementById('mediaSingle');
+  const shortsFeed=document.getElementById('shortsFeed');
   let mediaViewerHistoryPushed=false;
+  let shortItems=[];
+  let shortObserver=null;
 
-  function openMediaViewer(item, kind){
+  function shortEmbedUrl(id){
+    return 'https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
+  }
+  function stopShortIframes(exceptSlot){
+    shortsFeed?.querySelectorAll('.short-slide-slot').forEach(slot=>{
+      if(slot===exceptSlot) return;
+      slot.innerHTML='';
+      slot.dataset.loaded='0';
+    });
+  }
+  function activateShortSlide(slide){
+    if(!slide) return;
+    const slot=slide.querySelector('.short-slide-slot');
+    if(!slot) return;
+    stopShortIframes(slot);
+    const item=shortItems[Number(slide.dataset.index)||0];
+    const id=String(item?.id||'').trim();
+    if(!id) return;
+    if(slot.dataset.loaded!=='1'){
+      const iframe=document.createElement('iframe');
+      iframe.src=shortEmbedUrl(id);
+      iframe.title=String(item.title||'YouTube Short');
+      iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen=true;
+      iframe.referrerPolicy='strict-origin-when-cross-origin';
+      slot.innerHTML='';
+      slot.appendChild(iframe);
+      slot.dataset.loaded='1';
+    }
+    const idx=Number(slide.dataset.index)||0;
+    mediaViewerTitle.textContent='Shorts · '+(idx+1)+'/'+shortItems.length;
+  }
+
+  function openShortsViewer(items,startIndex){
+    shortItems=Array.isArray(items)?items.filter(x=>x&&x.id):[];
+    if(!mediaViewer || !shortsFeed || !shortItems.length) return;
+    mediaSingle.hidden=true;
+    shortsFeed.hidden=false;
+    mediaViewerBody.classList.add('short-mode');
+    shortsFeed.innerHTML=shortItems.map((item,i)=>{
+      const yt=safeHttpUrl(item.url)||('https://www.youtube.com/shorts/'+encodeURIComponent(item.id));
+      return `<section class="short-slide" data-index="${i}">
+        <div class="short-slide-slot"></div>
+        <div class="short-slide-info">
+          <div class="short-slide-rank">#${String(item.rank??i+1).padStart(2,'0')} · Trending Short · Worldwide</div>
+          <div class="short-slide-title">${htmlEsc(item.title||'YouTube Short')}</div>
+          <div class="short-slide-meta">${htmlEsc(item.channel||'')} · ${htmlEsc(formatViews(item.views))}</div>
+        </div>
+        <a class="short-slide-open" href="${htmlEsc(yt)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
+      </section>`;
+    }).join('');
+    shortObserver?.disconnect();
+    shortObserver=new IntersectionObserver(entries=>{
+      entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio).slice(0,1).forEach(e=>activateShortSlide(e.target));
+    },{root:shortsFeed,threshold:[0.65,0.9]});
+    shortsFeed.querySelectorAll('.short-slide').forEach(slide=>shortObserver.observe(slide));
+    const idx=Math.max(0,Math.min(Number(startIndex)||0,shortItems.length-1));
+    mediaViewerTitle.textContent='Shorts · '+(idx+1)+'/'+shortItems.length;
+    const target=shortsFeed.querySelector(`.short-slide[data-index="${idx}"]`);
+    target?.scrollIntoView({block:'start'});
+  }
+
+  function openMusicViewer(item){
     const id=String(item?.id||'').trim();
     if(!mediaViewer || !id) return;
+    mediaSingle.hidden=false;
+    shortsFeed.hidden=true;
+    mediaViewerBody.classList.remove('short-mode');
+    shortObserver?.disconnect();
+    shortObserver=null;
+    shortItems=[];
+    shortsFeed.innerHTML='';
     const title=String(item?.title||'YouTube');
     const channel=String(item?.channel||'');
     const views=formatViews(item?.views);
     const youtubeUrl=safeHttpUrl(item?.url) || ('https://www.youtube.com/watch?v='+encodeURIComponent(id));
     const embedUrl='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0&modestbranding=1';
     mediaViewerTitle.textContent=title;
-    mediaViewerMeta.textContent=(channel ? channel+' · ' : '')+views+' · '+(kind==='music'?'Trending song · India':'Trending Short · Worldwide');
+    mediaViewerMeta.textContent=(channel ? channel+' · ' : '')+views+' · Trending song · India';
     mediaOpenYoutube.href=youtubeUrl;
     mediaPlayerWrap.innerHTML='<iframe src="'+embedUrl+'" title="'+htmlEsc(title)+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+  }
+
+  function openMediaViewer(item, kind, collection, startIndex){
+    const id=String(item?.id||'').trim();
+    if(!mediaViewer || !id) return;
+    if(kind==='short') openShortsViewer(collection,startIndex);
+    else openMusicViewer(item);
     mediaViewer.classList.add('open');
     mediaViewer.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
@@ -2423,6 +2593,13 @@
     mediaViewer.classList.remove('open');
     mediaViewer.setAttribute('aria-hidden','true');
     mediaPlayerWrap.innerHTML='';
+    shortsFeed.innerHTML='';
+    shortsFeed.hidden=true;
+    mediaSingle.hidden=false;
+    mediaViewerBody.classList.remove('short-mode');
+    shortObserver?.disconnect();
+    shortObserver=null;
+    shortItems=[];
     document.body.style.overflow='';
     if(mediaViewerHistoryPushed){
       mediaViewerHistoryPushed=false;
@@ -2445,7 +2622,7 @@
         const img=safeHttpUrl(x.thumbnail);
         return `<button class="media-card" type="button" data-media-id="${htmlEsc(x.id||'')}" aria-label="Play ${htmlEsc(x.title||'YouTube video')}"><img src="${img}" alt="" loading="lazy" decoding="async"><div class="media-card-body"><div class="media-rank">#${String(x.rank).padStart(2,'0')} · ${kind}</div><div class="media-title">${htmlEsc(x.title)}</div><div class="media-meta">${htmlEsc(x.channel||'')} · ${htmlEsc(formatViews(x.views))}</div></div></button>`;
       }).join('');
-      wrap.querySelectorAll('.media-card[data-media-id]').forEach((btn,i)=>btn.addEventListener('click',()=>openMediaViewer(items[i],kind)));
+      wrap.querySelectorAll('.media-card[data-media-id]').forEach((btn,i)=>btn.addEventListener('click',()=>openMediaViewer(items[i],kind,items,i)));
     };
     const [musicRes,shortRes]=await Promise.all([tryFetch('/api/media/trending-music'),tryFetch('/api/media/top-shorts')]);
     if(musicRes?.success) render(music,musicRes.items,'music');
@@ -2694,7 +2871,7 @@
 
     async function loadLiveNews(){
       const lang = localStorage.getItem('burbreek_language') === 'hi' ? 'hi' : 'en';
-      const data = await tryFetch('/api/news/trending?lang=' + lang);
+      const data = await tryFetch('/api/news/trending?lang=' + lang + '&_=' + Date.now());
       if(!data || !data.articles || !data.articles.length) return;
       const list = document.getElementById('trendingList');
       list.innerHTML = data.articles.slice(0, 6).map(a => {
@@ -2720,6 +2897,84 @@
 
     window.addEventListener('burbreek-language-change', () => loadLiveNews());
     window.addEventListener('burbreek-location-confirmed', () => { loadLiveWeather(); });
+
+    async function loadLiveMarketNews(){
+      const wrap=document.getElementById('marketNewsList');
+      if(!wrap) return;
+      const data=await tryFetch('/api/market-news');
+      if(!data?.success || !Array.isArray(data.articles) || !data.articles.length){
+        wrap.innerHTML='<div class="media-status">Latest market news is temporarily unavailable.</div>';
+        return;
+      }
+      wrap.innerHTML=data.articles.slice(0,5).map(a=>{
+        const image=safeHttpUrl(a.image||a.urlToImage||'');
+        const href=safeHttpUrl(a.url)||'#';
+        const published=a.publishedAt ? new Date(a.publishedAt) : null;
+        const time=published && !Number.isNaN(published.getTime()) ? published.toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'})+' IST' : 'Latest';
+        return `<a class="card ${image?'news-card-with-image':''}" style="--accent:var(--green)" href="${htmlEsc(href)}" target="_blank" rel="noopener" data-external="true">
+          <div class="card-top"><span class="tag">Markets</span><span class="dot"></span><span class="time">${htmlEsc(time)}</span></div>
+          ${image?`<img class="news-thumb" src="${htmlEsc(image)}" alt="" loading="lazy" decoding="async">`:''}
+          <div class="headline">${htmlEsc(a.title||'Market update')}</div>
+          <div class="dek">${htmlEsc(a.description||'')}</div>
+          <div class="meta-row"><span>${htmlEsc(a.source||'News')}</span></div>
+        </a>`;
+      }).join('') + `<div class="market-news-updated">Updated ${htmlEsc(data.updatedAt ? new Date(data.updatedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'})+' IST' : 'now')}</div>`;
+      bindCardClicks();
+      const first=data.articles[0];
+      const ticker=document.getElementById('tickerMarket');
+      if(ticker) ticker.textContent=first?.title || 'Latest market news';
+    }
+
+    function bookMyShowUrl(title){
+      return 'https://in.bookmyshow.com/movies';
+    }
+
+    function renderMovieCard(movie){
+      const poster=safeHttpUrl(movie.poster||'');
+      const release=movie.releaseDate ? new Date(movie.releaseDate+'T00:00:00') : null;
+      const releaseText=release && !Number.isNaN(release.getTime()) ? release.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : 'Release date TBA';
+      const rating=Number(movie.rating);
+      return `<a class="movie-card" href="${htmlEsc(safeHttpUrl(movie.url)||'#')}" target="_blank" rel="noopener noreferrer">
+        ${poster?`<img src="${htmlEsc(poster)}" alt="${htmlEsc(movie.title||'Movie poster')}" loading="lazy" decoding="async">`:''}
+        <div class="movie-card-body">
+          <div class="movie-card-title">${htmlEsc(movie.title||'Untitled')}</div>
+          <div class="movie-card-meta">Release: ${htmlEsc(releaseText)}<br><span class="movie-rating">TMDB ★ ${Number.isFinite(rating)?rating.toFixed(1):'—'}</span> · ${htmlEsc(String(movie.voteCount||0))} votes</div>
+        </div>
+      </a>`;
+    }
+
+    async function loadLiveMovies(){
+      const status=document.getElementById('movieLiveStatus');
+      const nowWrap=document.getElementById('movieNowPlaying');
+      const upWrap=document.getElementById('movieUpcoming');
+      const ticketWrap=document.getElementById('ticketMovieList');
+      if(!nowWrap || !upWrap) return;
+      const data=await tryFetch('/api/movies/latest');
+      if(!data?.success){
+        const msg=data?.configured===false ? 'Live movie data needs TMDB_API_KEY in Render.' : 'Latest movie data is temporarily unavailable.';
+        if(status) status.textContent=msg;
+        nowWrap.innerHTML=`<div class="media-status">${htmlEsc(msg)}</div>`;
+        upWrap.innerHTML=`<div class="media-status">${htmlEsc(msg)}</div>`;
+        if(ticketWrap) ticketWrap.innerHTML=`<div class="media-status">${htmlEsc(msg)}</div>`;
+        return;
+      }
+      if(status) status.textContent=`Live movie data · updated ${data.updatedAt ? new Date(data.updatedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'})+' IST' : 'now'}`;
+      nowWrap.innerHTML=data.nowPlaying?.length ? data.nowPlaying.map(renderMovieCard).join('') : '<div class="media-status">No current theatrical releases returned.</div>';
+      upWrap.innerHTML=data.upcoming?.length ? data.upcoming.map(renderMovieCard).join('') : '<div class="media-status">No upcoming releases returned.</div>';
+      if(ticketWrap){
+        const all=[...(data.nowPlaying||[]),...(data.upcoming||[])].slice(0,8);
+        ticketWrap.innerHTML=all.length ? all.map(movie=>{
+          const poster=safeHttpUrl(movie.poster||'');
+          const release=movie.releaseDate ? new Date(movie.releaseDate+'T00:00:00') : null;
+          const releaseText=release&&!Number.isNaN(release.getTime()) ? release.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : 'TBA';
+          return `<div class="ticket-movie-item">
+            ${poster?`<img src="${htmlEsc(poster)}" alt="${htmlEsc(movie.title||'Movie')}" loading="lazy" decoding="async">`: '<div></div>'}
+            <div><div class="ticket-movie-name">${htmlEsc(movie.title||'Untitled')}</div><div class="ticket-movie-meta">Release: ${htmlEsc(releaseText)} · TMDB ★ ${Number.isFinite(Number(movie.rating))?Number(movie.rating).toFixed(1):'—'}</div></div>
+            <a class="ticket-book-btn" href="${bookMyShowUrl(movie.title)}" target="_blank" rel="noopener noreferrer">Find tickets ↗</a>
+          </div>`;
+        }).join('') : '<div class="media-status">No current movie titles returned.</div>';
+      }
+    }
 
     async function loadLiveMarkets(){
       const data = await tryFetch('/api/markets');
@@ -2879,7 +3134,11 @@
 
     loadLiveNews();
     loadLiveMarkets();
+    loadLiveMarketNews();
+    loadLiveMovies();
     loadLiveWeather();
+    document.getElementById('ticketRefreshMovies')?.addEventListener('click', loadLiveMovies);
+    setInterval(() => { loadLiveNews(); loadLiveMarketNews(); loadLiveMovies(); }, 5 * 60 * 1000);
     loadLivePrices('grocery', '#sec-grocery');
   })();
 </script>
@@ -3003,7 +3262,39 @@
     finally{btn.disabled=false;btn.textContent='Check PNR';}
   });
 
-  trainForm?.addEventListener('submit',async e=>{
+
+  const quickPnrForm=document.getElementById('quickPnrForm');
+  const quickPnrInput=document.getElementById('quickPnrInput');
+  const quickTrainForm=document.getElementById('quickTrainForm');
+  const quickTrainInput=document.getElementById('quickTrainInput');
+  const quickRailResult=document.getElementById('railwayQuickResult');
+
+  quickPnrForm?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const pnr=quickPnrInput.value.replace(/\D/g,'');
+    if(!/^\d{10}$/.test(pnr)){quickRailResult.innerHTML='<div class="railway-card"><div class="railway-title">Enter a valid 10-digit PNR.</div></div>';return;}
+    const btn=quickPnrForm.querySelector('button'); btn.disabled=true; btn.textContent='Checking…';
+    quickRailResult.innerHTML='<div class="railway-card"><div class="railway-subline">Fetching current PNR status…</div></div>';
+    try{renderPnr(await fetchJson('/api/railway/pnr?pnr='+encodeURIComponent(pnr))); if(quickRailResult && pnrResult?.innerHTML) quickRailResult.innerHTML=pnrResult.innerHTML;}
+    catch(err){quickRailResult.innerHTML='<div class="railway-card"><div class="railway-title">'+esc(err.message||'PNR service unavailable.')+'</div></div>';}
+    finally{btn.disabled=false;btn.textContent='Check PNR';}
+  });
+
+  quickTrainForm?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const num=quickTrainInput.value.replace(/\D/g,'');
+    if(!/^\d{5}$/.test(num)){quickRailResult.innerHTML='<div class="railway-card"><div class="railway-title">Enter a valid 5-digit train number.</div></div>';return;}
+    const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'});
+    const parts=today.split('-');
+    const ddmmYYYY=`${parts[2]}-${parts[1]}-${parts[0]}`;
+    const btn=quickTrainForm.querySelector('button'); btn.disabled=true; btn.textContent='Loading…';
+    quickRailResult.innerHTML='<div class="railway-card"><div class="railway-subline">Fetching today’s live train status…</div></div>';
+    try{renderTrain(await fetchJson('/api/railway/train/'+encodeURIComponent(num)+'/live?date='+encodeURIComponent(ddmmYYYY))); if(quickRailResult && trainResult?.innerHTML) quickRailResult.innerHTML=trainResult.innerHTML;}
+    catch(err){quickRailResult.innerHTML='<div class="railway-card"><div class="railway-title">'+esc(err.message||'Train service unavailable.')+'</div></div>';}
+    finally{btn.disabled=false;btn.textContent='Track your train';}
+  });
+
+    trainForm?.addEventListener('submit',async e=>{
     e.preventDefault();
     const num=trainInput.value.replace(/\D/g,'');
     const date=trainDateInput.value;
