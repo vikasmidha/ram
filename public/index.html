@@ -19,7 +19,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#EDEAE3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#EDEAE3;
@@ -889,6 +889,40 @@
   }
 
 
+  /* BURBREEK media + editorial typography v3 */
+  body,button,input,select,textarea{font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+  .headline,.section-title,.detail-headline,.card-title,.compare-result-name,.railway-title,.railway-action,.railway-tab{font-family:'DM Sans',sans-serif;}
+  .headline{font-weight:700;}
+  html[lang^="hi"] body,html[lang^="hi"] button,html[lang^="hi"] input,html[lang^="hi"] textarea,html[lang^="hi"] select,html[lang^="hi"] .headline,html[lang^="hi"] .dek,html[lang^="hi"] .section-title,html[lang^="hi"] .detail-headline{font-family:'Noto Sans Devanagari','DM Sans',sans-serif;}
+  html[lang^="hi"] .headline,html[lang^="hi"] .detail-headline{line-height:1.42;letter-spacing:0;font-weight:800;}
+  .news-thumb{display:block;width:100%;height:160px;object-fit:cover;border-radius:5px;margin:8px 0 10px;background:var(--paper);}
+  .news-card-with-image{display:block;}
+  .news-card-with-image .headline{margin-top:2px;}
+  .media-block{margin-top:12px;}
+  .media-block-title{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .media-strip{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:5px;-webkit-overflow-scrolling:touch;}
+  .media-strip::-webkit-scrollbar{display:none;}
+  .media-card{flex:0 0 220px;border:1px solid var(--line);border-radius:7px;background:var(--paper-raised);overflow:hidden;color:var(--ink);text-decoration:none;}
+  .media-card img{width:100%;height:124px;display:block;object-fit:cover;background:var(--paper);}
+  .media-card-body{padding:9px 10px 10px;}
+  .media-rank{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-bottom:4px;}
+  .media-title{font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.28;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .media-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .media-status{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);padding:9px 0;}
+  .detail-share-mini{margin-left:auto;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;min-height:40px;cursor:pointer;}
+  .detail-back{min-height:46px!important;padding:8px 12px!important;border:1px solid var(--ink)!important;border-radius:7px!important;background:var(--paper-raised)!important;font-family:'DM Sans',sans-serif!important;font-size:13px!important;font-weight:800!important;}
+  .detail-hero{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:7px;margin:8px 0 14px;background:var(--paper-raised);}
+  .detail-actions .detail-action-btn{font-family:'DM Sans',sans-serif;font-weight:700;}
+  @media(max-width:640px){
+    .news-thumb{height:148px;margin:7px 0 8px;}
+    .media-card{flex-basis:190px;}
+    .media-card img{height:108px;}
+    .detail-header{padding:10px 12px;}
+    .detail-share-mini{font-size:10px;padding:7px 10px;min-height:40px;}
+    .detail-body-wrap{padding:14px 14px 76px;}
+    .detail-hero{max-height:240px;}
+  }
+
   /* Live fuel cards */
   .fuel-source-note{margin-top:2px;line-height:1.4;}
 
@@ -1518,16 +1552,18 @@
       </a>
     </section>
 
-    <!-- REELS -->
+    <!-- REELS / MUSIC -->
     <section class="section" id="sec-reels">
-      <div class="section-head"><span class="section-title">Top 10 Reels · Worldwide</span><span class="section-sub">Short-form, ranked</span></div>
-      <div class="reel-strip">
-        <div class="reel-card"><div class="reel-rank">01</div><div><div class="reel-label">Northern lights over three continents in one night</div><div class="reel-views">48.2M views</div></div></div>
-        <div class="reel-card" style="background:linear-gradient(160deg, var(--teal), #0e2b2a);"><div class="reel-rank">02</div><div><div class="reel-label">Street chef's 90-second dumpling fold</div><div class="reel-views">31.7M views</div></div></div>
-        <div class="reel-card" style="background:linear-gradient(160deg, var(--orange), #3a1f0a);"><div class="reel-rank">03</div><div><div class="reel-label">Robot dog learns stairs, faceplants gracefully</div><div class="reel-views">27.9M views</div></div></div>
-        <div class="reel-card" style="background:linear-gradient(160deg, var(--blue), #0d1f38);"><div class="reel-rank">04</div><div><div class="reel-label">Free-diver's silent descent to 40m</div><div class="reel-views">22.4M views</div></div></div>
-        <div class="reel-card" style="background:linear-gradient(160deg, var(--violet), #1c1030);"><div class="reel-rank">05</div><div><div class="reel-label">AI restores 1920s street footage in color</div><div class="reel-views">19.8M views</div></div></div>
+      <div class="section-head"><span class="section-title">Trending Music &amp; Shorts</span><span class="section-sub">Live media signals</span></div>
+      <div class="media-block">
+        <div class="media-block-title"><span>Top Trending Songs · India</span><span class="live-badge"><span class="live-dot"></span>Live</span></div>
+        <div class="media-strip" id="trendingMusicList"><div class="media-status">Add YOUTUBE_API_KEY in Render to load live music trends.</div></div>
       </div>
+      <div class="media-block">
+        <div class="media-block-title"><span>Trending Shorts · Worldwide</span><span class="live-badge"><span class="live-dot"></span>Live</span></div>
+        <div class="media-strip" id="trendingShortsList"><div class="media-status">Add YOUTUBE_API_KEY in Render to load live Shorts.</div></div>
+      </div>
+      <div class="media-status" id="mediaStatus">Source: YouTube Data API · Shorts are YouTube short-form videos, not Instagram Reels.</div>
     </section>
 
     <!-- GOOD TO KNOW -->
@@ -1548,17 +1584,13 @@
 
     <!-- MOVIES / WEB SERIES REVIEW -->
     <section class="section" id="sec-reviews">
-      <div class="section-head"><span class="section-title">Movies | Web Series Review</span><span class="section-sub">Ratings at a glance</span></div>
-
-      <a class="card" style="--accent:var(--teal)">
-        <div class="card-top"><span class="tag">Movie Review</span><span class="dot"></span><span class="time">★ 4.1/5</span></div>
-        <div class="headline">"Kaal" — a taut thriller that trims the fat</div>
-        <div class="dek">Tight 2hr runtime, strong second half. Skips the usual interval-block padding.</div>
-      </a>
-      <a class="card" style="--accent:var(--teal)">
-        <div class="card-top"><span class="tag">Series Review</span><span class="dot"></span><span class="time">★ 3.6/5</span></div>
-        <div class="headline">Season 2 of "Undertow" trades pace for world-building</div>
-        <div class="dek">Slower start, but episodes 5–8 pay it off. Worth the binge.</div>
+      <div class="section-head"><span class="section-title">Movies | Web Series Reviews</span><span class="section-sub">Ratings at a glance</span></div>
+      <div class="media-status" style="margin-bottom:10px">Live IMDb ratings are not yet connected. IMDb currently offers commercial data licensing/API access, and its non-commercial datasets cannot be republished for a commercial BURBREEK service. We will connect the licensed IMDb feed rather than scrape IMDb.</div>
+      <a class="card" style="--accent:var(--teal)" href="https://www.imdb.com/" target="_blank" rel="noopener" data-external="true">
+        <div class="card-top"><span class="tag">IMDb</span><span class="dot"></span><span class="time">Official site</span></div>
+        <div class="headline">Check IMDb ratings and title details</div>
+        <div class="dek">BURBREEK will show verified IMDb ratings here once the commercial data connection is licensed.</div>
+        <div class="meta-row"><span>Open IMDb ↗</span></div>
       </a>
     </section>
 
@@ -1829,6 +1861,13 @@
     <section class="section" id="sec-settings">
       <div class="section-head"><span class="section-title">Settings</span><span class="section-sub">Digest &amp; personalization</span></div>
 
+      <div class="settings-card" id="seoSettingsCard">
+        <div class="settings-row">
+          <div><div class="settings-label">AI SEO meta descriptions</div><div class="settings-sub" id="seoStatusText">Ready to generate factual 140–155 character descriptions when Gemini is configured.</div></div>
+          <span class="live-badge" id="seoStatusBadge">AI SEO</span>
+        </div>
+      </div>
+
       <div class="settings-card">
         <div class="settings-row">
           <div><div class="settings-label">Morning brief</div><div class="settings-sub">Daily digest at 10:00 AM</div></div>
@@ -1888,10 +1927,11 @@
   <div class="detail-overlay" id="detailOverlay">
     <div class="detail-header">
       <button class="detail-back" id="detailBackBtn" aria-label="Back to feed">← Back</button>
-      <span class="detail-source" id="detailSource">Brief</span>
+      <span class="detail-source" id="detailSource">BURBREEK</span><button class="detail-share-mini" id="detailShareMini" type="button" aria-label="Share this story">↗ Share</button>
     </div>
     <div class="detail-body-wrap">
       <span class="detail-tag" id="detailTag">Tag</span>
+      <img class="detail-hero" id="detailHero" alt="" loading="lazy" decoding="async" hidden>
       <div class="detail-headline" id="detailHeadline">Headline</div>
       <div class="detail-meta">
         <span id="detailTime">Just now</span>
@@ -1904,8 +1944,8 @@
         <div id="detailSourceChips"></div>
       </div>
       <div class="detail-actions">
-        <button class="detail-action-btn primary">Save for later</button>
-        <button class="detail-action-btn">Share</button>
+        <button class="detail-action-btn primary" id="detailSaveBtn" type="button">Save for later</button>
+        <button class="detail-action-btn" id="detailShareBtn" type="button">Share on WhatsApp</button>
       </div>
     </div>
   </div>
@@ -2287,6 +2327,67 @@
       // with the backend for 10:00 AM / 5:00 PM local time.
     });
   });
+  // ---- Media + AI SEO helpers ----
+  function htmlEsc(v){ return String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function safeHttpUrl(v){
+    try{
+      const u=new URL(String(v||''),location.origin);
+      return (u.protocol==='http:'||u.protocol==='https:') ? u.href : '';
+    }catch(e){ return ''; }
+  }
+  function formatViews(v){
+    const n=Number(v||0);
+    if(!Number.isFinite(n)) return '— views';
+    if(n>=1000000000) return (n/1e9).toFixed(1)+'B views';
+    if(n>=1000000) return (n/1e6).toFixed(1)+'M views';
+    if(n>=1000) return (n/1e3).toFixed(1)+'K views';
+    return n.toLocaleString()+' views';
+  }
+  async function loadLiveMedia(){
+    const music=document.getElementById('trendingMusicList');
+    const shorts=document.getElementById('trendingShortsList');
+    const status=document.getElementById('mediaStatus');
+    const render=(wrap,items,kind)=>{
+      if(!wrap) return;
+      if(!Array.isArray(items)||!items.length){ wrap.innerHTML='<div class="media-status">No live items returned.</div>'; return; }
+      wrap.innerHTML=items.map(x=>{
+        const u=safeHttpUrl(x.url);
+        const img=safeHttpUrl(x.thumbnail);
+        const card=`<div class="media-card"><img src="${img}" alt="" loading="lazy" decoding="async"><div class="media-card-body"><div class="media-rank">#${String(x.rank).padStart(2,'0')} · ${kind}</div><div class="media-title">${htmlEsc(x.title)}</div><div class="media-meta">${htmlEsc(x.channel||'')} · ${htmlEsc(formatViews(x.views))}</div></div></div>`;
+        return u ? `<a class="media-card" href="${htmlEsc(u)}" target="_blank" rel="noopener noreferrer">${card.replace(/^<div class="media-card">|<\/div>$/g,'')}</a>` : card;
+      }).join('');
+    };
+    const [musicRes,shortRes]=await Promise.all([tryFetch('/api/media/trending-music'),tryFetch('/api/media/top-shorts')]);
+    if(musicRes?.success) render(music,musicRes.items,'music');
+    if(shortRes?.success) render(shorts,shortRes.items,'short');
+    const missing=[];
+    if(!musicRes?.success) missing.push('music');
+    if(!shortRes?.success) missing.push('Shorts');
+    if(status) status.textContent=missing.length ? 'Live media not configured or temporarily unavailable. Add YOUTUBE_API_KEY in Render.' : 'Source: YouTube Data API · Shorts are YouTube short-form videos, not Instagram Reels.';
+  }
+  async function loadHomeAIMeta(context){
+    const title=String(context?.title||'').trim();
+    const dek=String(context?.dek||'').trim();
+    const tag=String(context?.tag||'').trim();
+    if(!title&&!dek) return;
+    try{
+      const lang=localStorage.getItem('burbreek_language')==='hi'?'hi':'en';
+      const q=new URLSearchParams({title,dek,tag,lang});
+      const data=await tryFetch('/api/seo/meta-description?'+q.toString());
+      if(!data?.description) return;
+      let meta=document.querySelector('meta[name="description"]');
+      if(!meta){meta=document.createElement('meta');meta.name='description';document.head.appendChild(meta);}
+      meta.content=data.description;
+      let og=document.querySelector('meta[property="og:description"]');
+      if(og) og.content=data.description;
+      const badge=document.getElementById('seoStatusBadge');
+      const text=document.getElementById('seoStatusText');
+      if(badge) badge.textContent=data.source==='gemini'?'AI LIVE':'AI FALLBACK';
+      if(text) text.textContent=data.source==='gemini' ? 'Gemini generated the current SEO description.' : 'Using a safe fallback until Gemini is configured.';
+    }catch(e){}
+  }
+  loadLiveMedia();
+
   // ---- Article detail overlay ----
   const detailOverlay = document.getElementById('detailOverlay');
   const sourceNames = ['Reuters', 'PTI', 'Economic Times', 'Moneycontrol', 'LiveMint', 'Hindustan Times', 'NDTV', 'Business Standard', 'The Hindu', 'Bloomberg'];
@@ -2303,12 +2404,19 @@
     const headlineEl = card.querySelector('.headline');
     const dekEl = card.querySelector('.dek');
     const metaSpans = card.querySelectorAll('.meta-row span');
+    const cardImage = card.querySelector('img.news-thumb');
 
     const accent = getComputedStyle(card).getPropertyValue('--accent').trim() || '#1B1B1B';
     detailOverlay.style.setProperty('--accent-d', accent);
 
     document.getElementById('detailTag').textContent = tagEl ? tagEl.textContent : 'News';
     document.getElementById('detailHeadline').textContent = headlineEl ? headlineEl.textContent : 'Untitled story';
+    const hero=document.getElementById('detailHero');
+    if(hero){ const src=cardImage ? safeHttpUrl(cardImage.getAttribute('src')) : ''; hero.src=src||''; hero.alt=headlineEl?.textContent||''; hero.hidden=!src; }
+    const detailShareUrl=safeHttpUrl(card.getAttribute('href'))||location.href;
+    const shareTitle=headlineEl?.textContent||'BURBREEK';
+    window.__BURBREEK_DETAIL_SHARE={url:detailShareUrl,title:shareTitle,dek:dekEl?.textContent||''};
+    loadHomeAIMeta({title:shareTitle,dek:dekEl?.textContent||'',tag:tagEl?.textContent||''});
     document.getElementById('detailTime').textContent = timeEl ? timeEl.textContent : 'Just now';
 
     let sourcesCount = '12';
@@ -2343,6 +2451,22 @@
   }
 
   document.getElementById('detailBackBtn').addEventListener('click', closeDetail);
+  async function shareCurrentStory(){
+    const d=window.__BURBREEK_DETAIL_SHARE||{};
+    const url=d.url||location.href;
+    const text=[d.title,d.dek].filter(Boolean).join(' — ');
+    try{
+      if(navigator.share){ await navigator.share({title:d.title||'BURBREEK',text,url}); return; }
+    }catch(e){ if(e?.name==='AbortError') return; }
+    const wa='https://wa.me/?text='+encodeURIComponent((text?text+'\n\n':'')+url);
+    window.open(wa,'_blank','noopener');
+  }
+  document.getElementById('detailShareBtn')?.addEventListener('click',shareCurrentStory);
+  document.getElementById('detailShareMini')?.addEventListener('click',shareCurrentStory);
+  document.getElementById('detailSaveBtn')?.addEventListener('click',e=>{
+    e.currentTarget.textContent='Saved ✓';
+    e.currentTarget.disabled=true;
+  });
 
   function bindCardClicks(){
     document.querySelectorAll('.card').forEach(card => {
@@ -2488,15 +2612,20 @@
         const headline = localizedArticleField(a, 'headline', lang);
         const dek = localizedArticleField(a, 'dek', lang);
         const source = localizedArticleField(a, 'source', lang);
+        const image = safeHttpUrl(a.image || a.urlToImage || a.imageUrl || a.image_url || '');
+        const url = safeHttpUrl(a.url || '');
         return `
-        <a class="card" style="--accent:var(--red)" href="${a.url || '#'}" target="_blank" rel="noopener">
-          <div class="card-top"><span class="tag">${tag}</span><span class="dot"></span><span class="time">${a.time ? new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</span></div>
-          <div class="headline">${headline}</div>
-          <div class="dek">${dek}</div>
-          <div class="meta-row"><span>${source}</span></div>
+        <a class="card ${image ? 'news-card-with-image' : ''}" style="--accent:var(--red)" href="${htmlEsc(url || '#')}" target="_blank" rel="noopener" data-external="true">
+          <div class="card-top"><span class="tag">${htmlEsc(tag)}</span><span class="dot"></span><span class="time">${a.time ? new Date(a.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</span></div>
+          ${image ? `<img class="news-thumb" src="${htmlEsc(image)}" alt="" loading="lazy" decoding="async">` : ''}
+          <div class="headline">${htmlEsc(headline)}</div>
+          <div class="dek">${htmlEsc(dek)}</div>
+          <div class="meta-row"><span>${htmlEsc(source)}</span></div>
         </a>`;
       }).join('');
       bindCardClicks();
+      const first=data.articles[0]||{};
+      loadHomeAIMeta({title:localizedArticleField(first,'headline',lang),dek:localizedArticleField(first,'dek',lang),tag:localizedArticleField(first,'tag',lang)});
     }
 
     window.addEventListener('burbreek-language-change', () => loadLiveNews());
