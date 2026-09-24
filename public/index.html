@@ -1240,6 +1240,57 @@
   ]
 }
 </script>
+
+<style id="burbreek-railway-css">
+  .railway-tabs{display:flex;gap:6px;margin:0 0 12px;padding:4px;border:1px solid var(--line);border-radius:8px;background:var(--paper-raised)}
+  .railway-tab{flex:1;border:0;border-radius:6px;padding:8px 10px;background:transparent;color:var(--ink-soft);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+  .railway-tab.active{background:var(--ink);color:var(--paper)}
+  .railway-panel{border:1px solid var(--line);border-radius:10px;background:var(--paper-raised);padding:14px}
+  .railway-panel[hidden]{display:none}
+  .railway-intro{font-size:13px;line-height:1.45;color:var(--ink-soft);margin-bottom:11px}
+  .railway-form{display:grid;grid-template-columns:1fr auto;gap:8px}
+  .railway-train-form{grid-template-columns:1fr 150px auto}
+  .railway-form input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;background:#fff;padding:10px 11px;color:var(--ink);font-size:14px;outline:none}
+  .railway-form input:focus{border-color:var(--ink);box-shadow:0 0 0 2px rgba(27,27,27,.08)}
+  .railway-action{border:1px solid var(--ink);border-radius:6px;background:var(--ink);color:var(--paper);padding:10px 14px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .railway-action:disabled{opacity:.55;cursor:wait}
+  .railway-note{font-size:10px;color:var(--ink-soft);line-height:1.45;margin-top:8px}
+  .railway-result{margin-top:12px}
+  .railway-card{border:1px solid var(--line);border-radius:8px;background:#fff;padding:12px}
+  .railway-status-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .railway-kicker{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
+  .railway-title{font-size:16px;font-weight:800;line-height:1.2;margin-top:2px}
+  .railway-subline{font-size:11px;color:var(--ink-soft);margin-top:3px}
+  .railway-badge{border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;white-space:nowrap}
+  .railway-badge.cnf{background:#eaf6ee;color:#196b3a}
+  .railway-badge.rac{background:#fff5df;color:#8a5a00}
+  .railway-badge.wl{background:#fbecea;color:#9b3323}
+  .railway-meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .railway-meta{border-top:1px solid var(--line);padding-top:7px}
+  .railway-meta-label{font-size:9px;color:var(--ink-soft)}
+  .railway-meta-value{font-size:11px;font-weight:700;margin-top:2px}
+  .railway-passenger-list{margin-top:10px;display:grid;gap:7px}
+  .railway-passenger{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:8px 9px}
+  .railway-passenger-main{min-width:0}
+  .railway-passenger-name{font-size:11px;font-weight:800}
+  .railway-passenger-detail{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);margin-top:2px}
+  .railway-timeline{margin-top:10px;display:grid;gap:6px}
+  .railway-stop{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:start;padding:7px 0;border-top:1px solid var(--line)}
+  .railway-stop:first-child{border-top:0}
+  .railway-dot{width:8px;height:8px;border-radius:50%;background:var(--line);margin-top:4px}
+  .railway-stop.current .railway-dot{background:var(--ink);box-shadow:0 0 0 3px rgba(27,27,27,.08)}
+  .railway-stop.passed .railway-dot{background:var(--green)}
+  .railway-stop-name{font-size:11px;font-weight:700}
+  .railway-stop-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);margin-top:2px}
+  .railway-stop-state{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);white-space:nowrap}
+  .railway-source-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px}
+  .railway-source-link{display:inline-block;margin-top:9px;color:var(--ink);font-size:10px;text-decoration:underline;text-underline-offset:2px}
+  @media(max-width:640px){
+    .railway-form,.railway-train-form{grid-template-columns:1fr}
+    .railway-meta-grid{grid-template-columns:1fr 1fr}
+  }
+</style>
+
 </head>
 <body>
 <div class="frame" id="appFrame" data-mood="clear">
@@ -1303,6 +1354,7 @@
     <button class="pill" data-target="gtk">Good to Know</button>
     <button class="pill" data-target="reviews">Reviews</button>
     <button class="pill" data-target="tickets">Tickets</button>
+    <button class="pill" data-target="railway">Railway</button>
     <button class="pill" data-target="grocery">Grocery Rates</button>
     <button class="pill" data-target="trade">Trade Orders</button>
     <button class="pill" data-target="fashion">Fashion by Age</button>
@@ -1489,6 +1541,45 @@
         <div class="headline">Season 2 of "Undertow" trades pace for world-building</div>
         <div class="dek">Slower start, but episodes 5–8 pay it off. Worth the binge.</div>
       </a>
+    </section>
+
+    <!-- RAILWAY -->
+    <section class="section" id="sec-railway">
+      <div class="section-head">
+        <span class="section-title">Indian Railways</span>
+        <span class="section-sub">PNR · Live Train Tracking</span>
+      </div>
+
+      <div class="railway-tabs" role="tablist" aria-label="Railway tools">
+        <button type="button" class="railway-tab active" data-railway-tab="pnr" role="tab" aria-selected="true">PNR Status</button>
+        <button type="button" class="railway-tab" data-railway-tab="train" role="tab" aria-selected="false">Track Train</button>
+      </div>
+
+      <div class="railway-panel active" id="railwayPnrPanel" data-railway-panel="pnr">
+        <div class="railway-intro">Enter your 10-digit PNR to check booking and current passenger status.</div>
+        <form class="railway-form" id="pnrForm">
+          <input id="pnrInput" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit PNR" aria-label="10-digit PNR" autocomplete="off">
+          <button type="submit" class="railway-action">Check PNR</button>
+        </form>
+        <div class="railway-note">Your PNR is used only for this enquiry and is not saved by BURBREEK.</div>
+        <div class="railway-result" id="pnrResult" aria-live="polite"></div>
+        <a class="railway-source-link" href="https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?locale=en" target="_blank" rel="noopener noreferrer">Open official Indian Railways PNR enquiry ↗</a>
+      </div>
+
+      <div class="railway-panel" id="railwayTrainPanel" data-railway-panel="train" hidden>
+        <div class="railway-intro">Enter a 5-digit train number and journey date to see live running details.</div>
+        <form class="railway-form railway-train-form" id="trainForm">
+          <input id="trainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Train number e.g. 12987" aria-label="5-digit train number" autocomplete="off">
+          <input id="trainDateInput" type="date" aria-label="Journey date">
+          <button type="submit" class="railway-action">Track Train</button>
+        </form>
+        <div class="railway-note">Live tracking uses an independent railway data API; BURBREEK does not claim affiliation with Indian Railways.</div>
+        <div class="railway-result" id="trainResult" aria-live="polite"></div>
+        <div class="railway-source-row">
+          <a class="railway-source-link" href="https://www.indianrail.gov.in/" target="_blank" rel="noopener noreferrer">Indian Railways enquiry ↗</a>
+          <a class="railway-source-link" href="https://railradar.in/" target="_blank" rel="noopener noreferrer">RailRadar live tracker ↗</a>
+        </div>
+      </div>
     </section>
 
     <!-- GROCERY -->
@@ -1815,6 +1906,7 @@
     gtk: document.getElementById('sec-gtk'),
     reviews: document.getElementById('sec-reviews'),
     tickets: document.getElementById('sec-tickets'),
+    railway: document.getElementById('sec-railway'),
     grocery: document.getElementById('sec-grocery'),
     trade: document.getElementById('sec-trade'),
     fashion: document.getElementById('sec-fashion'),
@@ -1824,7 +1916,7 @@
   const sectionTitles = {
     trending:'Trending Now', startup:'Startup.news', funding:'Funding Watch', ai:'AI News',
     market:'Stock Market', ipo:'Upcoming IPO', politics:'Political News', reels:'Top 10 Reels · Worldwide',
-    gtk:'Good to Know', reviews:'Movies | Web Series', tickets:'Ticket Price Compare',
+    gtk:'Good to Know', reviews:'Movies | Web Series', tickets:'Ticket Price Compare', railway:'Indian Railways',
     grocery:'Grocery Rate Compare', trade:'Trade Order Compare', fashion:'Fashion Trends by Age',
     settings:'Settings'
   };
@@ -2554,18 +2646,154 @@
   })();
 </script>
 
+<script id="burbreek-railway">
+(function(){
+  const tabs=document.querySelectorAll('[data-railway-tab]');
+  const panels=document.querySelectorAll('[data-railway-panel]');
+  function setTab(name){
+    tabs.forEach(t=>{
+      const on=t.dataset.railwayTab===name;
+      t.classList.toggle('active',on);
+      t.setAttribute('aria-selected',on?'true':'false');
+    });
+    panels.forEach(p=>{
+      const on=p.dataset.railwayPanel===name;
+      p.hidden=!on;
+      p.classList.toggle('active',on);
+    });
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>setTab(t.dataset.railwayTab)));
+
+  const pnrForm=document.getElementById('pnrForm');
+  const pnrInput=document.getElementById('pnrInput');
+  const pnrResult=document.getElementById('pnrResult');
+  const trainForm=document.getElementById('trainForm');
+  const trainInput=document.getElementById('trainInput');
+  const trainDateInput=document.getElementById('trainDateInput');
+  const trainResult=document.getElementById('trainResult');
+  if(trainDateInput){ trainDateInput.value=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}); }
+
+  function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function statusClass(v){
+    const s=String(v||'').toUpperCase();
+    if(s.includes('CNF')) return 'cnf';
+    if(s.includes('RAC')) return 'rac';
+    if(s.includes('WL')) return 'wl';
+    return '';
+  }
+  function showError(el,msg){el.innerHTML=`<div class="railway-card"><div class="railway-title">${esc(msg)}</div><div class="railway-subline">Try again or use the official enquiry link below.</div></div>`;}
+
+  async function fetchJson(url){
+    const res=await fetch(url,{cache:'no-store'});
+    let body=null; try{ body=await res.json(); }catch(e){}
+    if(!res.ok) throw new Error(body?.error || 'Railway service unavailable');
+    return body;
+  }
+
+  function renderPnr(data){
+    const d=data?.data||data;
+    if(!d){showError(pnrResult,'No PNR data returned.');return;}
+    const train=d.train||{};
+    const journey=d.journey||{};
+    const passengers=Array.isArray(d.passengers)?d.passengers:[];
+    const chart=d.chart?.status || d.chartStatus || 'Not available';
+    const fare=d.booking?.fare ?? d.totalFare;
+    pnrResult.innerHTML=`
+      <div class="railway-card">
+        <div class="railway-status-row">
+          <div>
+            <div class="railway-kicker">PNR ${esc(d.pnr||d.pnrNumber||'')}</div>
+            <div class="railway-title">${esc(train.name||'Train')}</div>
+            <div class="railway-subline">${esc(train.number||'')} · ${esc(journey.source?.name||d.fromStation||'')} → ${esc(journey.destination?.name||d.toStation||'')}</div>
+          </div>
+          <div class="railway-badge ${statusClass(passengers[0]?.current?.details||passengers[0]?.current?.status)}">${esc(passengers[0]?.current?.details||passengers[0]?.current?.status||'STATUS')}</div>
+        </div>
+        <div class="railway-meta-grid">
+          <div class="railway-meta"><div class="railway-meta-label">Journey</div><div class="railway-meta-value">${esc(journey.dateOfJourney||d.journeyDate||'—')}</div></div>
+          <div class="railway-meta"><div class="railway-meta-label">Class / Quota</div><div class="railway-meta-value">${esc(journey.class||'—')} / ${esc(journey.quota||'—')}</div></div>
+          <div class="railway-meta"><div class="railway-meta-label">Chart</div><div class="railway-meta-value">${esc(chart)}</div></div>
+        </div>
+        ${fare!=null?`<div class="railway-subline" style="margin-top:10px">Ticket fare: <b>₹${esc(fare)}</b></div>`:''}
+        <div class="railway-passenger-list">
+          ${passengers.map((p,i)=>{
+            const cur=p.current||{};
+            const det=cur.details || [cur.status,cur.coach,cur.berthNo].filter(Boolean).join(' / ');
+            return `<div class="railway-passenger"><div class="railway-passenger-main"><div class="railway-passenger-name">${esc(p.serialNumber||`Passenger ${i+1}`)}</div><div class="railway-passenger-detail">Booking: ${esc(p.booking?.details||p.booking?.status||'—')} → Current: ${esc(det||'—')}</div></div><div class="railway-badge ${statusClass(det)}">${esc(cur.status||'—')}</div></div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }
+
+  function renderTrain(data){
+    const d=data?.data||data;
+    if(!d){showError(trainResult,'No train status returned.');return;}
+    const timeline=Array.isArray(d.timeline)?d.timeline:[];
+    const top=timeline.slice(0,60);
+    trainResult.innerHTML=`
+      <div class="railway-card">
+        <div class="railway-status-row">
+          <div>
+            <div class="railway-kicker">Live running status</div>
+            <div class="railway-title">${esc(d.trainName||d.trainNo||'Train')}</div>
+            <div class="railway-subline">Train ${esc(d.trainNo||'')} · ${esc(d.date||'')}</div>
+          </div>
+          <div class="railway-badge">LIVE</div>
+        </div>
+        <div class="railway-subline" style="margin-top:10px;font-weight:700">${esc(d.statusNote||'Status available')}</div>
+        <div class="railway-subline">Last update: ${esc(d.lastUpdate||'—')} ${d.currentStationCode?`· Current: <b>${esc(d.currentStationCode)}</b>`:''}</div>
+        <div class="railway-timeline">
+          ${top.map(p=>{
+            const state=String(p.status||'').toLowerCase();
+            let label=state||'scheduled';
+            if(p.type==='stoppage' && p.platform) label+=' · PF '+p.platform;
+            const time=p.type==='stoppage' ? (p.arrival?.actual||p.departure?.actual||p.arrival?.scheduled||p.departure?.scheduled||'') : '';
+            return `<div class="railway-stop ${esc(state)}"><span class="railway-dot"></span><div><div class="railway-stop-name">${esc(p.stationName||p.stationCode||'Station')} ${p.stationCode?`<span class="railway-stop-meta">(${esc(p.stationCode)})</span>`:''}</div><div class="railway-stop-meta">${esc(time)}</div></div><div class="railway-stop-state">${esc(label)}</div></div>`;
+          }).join('')}
+        </div>
+        ${timeline.length>60?`<div class="railway-note">Showing first 60 route points.</div>`:''}
+      </div>`;
+  }
+
+  pnrForm?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const pnr=pnrInput.value.replace(/\D/g,'');
+    if(!/^\d{10}$/.test(pnr)){showError(pnrResult,'Please enter a valid 10-digit PNR.');return;}
+    const btn=pnrForm.querySelector('button'); btn.disabled=true; btn.textContent='Checking…';
+    pnrResult.innerHTML='<div class="railway-card"><div class="railway-subline">Fetching current PNR status…</div></div>';
+    try{renderPnr(await fetchJson('/api/railway/pnr?pnr='+encodeURIComponent(pnr)));}
+    catch(err){showError(pnrResult,err.message||'Unable to fetch PNR status.');}
+    finally{btn.disabled=false;btn.textContent='Check PNR';}
+  });
+
+  trainForm?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const num=trainInput.value.replace(/\D/g,'');
+    const date=trainDateInput.value;
+    if(!/^\d{5}$/.test(num)){showError(trainResult,'Please enter a valid 5-digit train number.');return;}
+    if(!date){showError(trainResult,'Please select a journey date.');return;}
+    const parts=date.split('-');
+    const ddmmYYYY=`${parts[2]}-${parts[1]}-${parts[0]}`;
+    const btn=trainForm.querySelector('button'); btn.disabled=true; btn.textContent='Loading…';
+    trainResult.innerHTML='<div class="railway-card"><div class="railway-subline">Fetching live train status…</div></div>';
+    try{renderTrain(await fetchJson('/api/railway/train/'+encodeURIComponent(num)+'/live?date='+encodeURIComponent(ddmmYYYY)));}
+    catch(err){showError(trainResult,err.message||'Unable to fetch live train status.');}
+    finally{btn.disabled=false;btn.textContent='Track Train';}
+  });
+})();
+</script>
+
 <script id="burbreek-language-toggle">
 (function(){
   const KEY='burbreek_language';
   const dict={
     en:{
-      News:'News',Markets:'Markets',IPOs:'IPOs',Grocery:'Grocery',Fuel:'Fuel',Fashion:'Fashion',Movies:'Movies',Settings:'Settings',
+      News:'News',Markets:'Markets',IPOs:'IPOs',Grocery:'Grocery',Fuel:'Fuel',Fashion:'Fashion',Movies:'Movies',Settings:'Settings',Railway:'Railway',
       Live:'Live',Read:'Read',Source:'Source',English:'English',Hindi:'Hindi',Feed:'Feed',Trending:'Trending',Startup:'Startup',Funding:'Funding',
       AI:'AI',IPO:'IPO',Politics:'Politics',Reels:'Reels','Good to Know':'Good to Know',Reviews:'Reviews',Tickets:'Tickets',Headline:'Headline',
       Back:'Back',Home:'Home','Save for later':'Save for later',Share:'Share','Also covered by':'Also covered by',Sources:'sources'
     },
     hi:{
-      News:'समाचार',Markets:'बाज़ार',IPOs:'आईपीओ',Grocery:'किराना',Fuel:'ईंधन',Fashion:'फैशन',Movies:'फ़िल्में',Settings:'सेटिंग्स',
+      News:'समाचार',Markets:'बाज़ार',IPOs:'आईपीओ',Grocery:'किराना',Fuel:'ईंधन',Fashion:'फैशन',Movies:'फ़िल्में',Settings:'सेटिंग्स',Railway:'रेलवे',
       Live:'लाइव',Read:'पढ़ें',Source:'स्रोत',English:'अंग्रेज़ी',Hindi:'हिंदी',Feed:'फ़ीड',Trending:'ट्रेंडिंग',Startup:'स्टार्टअप',Funding:'फंडिंग',
       AI:'एआई',IPO:'आईपीओ',Politics:'राजनीति',Reels:'रील्स','Good to Know':'जानने योग्य',Reviews:'रिव्यू',Tickets:'टिकट्स',Headline:'शीर्षक',
       Back:'वापस',Home:'होम','Save for later':'बाद के लिए सेव करें',Share:'शेयर करें','Also covered by':'इन स्रोतों ने भी कवर किया',Sources:'स्रोत'
