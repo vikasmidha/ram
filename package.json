@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --check server.js && node --check db.js && node --check routes/news.js && node --check routes/markets.js && node --check routes/weather.js && node --check routes/manualData.js && node --check routes/compare.js && node --check routes/railway.js"
+    "test": "node --check server.js && node --check db.js && node --check routes/news.js && node --check routes/markets.js && node --check routes/weather.js && node --check routes/manualData.js && node --check routes/compare.js && node --check routes/railway.js && node --check routes/media.js && node --check routes/seo.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
