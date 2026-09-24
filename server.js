@@ -10,6 +10,8 @@ const weatherRoutes = require('./routes/weather');
 const manualDataRoutes = require('./routes/manualData');
 const compareRoutes = require('./routes/compare');
 const railwayRoutes = require('./routes/railway');
+const mediaRoutes = require('./routes/media');
+const seoRoutes = require('./routes/seo');
 const db = require('./db');
 
 const app = express();
@@ -41,12 +43,14 @@ app.get('/health', (req, res) => {
     database: db.isConfigured(),
     openweather: Boolean(process.env.OPENWEATHER_KEY) && !process.env.OPENWEATHER_KEY.includes('your_'),
     railway: Boolean(process.env.RAILKIT_API_KEY) && !process.env.RAILKIT_API_KEY.includes('your_'),
+    youtube: Boolean(process.env.YOUTUBE_API_KEY) && !process.env.YOUTUBE_API_KEY.includes('your_'),
+    gemini: Boolean(process.env.GEMINI_API_KEY) && !process.env.GEMINI_API_KEY.includes('your_'),
   };
   const ready = db.isConfigured() ? db.isReady() : true;
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'degraded', version: '1.0.0', environment: process.env.NODE_ENV || 'development', ready, configured, databaseError: db.getError() });
 });
 
-app.get('/api/config', (req, res) => res.json({ version: '1.0.0', analyticsEnabled: Boolean(process.env.GA_MEASUREMENT_ID), gaMeasurementId: process.env.GA_MEASUREMENT_ID || null, comparisonDataPolicy: 'manual-data-is-labelled' }));
+app.get('/api/config', (req, res) => res.json({ version: '1.0.0', analyticsEnabled: Boolean(process.env.GA_MEASUREMENT_ID), gaMeasurementId: process.env.GA_MEASUREMENT_ID || null, comparisonDataPolicy: 'manual-data-is-labelled', youtubeEnabled: Boolean(process.env.YOUTUBE_API_KEY), geminiEnabled: Boolean(process.env.GEMINI_API_KEY) }));
 
 app.use('/api/news', newsRoutes);
 app.use('/api/markets', marketsRoutes);
@@ -54,6 +58,8 @@ app.use('/api/weather', weatherRoutes);
 app.use('/api/prices', manualDataRoutes);
 app.use('/api/compare', compareRoutes);
 app.use('/api/railway', railwayRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/seo', seoRoutes);
 
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'], maxAge: isProduction ? '1h' : 0 }));
 app.get('*', (req, res, next) => {
