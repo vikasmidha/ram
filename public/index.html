@@ -2343,6 +2343,21 @@
     if(n>=1000) return (n/1e3).toFixed(1)+'K views';
     return n.toLocaleString()+' views';
   }
+  // Global fetch helper for media/SEO loaders. The media loader lives
+  // outside the later live-data IIFE, so it cannot see that IIFE's local
+  // tryFetch() function. Keeping this helper global ensures the live media
+  // cards can load from the public API endpoints.
+  async function tryFetch(url){
+    try{
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) return null;
+      return await res.json();
+    }catch(e){
+      console.warn('[BURBREEK] fetch failed:', url, e);
+      return null;
+    }
+  }
+
   async function loadLiveMedia(){
     const music=document.getElementById('trendingMusicList');
     const shorts=document.getElementById('trendingShortsList');
