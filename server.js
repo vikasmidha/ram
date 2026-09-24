@@ -9,6 +9,7 @@ const marketsRoutes = require('./routes/markets');
 const weatherRoutes = require('./routes/weather');
 const manualDataRoutes = require('./routes/manualData');
 const compareRoutes = require('./routes/compare');
+const railwayRoutes = require('./routes/railway');
 const db = require('./db');
 
 const app = express();
@@ -39,6 +40,7 @@ app.get('/health', (req, res) => {
     newsapi: Boolean(process.env.NEWSAPI_KEY) && !process.env.NEWSAPI_KEY.includes('your_'),
     database: db.isConfigured(),
     openweather: Boolean(process.env.OPENWEATHER_KEY) && !process.env.OPENWEATHER_KEY.includes('your_'),
+    railway: Boolean(process.env.RAILKIT_API_KEY) && !process.env.RAILKIT_API_KEY.includes('your_'),
   };
   const ready = db.isConfigured() ? db.isReady() : true;
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'degraded', version: '1.0.0', environment: process.env.NODE_ENV || 'development', ready, configured, databaseError: db.getError() });
@@ -51,6 +53,7 @@ app.use('/api/markets', marketsRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/prices', manualDataRoutes);
 app.use('/api/compare', compareRoutes);
+app.use('/api/railway', railwayRoutes);
 
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'], maxAge: isProduction ? '1h' : 0 }));
 app.get('*', (req, res, next) => {
