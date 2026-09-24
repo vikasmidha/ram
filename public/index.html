@@ -902,13 +902,31 @@
   .media-block-title{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .media-strip{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:5px;-webkit-overflow-scrolling:touch;}
   .media-strip::-webkit-scrollbar{display:none;}
-  .media-card{flex:0 0 220px;border:1px solid var(--line);border-radius:7px;background:var(--paper-raised);overflow:hidden;color:var(--ink);text-decoration:none;}
+  .media-card{flex:0 0 220px;border:1px solid var(--line);border-radius:7px;background:var(--paper-raised);overflow:hidden;color:var(--ink);text-decoration:none;cursor:pointer;text-align:left;padding:0;display:block;}
+  button.media-card{font:inherit;width:220px;}
   .media-card img{width:100%;height:124px;display:block;object-fit:cover;background:var(--paper);}
   .media-card-body{padding:9px 10px 10px;}
   .media-rank{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-bottom:4px;}
   .media-title{font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.28;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .media-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .media-status{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);padding:9px 0;}
+  .media-viewer{
+    position:absolute;inset:0;background:#111;z-index:70;display:flex;flex-direction:column;
+    transform:translateY(100%);visibility:hidden;pointer-events:none;transition:transform .24s cubic-bezier(.2,.7,.3,1),visibility 0s linear .24s;
+  }
+  .media-viewer.open{transform:translateY(0);visibility:visible;pointer-events:auto;transition:transform .24s cubic-bezier(.2,.7,.3,1),visibility 0s linear 0s;}
+  .media-viewer-header{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#181818;color:#fff;border-bottom:1px solid #333;min-height:54px;}
+  .media-viewer-back{flex:none;min-height:42px;padding:8px 12px;border:1px solid #777;border-radius:7px;background:#222;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+  .media-viewer-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .media-viewer-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:12px;background:#111;overflow:auto;}
+  .media-player-wrap{width:100%;aspect-ratio:16/9;max-height:72vh;background:#000;border-radius:8px;overflow:hidden;}
+  .media-player-wrap iframe{width:100%;height:100%;border:0;display:block;}
+  .media-viewer-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:#cfcfcf;line-height:1.45;}
+  .media-open-youtube{display:inline-flex;align-items:center;justify-content:center;align-self:stretch;min-height:44px;border:1px solid #666;border-radius:6px;background:#222;color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;}
+  @media(max-width:640px){
+    .media-viewer-body{padding:10px;}
+    .media-player-wrap{max-height:none;}
+  }
   .detail-share-mini{margin-left:auto;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;min-height:40px;cursor:pointer;}
   .detail-back{min-height:46px!important;padding:8px 12px!important;border:1px solid var(--ink)!important;border-radius:7px!important;background:var(--paper-raised)!important;font-family:'DM Sans',sans-serif!important;font-size:13px!important;font-weight:800!important;}
   .detail-hero{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:7px;margin:8px 0 14px;background:var(--paper-raised);}
@@ -916,6 +934,7 @@
   @media(max-width:640px){
     .news-thumb{height:148px;margin:7px 0 8px;}
     .media-card{flex-basis:190px;}
+    button.media-card{width:190px;}
     .media-card img{height:108px;}
     .detail-header{padding:10px 12px;}
     .detail-share-mini{font-size:10px;padding:7px 10px;min-height:40px;}
@@ -1924,6 +1943,18 @@
     <div class="section-screen-content" id="sectionScreenContent"></div>
   </div>
 
+  <div class="media-viewer" id="mediaViewer" aria-hidden="true">
+    <div class="media-viewer-header">
+      <button class="media-viewer-back" id="mediaViewerBack" type="button" aria-label="Back">← Back</button>
+      <div class="media-viewer-title" id="mediaViewerTitle">YouTube</div>
+    </div>
+    <div class="media-viewer-body">
+      <div class="media-player-wrap" id="mediaPlayerWrap"></div>
+      <div class="media-viewer-meta" id="mediaViewerMeta"></div>
+      <a class="media-open-youtube" id="mediaOpenYoutube" href="#" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+    </div>
+  </div>
+
   <div class="detail-overlay" id="detailOverlay">
     <div class="detail-header">
       <button class="detail-back" id="detailBackBtn" aria-label="Back to feed">← Back</button>
@@ -2358,6 +2389,51 @@
     }
   }
 
+  const mediaViewer=document.getElementById('mediaViewer');
+  const mediaViewerBack=document.getElementById('mediaViewerBack');
+  const mediaViewerTitle=document.getElementById('mediaViewerTitle');
+  const mediaViewerMeta=document.getElementById('mediaViewerMeta');
+  const mediaPlayerWrap=document.getElementById('mediaPlayerWrap');
+  const mediaOpenYoutube=document.getElementById('mediaOpenYoutube');
+  let mediaViewerHistoryPushed=false;
+
+  function openMediaViewer(item, kind){
+    const id=String(item?.id||'').trim();
+    if(!mediaViewer || !id) return;
+    const title=String(item?.title||'YouTube');
+    const channel=String(item?.channel||'');
+    const views=formatViews(item?.views);
+    const youtubeUrl=safeHttpUrl(item?.url) || ('https://www.youtube.com/watch?v='+encodeURIComponent(id));
+    const embedUrl='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0&modestbranding=1';
+    mediaViewerTitle.textContent=title;
+    mediaViewerMeta.textContent=(channel ? channel+' · ' : '')+views+' · '+(kind==='music'?'Trending song · India':'Trending Short · Worldwide');
+    mediaOpenYoutube.href=youtubeUrl;
+    mediaPlayerWrap.innerHTML='<iframe src="'+embedUrl+'" title="'+htmlEsc(title)+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    mediaViewer.classList.add('open');
+    mediaViewer.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    if(!mediaViewerHistoryPushed){
+      history.pushState({burbreekMediaViewer:true},'',location.href.split('#')[0]+'#media='+encodeURIComponent(id));
+      mediaViewerHistoryPushed=true;
+    }
+  }
+
+  function closeMediaViewer(fromPopstate=false){
+    if(!mediaViewer) return;
+    mediaViewer.classList.remove('open');
+    mediaViewer.setAttribute('aria-hidden','true');
+    mediaPlayerWrap.innerHTML='';
+    document.body.style.overflow='';
+    if(mediaViewerHistoryPushed){
+      mediaViewerHistoryPushed=false;
+      if(!fromPopstate) history.back();
+    }
+  }
+  mediaViewerBack?.addEventListener('click',()=>closeMediaViewer(false));
+  window.addEventListener('popstate',(e)=>{
+    if(mediaViewerHistoryPushed){ closeMediaViewer(true); }
+  });
+
   async function loadLiveMedia(){
     const music=document.getElementById('trendingMusicList');
     const shorts=document.getElementById('trendingShortsList');
@@ -2366,11 +2442,10 @@
       if(!wrap) return;
       if(!Array.isArray(items)||!items.length){ wrap.innerHTML='<div class="media-status">No live items returned.</div>'; return; }
       wrap.innerHTML=items.map(x=>{
-        const u=safeHttpUrl(x.url);
         const img=safeHttpUrl(x.thumbnail);
-        const card=`<div class="media-card"><img src="${img}" alt="" loading="lazy" decoding="async"><div class="media-card-body"><div class="media-rank">#${String(x.rank).padStart(2,'0')} · ${kind}</div><div class="media-title">${htmlEsc(x.title)}</div><div class="media-meta">${htmlEsc(x.channel||'')} · ${htmlEsc(formatViews(x.views))}</div></div></div>`;
-        return u ? `<a class="media-card" href="${htmlEsc(u)}" target="_blank" rel="noopener noreferrer">${card.replace(/^<div class="media-card">|<\/div>$/g,'')}</a>` : card;
+        return `<button class="media-card" type="button" data-media-id="${htmlEsc(x.id||'')}" aria-label="Play ${htmlEsc(x.title||'YouTube video')}"><img src="${img}" alt="" loading="lazy" decoding="async"><div class="media-card-body"><div class="media-rank">#${String(x.rank).padStart(2,'0')} · ${kind}</div><div class="media-title">${htmlEsc(x.title)}</div><div class="media-meta">${htmlEsc(x.channel||'')} · ${htmlEsc(formatViews(x.views))}</div></div></button>`;
       }).join('');
+      wrap.querySelectorAll('.media-card[data-media-id]').forEach((btn,i)=>btn.addEventListener('click',()=>openMediaViewer(items[i],kind)));
     };
     const [musicRes,shortRes]=await Promise.all([tryFetch('/api/media/trending-music'),tryFetch('/api/media/top-shorts')]);
     if(musicRes?.success) render(music,musicRes.items,'music');
@@ -2378,7 +2453,7 @@
     const missing=[];
     if(!musicRes?.success) missing.push('music');
     if(!shortRes?.success) missing.push('Shorts');
-    if(status) status.textContent=missing.length ? 'Live media not configured or temporarily unavailable. Add YOUTUBE_API_KEY in Render.' : 'Source: YouTube Data API · Shorts are YouTube short-form videos, not Instagram Reels.';
+    if(status) status.textContent=missing.length ? 'Live media temporarily unavailable.' : 'Source: YouTube Data API · Shorts are YouTube short-form videos, not Instagram Reels.';
   }
   async function loadHomeAIMeta(context){
     const title=String(context?.title||'').trim();
