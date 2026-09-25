@@ -1,6 +1,6 @@
 {
   "name": "brief-backend",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Backend API for BURBREEK \u2014 fresh news, markets, weather, media, movies, comparisons and railway utilities.",
   "main": "server.js",
   "type": "commonjs",

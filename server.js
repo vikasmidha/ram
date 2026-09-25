@@ -50,16 +50,16 @@ app.get('/health', (req, res) => {
     tmdb: Boolean(process.env.TMDB_API_KEY || process.env.TMDB_ACCESS_TOKEN),
   };
   const ready = db.isConfigured() ? db.isReady() : true;
-  res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'degraded', version: '1.1.0', environment: process.env.NODE_ENV || 'development', ready, configured, databaseError: db.getError() });
+  res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'degraded', version: '1.3.0', environment: process.env.NODE_ENV || 'development', ready, configured, databaseError: db.getError() });
 });
 
 app.get('/api/config', (req, res) => res.json({
-  version: '1.1.0',
+  version: '1.3.0',
   analyticsEnabled: Boolean(process.env.GA_MEASUREMENT_ID),
   gaMeasurementId: process.env.GA_MEASUREMENT_ID || null,
   comparisonDataPolicy: 'manual-data-is-labelled',
   youtubeEnabled: Boolean(process.env.YOUTUBE_API_KEY),
-  geminiEnabled: Boolean(process.env.GEMINI_API_KEY),
+  geminiEnabled: Boolean(process.env.GEMINI_API_KEY) && !process.env.GEMINI_API_KEY.includes('your_'),
   moviesEnabled: Boolean(process.env.TMDB_API_KEY || process.env.TMDB_ACCESS_TOKEN),
   railwayEnabled: Boolean(process.env.RAILRADAR_API_KEY || process.env.RAILKIT_API_KEY),
 }));
@@ -102,12 +102,12 @@ app.get('/story', async (req, res, next) => {
       mainEntityOfPage: canonical,
       isPartOf: { '@type': 'WebSite', name: 'BURBREEK', url: `${req.protocol}://${req.get('host')}/` },
       articleSection: tag || undefined,
-      url: sourceUrl || canonical,
+      url: canonical,
       sourceOrganization: source,
       ...(imageUrl && /^https?:\/\//i.test(imageUrl) ? { image: imageUrl } : {}),
     });
     const jsonLd = articleJson.replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
-    const headPatch = `\n<title>${escapeHtml(safeTitle)} | BURBREEK</title>\n<meta name="description" content="${escapeHtml(safeDescription)}">\n<link rel="canonical" href="${escapeHtml(canonical)}">\n<meta property="og:title" content="${escapeHtml(safeTitle)} | BURBREEK">\n<meta property="og:description" content="${escapeHtml(safeDescription)}">\n<meta property="og:type" content="article">\n<meta property="og:url" content="${escapeHtml(canonical)}">\n<meta name="twitter:card" content="summary_large_image">${imageUrl && /^https?:\/\//i.test(imageUrl) ? `\n<meta property="og:image" content="${escapeHtml(imageUrl)}">` : ''}\n<script type="application/ld+json">${jsonLd}</script>`;
+    const headPatch = `\n<title>${escapeHtml(safeTitle)} | BURBREEK</title>\n<meta name="description" content="${escapeHtml(safeDescription)}">\n<link rel="canonical" href="${escapeHtml(canonical)}">\n<meta property="og:title" content="${escapeHtml(safeTitle)} | BURBREEK">\n<meta property="og:description" content="${escapeHtml(safeDescription)}">\n<meta property="og:type" content="article">\n<meta property="og:url" content="${escapeHtml(canonical)}">\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="${escapeHtml(safeTitle)} | BURBREEK">\n<meta name="twitter:description" content="${escapeHtml(safeDescription)}">${imageUrl && /^https?:\/\//i.test(imageUrl) ? `\n<meta property="og:image" content="${escapeHtml(imageUrl)}">` : ''}\n<script type="application/ld+json">${jsonLd}</script>`;
     res.set('Cache-Control', 'public, max-age=300');
     res.type('html').send(file.replace('</head>', `${headPatch}\n</head>`));
   } catch (err) {
@@ -139,5 +139,5 @@ function escapeHtml(v) {
       process.exit(1);
     }
   }
-  app.listen(PORT, () => console.log(`BURBREEK v1.1 listening on port ${PORT}`));
+  app.listen(PORT, () => console.log(`BURBREEK v1.3 listening on port ${PORT}`));
 })();

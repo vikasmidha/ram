@@ -1420,6 +1420,29 @@
   @media(max-width:640px){.ticket-live-card{align-items:flex-start;}.ticket-live-btn{white-space:nowrap;}}
 </style>
 
+
+
+  /* BURBREEK v6 usability pass */
+  .railway-tab-panel[hidden]{display:none!important;}
+  .railway-result{min-width:0;}
+  .railway-collapsible{margin-top:10px;}
+  .railway-collapsible>summary{position:sticky;top:0;z-index:2;background:var(--paper-raised);}
+  .railway-result-scroll{max-height:300px!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch;}
+  .railway-train-form{grid-template-columns:minmax(0,1fr) 150px auto;}
+  .railway-panel{overflow:hidden;}
+  .app-header{position:sticky;top:0;z-index:40;}
+  .app-header .masthead{padding:7px 16px 6px!important;}
+  .app-header .pill-row{padding-top:7px;padding-bottom:7px;}
+  .app-header.header-scrolled .masthead{padding:7px 16px 6px!important;}
+  .app-header.header-scrolled .app-logo{width:34px!important;height:34px!important;}
+  .app-header.header-scrolled .brand-wordmark{font-size:18px!important;}
+  .app-header.header-scrolled .weather-strip,
+  .app-header.header-scrolled .pill-row{display:none!important;}
+  @media(max-width:640px){
+    .railway-train-form{grid-template-columns:1fr;}
+    .railway-result-scroll{max-height:260px!important;}
+  }
+
 </head>
 <body>
 <div class="frame" id="appFrame" data-mood="clear">
@@ -1452,12 +1475,6 @@
       <span class="weather-stats"><b id="weatherFeels">--</b><b id="weatherHumidity">--</b></span>
       <span class="weather-days" id="weatherDays"></span>
     </div>
-
-    <form class="header-pnr" id="quickPnrForm" autocomplete="off">
-      <input id="quickPnrInput" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit PNR" aria-label="10-digit PNR">
-      <button type="submit" class="header-pnr-btn">Check PNR</button>
-    </form>
-    <div class="header-pnr-result" id="quickPnrResult" aria-live="polite"></div>
   </div>
 
   <div class="pill-row" id="pillRow">
@@ -1473,6 +1490,7 @@
     <button class="pill" data-target="gtk">Good to Know</button>
     <button class="pill" data-target="reviews">Reviews</button>
     <button class="pill" data-target="tickets">Tickets</button>
+    <button class="pill" data-target="railway">Train</button>
     <button class="pill" data-target="grocery">Grocery Rates</button>
     <button class="pill" data-target="trade">Trade Orders</button>
     <button class="pill" data-target="fashion">Fashion by Age</button>
@@ -1654,19 +1672,37 @@
       <div class="media-status movie-note" id="movieStatus">Ratings shown here are TMDB ratings. IMDb data will be connected only through licensed access.</div>
     </section>
 
-    <!-- TRAIN -->
+    <!-- TRAIN / PNR -->
     <section class="section" id="sec-railway">
       <div class="section-head">
-        <span class="section-title">Track Your Train</span>
-        <span class="section-sub">Live running status</span>
+        <span class="section-title">Indian Railways</span>
+        <span class="section-sub">PNR + live train status</span>
       </div>
       <div class="railway-panel">
-        <form class="railway-form" id="trainForm">
-          <input id="trainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Train number e.g. 12987" aria-label="5-digit train number" autocomplete="off">
-          <button type="submit" class="railway-action">Track Train</button>
-        </form>
-        <div class="railway-note">The journey date defaults to today. Live tracking is shown when a railway data provider is configured.</div>
-        <div class="railway-result" id="trainResult" aria-live="polite"></div>
+        <div class="railway-tabs" role="tablist" aria-label="Railway tools">
+          <button class="railway-tab active" id="railTabPnr" type="button" role="tab" aria-selected="true" aria-controls="railPanelPnr">Check PNR</button>
+          <button class="railway-tab" id="railTabTrain" type="button" role="tab" aria-selected="false" aria-controls="railPanelTrain">Track Train</button>
+        </div>
+
+        <div id="railPanelPnr" class="railway-tab-panel" role="tabpanel">
+          <form class="railway-form" id="quickPnrForm" autocomplete="off">
+            <input id="quickPnrInput" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit PNR" aria-label="10-digit PNR" autocomplete="off">
+            <button type="submit" class="railway-action">Check PNR</button>
+          </form>
+          <div class="railway-note">Check the latest PNR status. Results stay inside a compact scroll area.</div>
+          <div class="railway-result" id="quickPnrResult" aria-live="polite"></div>
+        </div>
+
+        <div id="railPanelTrain" class="railway-tab-panel" role="tabpanel" hidden>
+          <form class="railway-form railway-train-form" id="trainForm">
+            <input id="trainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Train number e.g. 12987" aria-label="5-digit train number" autocomplete="off">
+            <input id="trainDateInput" inputmode="numeric" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" maxlength="10" placeholder="DD-MM-YYYY (optional)" aria-label="Journey date">
+            <button type="submit" class="railway-action">Track Train</button>
+          </form>
+          <div class="railway-note">Live running status is shown when a railway data provider is configured. Date defaults to today.</div>
+          <div class="railway-result" id="trainResult" aria-live="polite"></div>
+        </div>
+
         <div class="railway-source-row">
           <a class="railway-source-link" href="https://www.indianrail.gov.in/" target="_blank" rel="noopener noreferrer">Indian Railways enquiry ↗</a>
           <a class="railway-source-link" href="https://railradar.in/" target="_blank" rel="noopener noreferrer">RailRadar ↗</a>
@@ -2291,19 +2327,14 @@
   setInterval(() => { try { loadLiveNews(); loadLiveMarkets(); loadLiveMarketNews(); } catch(e) {} }, 60000);
   setInterval(() => { try { loadLiveMedia(); loadLiveMovies(); renderTicketMovies(); } catch(e) {} }, 600000);
 
-  // Header behavior: keep the reading area clean. Scrolling down collapses the
-  // utility-heavy header to the small BURBREEK logo bar; scrolling up restores it.
+  // Header behavior: keep a compact, stable masthead while scrolling.
+  // Do not expand/collapse it based on scroll direction; that caused visual jumps.
   (function(){
     const feed=document.getElementById('feed');
     const header=document.getElementById('appHeader');
     if(!feed||!header) return;
-    let last=feed.scrollTop;
     feed.addEventListener('scroll',()=>{
-      const y=feed.scrollTop;
-      if(y<24){ header.classList.remove('header-scrolled'); last=y; return; }
-      if(y>last+4) header.classList.add('header-scrolled');
-      else if(y<last-4) header.classList.remove('header-scrolled');
-      last=y;
+      header.classList.toggle('header-scrolled', feed.scrollTop > 24);
     },{passive:true});
   })();
 
@@ -2366,7 +2397,7 @@
     const channel=String(item?.channel||'');
     const views=formatViews(item?.views);
     const youtubeUrl=safeHttpUrl(item?.url) || ('https://www.youtube.com/watch?v='+encodeURIComponent(id));
-    const embedUrl='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1&origin='+encodeURIComponent(location.origin);
+    const embedUrl='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0&modestbranding=1';
     mediaViewerKind=kind;
     mediaViewerItems=Array.isArray(items)?items:[];
     mediaViewerIndex=Number.isFinite(index)?index:0;
@@ -2499,8 +2530,13 @@
       const badge=document.getElementById('seoStatusBadge');
       const text=document.getElementById('seoStatusText');
       if(badge) badge.textContent=data.source==='gemini'?'AI LIVE':'AI FALLBACK';
-      if(text) text.textContent=data.source==='gemini' ? 'Gemini generated the current SEO description.' : 'Using a safe fallback until Gemini is configured.';
-    }catch(e){}
+      if(text) text.textContent=data.source==='gemini' ? 'Gemini generated the current SEO description.' : 'Using the deterministic fallback. Server-rendered story pages remain crawlable.';
+    }catch(e){
+      const badge=document.getElementById('seoStatusBadge');
+      const text=document.getElementById('seoStatusText');
+      if(badge) badge.textContent='SEO FALLBACK';
+      if(text) text.textContent='Using the deterministic fallback.';
+    }
   }
   loadLiveMedia();
   loadLiveMovies();
@@ -2560,13 +2596,15 @@
     detailOverlay.scrollTop = 0;
   }
 
-  function closeDetail(){
+  function closeDetail(fromPopstate=false){
     detailOverlay.classList.remove('open');
-    // Never leave the detail layer at an old scroll offset for the next story.
     requestAnimationFrame(() => { detailOverlay.scrollTop = 0; });
+    if(!fromPopstate && location.pathname === '/story'){
+      history.back();
+    }
   }
 
-  document.getElementById('detailBackBtn').addEventListener('click', closeDetail);
+  document.getElementById('detailBackBtn').addEventListener('click', () => closeDetail(false));
   async function shareCurrentStory(){
     const d=window.__BURBREEK_DETAIL_SHARE||{};
     const url=d.url||location.href;
@@ -2584,12 +2622,22 @@
     e.currentTarget.disabled=true;
   });
 
+  window.addEventListener('popstate', e => {
+    if(detailOverlay?.classList.contains('open') && location.pathname !== '/story'){
+      closeDetail(true);
+    }
+  });
+
   function bindCardClicks(){
     document.querySelectorAll('.card').forEach(card => {
       if(card.dataset.bound) return;
       card.dataset.bound = '1';
       card.addEventListener('click', e => {
         e.preventDefault();
+        const href=card.getAttribute('href');
+        if(href && href.startsWith('/story?')){
+          try{ history.pushState({burbreekStory:true},'',href); }catch(_){}
+        }
         openDetail(card);
       });
     });
@@ -2930,11 +2978,28 @@
 
 <script id="burbreek-railway">
 (function(){
+  const railTabPnr=document.getElementById('railTabPnr');
+  const railTabTrain=document.getElementById('railTabTrain');
+  const railPanelPnr=document.getElementById('railPanelPnr');
+  const railPanelTrain=document.getElementById('railPanelTrain');
+  function activateRailTab(tab){
+    const isPnr=tab==='pnr';
+    railTabPnr?.classList.toggle('active',isPnr);
+    railTabTrain?.classList.toggle('active',!isPnr);
+    railTabPnr?.setAttribute('aria-selected',String(isPnr));
+    railTabTrain?.setAttribute('aria-selected',String(!isPnr));
+    if(railPanelPnr) railPanelPnr.hidden=!isPnr;
+    if(railPanelTrain) railPanelTrain.hidden=isPnr;
+  }
+  railTabPnr?.addEventListener('click',()=>activateRailTab('pnr'));
+  railTabTrain?.addEventListener('click',()=>activateRailTab('train'));
+
   const quickPnrForm=document.getElementById('quickPnrForm');
   const quickPnrInput=document.getElementById('quickPnrInput');
   const quickPnrResult=document.getElementById('quickPnrResult');
   const trainForm=document.getElementById('trainForm');
   const trainInput=document.getElementById('trainInput');
+  const trainDateInput=document.getElementById('trainDateInput');
   const trainResult=document.getElementById('trainResult');
 
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
@@ -2954,7 +3019,7 @@
     const fare=d.booking?.fare??d.totalFare;
     const first=passengers[0]?.current||{};
     const status=first.details||first.status||'STATUS';
-    return `<details class="railway-collapsible" open><summary>PNR result <span>Collapse</span></summary><div class="railway-result-scroll">
+    return `<details class="railway-collapsible" open><summary>PNR result <span>Tap to collapse</span></summary><div class="railway-result-scroll">
       <div class="railway-card">
         <div class="railway-status-row"><div><div class="railway-kicker">PNR ${esc(d.pnr||d.pnrNumber||'')}</div><div class="railway-title">${esc(train.name||'Train')}</div><div class="railway-subline">${esc(train.number||'')} · ${esc(journey.source?.name||d.fromStation||'')} → ${esc(journey.destination?.name||d.toStation||'')}</div></div><div class="railway-badge ${statusClass(status)}">${esc(status)}</div></div>
         <div class="railway-meta-grid"><div class="railway-meta"><div class="railway-meta-label">Journey</div><div class="railway-meta-value">${esc(journey.dateOfJourney||d.journeyDate||'—')}</div></div><div class="railway-meta"><div class="railway-meta-label">Class / Quota</div><div class="railway-meta-value">${esc(journey.class||'—')} / ${esc(journey.quota||'—')}</div></div><div class="railway-meta"><div class="railway-meta-label">Chart</div><div class="railway-meta-value">${esc(chart)}</div></div></div>
@@ -2965,7 +3030,7 @@
 
   function showPnrError(el,msg){
     if(!el) return;
-    el.innerHTML=`<details class="railway-collapsible" open><summary>PNR enquiry <span>Collapse</span></summary><div class="railway-result-scroll"><div class="railway-card"><div class="railway-title">${esc(msg)}</div><div class="railway-subline">You can also use the official Indian Railways PNR enquiry.</div></div></div></details>`;
+    el.innerHTML=`<details class="railway-collapsible"><summary>PNR enquiry <span>Tap to expand</span></summary><div class="railway-result-scroll"><div class="railway-card"><div class="railway-title">${esc(msg)}</div><div class="railway-subline">You can also use the official Indian Railways PNR enquiry.</div></div></div></details>`;
   }
 
   async function fetchJson(url){
@@ -2996,11 +3061,13 @@
     const btn=trainForm.querySelector('button');btn.disabled=true;btn.textContent='Loading…';
     trainResult.innerHTML='<div class="railway-card"><div class="railway-subline">Fetching live train status…</div></div>';
     try{
-      const data=await fetchJson('/api/railway/train/'+encodeURIComponent(num)+'/live');
+      const journeyDate=String(trainDateInput?.value||'').trim();
+      if(journeyDate && !/^\\d{2}-\\d{2}-\\d{4}$/.test(journeyDate)){trainResult.innerHTML='<div class="railway-card"><div class="railway-title">Date must be DD-MM-YYYY.</div></div>';btn.disabled=false;btn.textContent='Track Train';return;}
+      const data=await fetchJson('/api/railway/train/'+encodeURIComponent(num)+'/live'+(journeyDate?'?date='+encodeURIComponent(journeyDate):''));
       const d=data?.data||data||{};
       const timeline=Array.isArray(d.timeline)?d.timeline:Array.isArray(d.route)?d.route:[];
       const top=timeline.slice(0,60);
-      trainResult.innerHTML=`<div class="railway-collapsible-wrap"><details class="railway-collapsible" open><summary>Live train status <span>Collapse</span></summary><div class="railway-result-scroll"><div class="railway-card"><div class="railway-status-row"><div><div class="railway-kicker">Train ${esc(d.trainNumber||d.trainNo||num)}</div><div class="railway-title">${esc(d.trainName||d.train?.name||'Train')}</div><div class="railway-subline">${esc(d.statusNote||d.status||'Live status')}</div></div><div class="railway-badge">LIVE</div></div><div class="railway-subline" style="margin-top:10px">Delay: <b>${esc(d.delayMinutes!=null?d.delayMinutes+' min':(d.currentLocation?.status||'—'))}</b> · Updated ${esc(d.lastUpdatedAt||d.lastUpdate||'—')}</div><div class="railway-timeline">${top.map(p=>`<div class="railway-stop"><span class="railway-dot"></span><div><div class="railway-stop-name">${esc(p.stationName||p.stationCode||p.station?.name||'Station')}</div><div class="railway-stop-meta">${esc(p.actualDeparture||p.actualArrival||p.departure?.actual||p.arrival?.actual||p.scheduledDeparture||p.scheduledArrival||'')}</div></div><div class="railway-stop-state">${esc(p.status||'scheduled')}</div></div>`).join('')}</div></div></div></details></div>`;
+      trainResult.innerHTML=`<div class="railway-collapsible-wrap"><details class="railway-collapsible" open><summary>Live train status <span>Tap to collapse</span></summary><div class="railway-result-scroll"><div class="railway-card"><div class="railway-status-row"><div><div class="railway-kicker">Train ${esc(d.trainNumber||d.trainNo||num)}</div><div class="railway-title">${esc(d.trainName||d.train?.name||'Train')}</div><div class="railway-subline">${esc(d.statusNote||d.status||'Live status')}</div></div><div class="railway-badge">LIVE</div></div><div class="railway-subline" style="margin-top:10px">Delay: <b>${esc(d.delayMinutes!=null?d.delayMinutes+' min':(d.currentLocation?.status||'—'))}</b> · Updated ${esc(d.lastUpdatedAt||d.lastUpdate||'—')}</div><div class="railway-timeline">${top.map(p=>`<div class="railway-stop"><span class="railway-dot"></span><div><div class="railway-stop-name">${esc(p.stationName||p.stationCode||p.station?.name||'Station')}</div><div class="railway-stop-meta">${esc(p.actualDeparture||p.actualArrival||p.departure?.actual||p.arrival?.actual||p.scheduledDeparture||p.scheduledArrival||'')}</div></div><div class="railway-stop-state">${esc(p.status||'scheduled')}</div></div>`).join('')}</div></div></div></details></div>`;
     }catch(err){trainResult.innerHTML='<div class="railway-card"><div class="railway-title">'+esc(err.message||'Live train service is unavailable.')+'</div><div class="railway-subline">Add a RailRadar API key in Render for live train tracking.</div></div>';}
     finally{btn.disabled=false;btn.textContent='Track Train';}
   });

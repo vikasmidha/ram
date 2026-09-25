@@ -20,6 +20,9 @@ Launchable Phase 1 build of BURBREEK: news, markets, weather, and product compar
 - Set `REQUIRE_DATABASE=true`.
 - Set `DATABASE_URL` and provider keys as environment secrets.
 - Set `GA_MEASUREMENT_ID` when the production GA4 property exists.
+- Set `YOUTUBE_API_KEY` for Trending Music / Shorts.
+- Set `RAILRADAR_API_KEY` and/or `RAILKIT_API_KEY` for railway utilities.
+- Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) for AI-generated SEO meta descriptions.
 - Put HTTPS/reverse proxy in front of the app.
 
 ## Data policy

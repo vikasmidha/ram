@@ -25,7 +25,7 @@ function fallback(title, dek) {
 }
 
 router.get('/status', (req, res) => {
-  res.json({ provider: 'Google Gemini API', configured: configured(), model: process.env.GEMINI_MODEL || 'gemini-3.8-flash' });
+  res.json({ provider: 'Google Gemini API', configured: configured(), model: process.env.GEMINI_MODEL || 'gemini-2.5-flash' });
 });
 
 async function generateMetaDescription({ title = '', dek = '', tag = '', lang = 'en' } = {}) {
@@ -44,7 +44,7 @@ async function generateMetaDescription({ title = '', dek = '', tag = '', lang = 
     return payload;
   }
 
-  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
   const prompt = lang === 'hi'
     ? `नीचे दिए गए समाचार के लिए 140-155 अक्षरों की एक तथ्यात्मक SEO meta description लिखें। कोई नई जानकारी या दावा न जोड़ें। क्लिकबेट, इमोजी, हैशटैग और उद्धरण चिह्न न रखें। केवल description लौटाएँ।\nश्रेणी: ${tag}\nशीर्षक: ${title}\nविवरण: ${dek}`
     : `Write one factual SEO meta description of 140-155 characters for the news item below. Do not add any new facts or claims. No clickbait, emoji, hashtags or quotation marks. Return only the description.\nCategory: ${tag}\nTitle: ${title}\nDescription: ${dek}`;
@@ -67,7 +67,7 @@ async function generateMetaDescription({ title = '', dek = '', tag = '', lang = 
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body?.error?.message || `Gemini HTTP ${response.status}`);
       const text = body?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join(' ').trim() || '';
-      const description = clean(text.replace(/^['\"`]+|['\"`]+$/g, ''), 170);
+      const description = clean(text.replace(/^['\"`]+|['\"`]+$/g, ''), 155);
       const payload = { success: Boolean(description), configured: true, description: description || fallback(title, dek), source: description ? 'gemini' : 'deterministic-fallback', model };
       cache.set(key, { at: Date.now(), data: payload });
       return payload;
