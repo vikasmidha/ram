@@ -44,7 +44,7 @@ app.get('/health', (req, res) => {
     newsapi: Boolean(process.env.NEWSAPI_KEY) && !process.env.NEWSAPI_KEY.includes('your_'),
     database: db.isConfigured(),
     openweather: Boolean(process.env.OPENWEATHER_KEY) && !process.env.OPENWEATHER_KEY.includes('your_'),
-    railway: Boolean(process.env.RAILKIT_API_KEY) && !process.env.RAILKIT_API_KEY.includes('your_'),
+    railway: Boolean((process.env.RAILRADAR_API_KEY && !process.env.RAILRADAR_API_KEY.includes('your_')) || (process.env.INDIAN_RAIL_API_KEY && !process.env.INDIAN_RAIL_API_KEY.includes('your_')) || (process.env.RAILKIT_API_KEY && !process.env.RAILKIT_API_KEY.includes('your_'))),
     youtube: Boolean(process.env.YOUTUBE_API_KEY) && !process.env.YOUTUBE_API_KEY.includes('your_'),
     gemini: Boolean(process.env.GEMINI_API_KEY) && !process.env.GEMINI_API_KEY.includes('your_'),
     tmdb: Boolean(process.env.TMDB_BEARER_TOKEN || process.env.TMDB_API_KEY),
