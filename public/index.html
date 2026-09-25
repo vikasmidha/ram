@@ -1000,6 +1000,7 @@
   .short-slide{position:relative;min-height:calc(100dvh - 54px);height:calc(100dvh - 54px);scroll-snap-align:start;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;}
   .short-slide-slot{width:100%;aspect-ratio:9/16;max-height:100%;display:flex;align-items:center;justify-content:center;background:#000;}
   .short-slide-slot iframe{width:100%;height:100%;border:0;display:block;}
+  .short-poster,.media-poster{width:100%;height:100%;object-fit:cover;display:block;}
   .short-slide-info{position:absolute;left:0;right:0;bottom:0;padding:38px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.9));color:#fff;pointer-events:none;}
   .short-slide-rank{font-family:'JetBrains Mono',monospace;font-size:8px;opacity:.75;text-transform:uppercase;}
   .short-slide-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;line-height:1.25;margin-top:4px;max-width:85%;}
@@ -1169,59 +1170,11 @@
   .up{color:#5FBE87;}
   .down{color:#E6786A;}
 
-  /* Collapsible header */
-  .app-header{
-    position:sticky;
-    top:0;
-    z-index:30;
-    background:var(--paper);
-    transition:box-shadow .25s ease;
-  }
-  .app-header.scrolled{
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-  }
-  /* Tagline shrinks away once scrolled, keeping only the compact logo/date
-     row + one-line mood summary visible — maximizes reading room. */
-  .app-header .tagline{
-    max-height:30px;
-    opacity:1;
-    overflow:hidden;
-    transition:max-height .22s ease, opacity .16s ease, margin .22s ease;
-  }
-  .app-header.scrolled .tagline{max-height:0; opacity:0; margin-top:0;}
-  .app-header.scrolled .masthead{padding-bottom:6px;}
-  .app-header.scrolled .mood-panel.expanded{max-height:0; opacity:0; margin-top:0;}
-  /* Ticker + category tabs: only needed while browsing, not while reading —
-     they slide away on scroll-down and reappear the moment the user scrolls up. */
-  .app-header .ticker-wrap,
-  .app-header .pill-row{
-    max-height:60px;
-    overflow:hidden;
-    transition:max-height .22s ease, opacity .18s ease, padding .22s ease, border-color .22s ease;
-  }
-  .app-header.tabs-hidden .ticker-wrap{max-height:0; opacity:0; padding-top:0; padding-bottom:0; border-color:transparent;}
-  .app-header.tabs-hidden .pill-row{max-height:0; opacity:0; padding-top:0; padding-bottom:0; border-color:transparent;}
-
-  /* Quick jump back to top once header has collapsed, appears bottom-right above footer */
-  .scroll-top-btn{
-    position:fixed;
-    right:calc(50% - 205px);
-    bottom:72px;
-    z-index:25;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    padding:8px 12px;
-    border-radius:16px;
-    border:1px solid var(--ink);
-    background:var(--ink);
-    color:var(--paper);
-    box-shadow:0 3px 10px rgba(0,0,0,0.25);
-    cursor:pointer;
-    opacity:0;
-    pointer-events:none;
-    transform:translateY(8px);
-    transition:opacity .2s ease, transform .2s ease;
-  }
+  /* Flexible header: scrolls away with feed; logo size remains fixed. */
+  .app-header{position:absolute;top:0;left:0;right:0;z-index:30;background:var(--paper);transform:translateY(0);transition:transform .22s ease,box-shadow .22s ease;will-change:transform;}
+  .app-header.header-hidden{transform:translateY(calc(-100% - 4px));box-shadow:none;}
+  .app-logo{width:42px!important;height:42px!important;min-width:42px;min-height:42px;max-width:42px;max-height:42px;object-fit:contain;display:block;}
+  .scroll-top-btn{position:fixed;right:calc(50% - 205px);bottom:72px;z-index:25;}
   .scroll-top-btn.visible{opacity:1; pointer-events:auto; transform:translateY(0);}
   @media (max-width:430px){
     .scroll-top-btn{right:16px;}
@@ -1449,11 +1402,6 @@
     <div class="masthead-top">
       <div class="logo-row">
         <img class="app-logo" src="/app-logo.png" alt="BURBREEK app logo" width="42" height="42">
-        <div class="brand-wordmark" aria-label="BURBREEK">BURBREEK</div>
-      </div>
-      <div class="masthead-right">
-        <div class="edition-line" id="editionLine">EDITION No. 214</div>
-        <div class="date-line" id="dateLine">SUN, AUG 16</div>
       </div>
     </div>
     <div class="weather-strip unavailable" id="weatherStrip" aria-label="Live weather">
@@ -1476,16 +1424,12 @@
     </div>
 
     <div class="railway-quick" id="railwayQuick" aria-label="Railway quick tools">
-      <div class="railway-quick-head">
-        <span class="railway-quick-title">Indian Railways</span>
-        <span class="railway-quick-live"><span class="live-dot"></span> Live</span>
-      </div>
       <form class="railway-quick-row" id="quickPnrForm">
-        <input id="quickPnrInput" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit PNR" aria-label="10-digit PNR" autocomplete="off">
+        <input id="quickPnrInput" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit PNR" aria-label="10-digit PNR" autocomplete="off">
         <button type="submit" class="railway-quick-btn">Check PNR</button>
       </form>
       <form class="railway-quick-row" id="quickTrainForm">
-        <input id="quickTrainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Train number e.g. 12987" aria-label="5-digit train number" autocomplete="off">
+        <input id="quickTrainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Enter train number" aria-label="5-digit train number" autocomplete="off">
         <button type="submit" class="railway-quick-btn">Track your train</button>
       </form>
       <div class="railway-quick-result" id="railwayQuickResult" aria-live="polite"></div>
@@ -1725,7 +1669,7 @@
       <div class="railway-panel" id="railwayTrainPanel" data-railway-panel="train" hidden>
         <div class="railway-intro">Enter a 5-digit train number and journey date to see live running details.</div>
         <form class="railway-form railway-train-form" id="trainForm">
-          <input id="trainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Train number e.g. 12987" aria-label="5-digit train number" autocomplete="off">
+          <input id="trainInput" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Enter train number" aria-label="5-digit train number" autocomplete="off">
           <input id="trainDateInput" type="date" aria-label="Journey date">
           <button type="submit" class="railway-action">Track Train</button>
         </form>
@@ -2136,6 +2080,8 @@
     sectionScreen.scrollTop = 0;
     setActiveNav(target);
     bindCardClicks();
+    if(target === 'tickets' && typeof window.burbreekRefreshMovies === 'function') window.burbreekRefreshMovies();
+    if(target === 'market' && typeof window.burbreekRefreshMarketNews === 'function') window.burbreekRefreshMarketNews();
   }
 
   function closeSectionScreen(){
@@ -2159,64 +2105,24 @@
     else openSectionScreen(n.dataset.target);
   }));
 
-  // ---- Feed scrolling / compact header / footer ----
-  // The app uses one real scroll container (#feed). This avoids the old
-  // window+sticky combination that could leave blank space after returning
-  // from a section/article and keeps overlays independent from feed scroll.
+  // ---- Feed scrolling / flexible header / footer ----
   (function(){
-    const header = document.getElementById('appHeader');
-    const bottomNavEl = document.querySelector('.bottom-nav');
-    const scrollTopBtn = document.getElementById('scrollTopBtn');
-    const scroller = feedEl;
-    let lastY = scroller.scrollTop;
-    let ticking = false;
-
+    const header=document.getElementById('appHeader');
+    const bottomNavEl=document.querySelector('.bottom-nav');
+    const scrollTopBtn=document.getElementById('scrollTopBtn');
+    const scroller=feedEl;
+    let lastY=scroller.scrollTop, ticking=false;
+    function syncHeaderSpace(){ if(header) feedEl.style.paddingTop=Math.max(14,Math.ceil(header.getBoundingClientRect().height)+12)+'px'; }
+    syncHeaderSpace(); window.addEventListener('resize',syncHeaderSpace,{passive:true});
     function update(){
-      const y = scroller.scrollTop;
-      const goingDown = y > lastY;
-      const goingUp = y < lastY;
-      const delta = Math.abs(y - lastY);
-
-      header.classList.toggle('scrolled', y > 8);
-
-      if(y > 140 && delta > 4){
-        header.classList.toggle('tabs-hidden', goingDown);
-        bottomNavEl.classList.toggle('nav-hidden', goingDown);
-        if(goingUp){
-          header.classList.remove('tabs-hidden');
-          bottomNavEl.classList.remove('nav-hidden');
-        }
-      }else if(y <= 140){
-        header.classList.remove('tabs-hidden');
-        bottomNavEl.classList.remove('nav-hidden');
-      }
-
-      scrollTopBtn.classList.toggle('visible', y > 260);
-      lastY = y;
-      ticking = false;
+      const y=scroller.scrollTop, delta=y-lastY;
+      if(header){ if(y<=18) header.classList.remove('header-hidden'); else if(delta>3) header.classList.add('header-hidden'); else if(delta<-3) header.classList.remove('header-hidden'); }
+      if(y<=18) bottomNavEl?.classList.remove('nav-hidden'); else if(delta>3) bottomNavEl?.classList.add('nav-hidden'); else if(delta<-3) bottomNavEl?.classList.remove('nav-hidden');
+      scrollTopBtn?.classList.toggle('visible',y>260); lastY=y; ticking=false;
     }
-
-    scroller.addEventListener('scroll', () => {
-      if(!ticking){
-        window.requestAnimationFrame(update);
-        ticking = true;
-      }
-    }, {passive:true});
-
-    scrollTopBtn.addEventListener('click', () => {
-      scroller.scrollTo({top:0, behavior:'smooth'});
-    });
+    scroller.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(update);ticking=true;}},{passive:true});
+    scrollTopBtn?.addEventListener('click',()=>scroller.scrollTo({top:0,behavior:'smooth'}));
   })();
-
-  // live-ish date
-  const d = new Date();
-  const opts = { weekday:'short', month:'short', day:'numeric' };
-  document.getElementById('dateLine').textContent = d.toLocaleDateString('en-US', opts).toUpperCase();
-
-  // Edition number — derived from day-of-year so it increments daily, like a real running circular
-  const startOfYear = new Date(d.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((d - startOfYear) / 86400000);
-  document.getElementById('editionLine').textContent = 'EDITION No. ' + (100 + dayOfYear);
 
   // Time-of-day feel
   const hr = d.getHours();
@@ -2502,90 +2408,29 @@
     });
   }
   function activateShortSlide(slide){
-    if(!slide) return;
-    const slot=slide.querySelector('.short-slide-slot');
-    if(!slot) return;
-    stopShortIframes(slot);
-    const item=shortItems[Number(slide.dataset.index)||0];
-    const id=String(item?.id||'').trim();
-    if(!id) return;
-    if(slot.dataset.loaded!=='1'){
-      const iframe=document.createElement('iframe');
-      iframe.src=shortEmbedUrl(id);
-      iframe.title=String(item.title||'YouTube Short');
-      iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      iframe.allowFullscreen=true;
-      iframe.referrerPolicy='strict-origin-when-cross-origin';
-      slot.innerHTML='';
-      slot.appendChild(iframe);
-      slot.dataset.loaded='1';
-    }
-    const idx=Number(slide.dataset.index)||0;
-    mediaViewerTitle.textContent='Shorts · '+(idx+1)+'/'+shortItems.length;
+    if(!slide) return; const slot=slide.querySelector('.short-slide-slot'); if(!slot) return;
+    stopShortIframes(slot); const idx=Number(slide.dataset.index)||0; const item=shortItems[idx]; const id=String(item?.id||'').trim(); if(!id) return;
+    mediaViewerTitle.textContent='Shorts · '+(idx+1)+'/'+shortItems.length; if(slot.dataset.loaded==='1') return;
+    const poster=safeHttpUrl(item.thumbnail||''); slot.innerHTML=poster?`<img class="short-poster" src="${htmlEsc(poster)}" alt="" loading="eager" decoding="async">`:''; slot.dataset.loaded='0';
+    setTimeout(()=>{ if(!mediaViewer?.classList.contains('open')||slot.dataset.loaded==='1') return; const iframe=document.createElement('iframe'); iframe.src=shortEmbedUrl(id); iframe.title=String(item.title||'YouTube Short'); iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; iframe.allowFullscreen=true; iframe.referrerPolicy='strict-origin-when-cross-origin'; iframe.loading='eager'; iframe.style.cssText='width:100%;height:100%;border:0;display:block;'; slot.innerHTML=''; slot.appendChild(iframe); slot.dataset.loaded='1'; },80);
   }
-
   function openShortsViewer(items,startIndex){
-    shortItems=Array.isArray(items)?items.filter(x=>x&&x.id):[];
-    if(!mediaViewer || !shortsFeed || !shortItems.length) return;
-    mediaSingle.hidden=true;
-    shortsFeed.hidden=false;
-    mediaViewerBody.classList.add('short-mode');
-    shortsFeed.innerHTML=shortItems.map((item,i)=>{
-      const yt=safeHttpUrl(item.url)||('https://www.youtube.com/shorts/'+encodeURIComponent(item.id));
-      return `<section class="short-slide" data-index="${i}">
-        <div class="short-slide-slot"></div>
-        <div class="short-slide-info">
-          <div class="short-slide-rank">#${String(item.rank??i+1).padStart(2,'0')} · Trending Short · Worldwide</div>
-          <div class="short-slide-title">${htmlEsc(item.title||'YouTube Short')}</div>
-          <div class="short-slide-meta">${htmlEsc(item.channel||'')} · ${htmlEsc(formatViews(item.views))}</div>
-        </div>
-        <a class="short-slide-open" href="${htmlEsc(yt)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
-      </section>`;
-    }).join('');
-    shortObserver?.disconnect();
-    shortObserver=new IntersectionObserver(entries=>{
-      entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio).slice(0,1).forEach(e=>activateShortSlide(e.target));
-    },{root:shortsFeed,threshold:[0.65,0.9]});
-    shortsFeed.querySelectorAll('.short-slide').forEach(slide=>shortObserver.observe(slide));
-    const idx=Math.max(0,Math.min(Number(startIndex)||0,shortItems.length-1));
-    mediaViewerTitle.textContent='Shorts · '+(idx+1)+'/'+shortItems.length;
-    const target=shortsFeed.querySelector(`.short-slide[data-index="${idx}"]`);
-    target?.scrollIntoView({block:'start'});
+    shortItems=Array.isArray(items)?items.filter(x=>x&&x.id):[]; if(!mediaViewer||!shortsFeed||!shortItems.length) return;
+    mediaSingle.hidden=true; shortsFeed.hidden=false; mediaViewerBody.classList.add('short-mode');
+    shortsFeed.innerHTML=shortItems.map((item,i)=>{ const yt=safeHttpUrl(item.url)||('https://www.youtube.com/shorts/'+encodeURIComponent(item.id)); const poster=safeHttpUrl(item.thumbnail||''); return `<section class="short-slide" data-index="${i}"><div class="short-slide-slot">${poster?`<img class="short-poster" src="${htmlEsc(poster)}" alt="" loading="eager" decoding="async">`:''}</div><div class="short-slide-info"><div class="short-slide-rank">#${String(item.rank??i+1).padStart(2,'0')} · Trending Short · Worldwide</div><div class="short-slide-title">${htmlEsc(item.title||'YouTube Short')}</div><div class="short-slide-meta">${htmlEsc(item.channel||'')} · ${htmlEsc(formatViews(item.views))}</div></div><a class="short-slide-open" href="${htmlEsc(yt)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a></section>`; }).join('');
+    shortObserver?.disconnect(); shortObserver=new IntersectionObserver(entries=>{entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio).slice(0,1).forEach(e=>activateShortSlide(e.target));},{root:shortsFeed,threshold:[0.65,0.9]});
+    shortsFeed.querySelectorAll('.short-slide').forEach(slide=>shortObserver.observe(slide)); const idx=Math.max(0,Math.min(Number(startIndex)||0,shortItems.length-1)); const target=shortsFeed.querySelector(`.short-slide[data-index="${idx}"]`); requestAnimationFrame(()=>{target?.scrollIntoView({block:'start'});activateShortSlide(target);});
   }
-
   function openMusicViewer(item){
-    const id=String(item?.id||'').trim();
-    if(!mediaViewer || !id) return;
-    mediaSingle.hidden=false;
-    shortsFeed.hidden=true;
-    mediaViewerBody.classList.remove('short-mode');
-    shortObserver?.disconnect();
-    shortObserver=null;
-    shortItems=[];
-    shortsFeed.innerHTML='';
-    const title=String(item?.title||'YouTube');
-    const channel=String(item?.channel||'');
-    const views=formatViews(item?.views);
-    const youtubeUrl=safeHttpUrl(item?.url) || ('https://www.youtube.com/watch?v='+encodeURIComponent(id));
-    const embedUrl='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0&modestbranding=1';
-    mediaViewerTitle.textContent=title;
-    mediaViewerMeta.textContent=(channel ? channel+' · ' : '')+views+' · Trending song · India';
-    mediaOpenYoutube.href=youtubeUrl;
-    mediaPlayerWrap.innerHTML='<iframe src="'+embedUrl+'" title="'+htmlEsc(title)+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    const id=String(item?.id||'').trim(); if(!mediaViewer||!id) return; mediaSingle.hidden=false; shortsFeed.hidden=true; mediaViewerBody.classList.remove('short-mode'); shortObserver?.disconnect(); shortObserver=null; shortItems=[]; shortsFeed.innerHTML='';
+    const title=String(item?.title||'YouTube'), channel=String(item?.channel||''); const youtubeUrl=safeHttpUrl(item?.url)||('https://www.youtube.com/watch?v='+encodeURIComponent(id)); mediaViewerTitle.textContent=title; mediaViewerMeta.textContent=(channel?channel+' · ':'')+formatViews(item?.views)+' · Trending song · India'; mediaOpenYoutube.href=youtubeUrl;
+    const poster=safeHttpUrl(item?.thumbnail||''); mediaPlayerWrap.innerHTML=poster?`<img class="media-poster" src="${htmlEsc(poster)}" alt="" loading="eager" decoding="async">`:'';
+    setTimeout(()=>{if(!mediaViewer?.classList.contains('open')) return; const iframe=document.createElement('iframe'); iframe.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0&modestbranding=1'; iframe.title=title; iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; iframe.allowFullscreen=true; iframe.referrerPolicy='strict-origin-when-cross-origin'; iframe.loading='eager'; mediaPlayerWrap.innerHTML=''; mediaPlayerWrap.appendChild(iframe);},80);
   }
-
-  function openMediaViewer(item, kind, collection, startIndex){
-    const id=String(item?.id||'').trim();
-    if(!mediaViewer || !id) return;
-    if(kind==='short') openShortsViewer(collection,startIndex);
-    else openMusicViewer(item);
-    mediaViewer.classList.add('open');
-    mediaViewer.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-    if(!mediaViewerHistoryPushed){
-      history.pushState({burbreekMediaViewer:true},'',location.href.split('#')[0]+'#media='+encodeURIComponent(id));
-      mediaViewerHistoryPushed=true;
-    }
+  function openMediaViewer(item,kind,collection,startIndex){
+    const id=String(item?.id||'').trim(); if(!mediaViewer||!id) return; mediaViewer.classList.add('open'); mediaViewer.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+    if(!mediaViewerHistoryPushed){history.pushState({burbreekMediaViewer:true},'',location.href.split('#')[0]+'#media='+encodeURIComponent(id));mediaViewerHistoryPushed=true;}
+    requestAnimationFrame(()=>{try{if(kind==='short')openShortsViewer(collection,startIndex);else openMusicViewer(item);}catch(err){console.error('[media] viewer error',err);mediaViewerMeta.textContent='Video could not be loaded here.';}});
   }
 
   function closeMediaViewer(fromPopstate=false){
@@ -2650,7 +2495,7 @@
       const badge=document.getElementById('seoStatusBadge');
       const text=document.getElementById('seoStatusText');
       if(badge) badge.textContent=data.source==='gemini'?'AI LIVE':'AI FALLBACK';
-      if(text) text.textContent=data.source==='gemini' ? 'Gemini generated the current SEO description.' : 'Using a safe fallback until Gemini is configured.';
+      if(text) text.textContent=data.source==='gemini' ? 'Gemini generated the current SEO description.' : (data.configured ? 'Gemini is configured; live generation is temporarily unavailable.' : 'Using a safe fallback until Gemini is configured.');
     }catch(e){}
   }
   loadLiveMedia();
@@ -2901,7 +2746,7 @@
     async function loadLiveMarketNews(){
       const wrap=document.getElementById('marketNewsList');
       if(!wrap) return;
-      const data=await tryFetch('/api/market-news');
+      const data=await tryFetch('/api/market-news?_='+Date.now());
       if(!data?.success || !Array.isArray(data.articles) || !data.articles.length){
         wrap.innerHTML='<div class="media-status">Latest market news is temporarily unavailable.</div>';
         return;
@@ -2977,7 +2822,7 @@
     }
 
     async function loadLiveMarkets(){
-      const data = await tryFetch('/api/markets');
+      const data = await tryFetch('/api/markets?_='+Date.now());
       if(!data || !data.quotes) return;
       const bySymbol = {};
       data.quotes.forEach(q => { if(!q.error) bySymbol[q.symbol] = q; });
@@ -2987,10 +2832,10 @@
         const valEl = card.querySelector('.idx-val');
         const chgEl = card.querySelector('.idx-chg');
         if(!q || typeof q.price !== 'number') {
-          if(valEl) valEl.textContent = '--';
+          if(valEl) valEl.textContent = '—';
           if(chgEl) {
             chgEl.className = 'idx-chg';
-            chgEl.textContent = 'Market data unavailable';
+            chgEl.textContent = 'Live snapshot unavailable';
           }
           return;
         }
@@ -3138,7 +2983,8 @@
     loadLiveMovies();
     loadLiveWeather();
     document.getElementById('ticketRefreshMovies')?.addEventListener('click', loadLiveMovies);
-    setInterval(() => { loadLiveNews(); loadLiveMarketNews(); loadLiveMovies(); }, 5 * 60 * 1000);
+    setInterval(() => { loadLiveNews(); loadLiveMarkets(); loadLiveMarketNews(); loadLiveMovies(); }, 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ loadLiveMarkets(); loadLiveMarketNews(); loadLiveNews(); } });
     loadLivePrices('grocery', '#sec-grocery');
   })();
 </script>
