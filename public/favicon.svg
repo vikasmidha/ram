@@ -1,6 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect x="8" y="4" width="48" height="56" rx="16" fill="#1B1B1B"/>
-  <circle cx="32" cy="19" r="7" fill="#E53935"/>
-  <circle cx="32" cy="32" r="7" fill="#43A047"/>
-  <circle cx="32" cy="45" r="7" fill="#1E88E5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <!-- Icon Mark -->
+  <g transform="translate(10, 10)">
+    <!-- App Icon Background -->
+    <rect x="0" y="0" width="100" height="100" rx="24" fill="#1E293B"/>
+    
+    <!-- Vertical Spine -->
+    <rect x="28" y="24" width="10" height="52" rx="5" fill="#FFFFFF"/>
+    
+    <!-- Top Curve (Platform A Price) -->
+    <path d="M 38 24 C 65 24, 65 48, 38 48" 
+          fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+          
+    <!-- Bottom Trend Arrow (Lower Price / Deal Found) -->
+    <path d="M 38 48 C 75 48, 75 76, 44 76" 
+          fill="none" stroke="#FF385C" stroke-width="9" stroke-linecap="round"/>
+    <polygon points="40,76 52,70 52,82" fill="#FF385C"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="130" y="70" font-family="System-UI, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="44" fill="#1E293B" letter-spacing="-1">
+    burbreek
+  </text>
+  <text x="131" y="91" font-family="System-UI, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13" fill="#FF385C" letter-spacing="3">
+    LIVE PRICE TRACKER
+  </text>
 </svg>
