@@ -1,11 +1,72 @@
-const express=require('express');const fetch=require('node-fetch');const router=express.Router();const cache=new Map();const env=k=>String(process.env[k]||'').trim();const fail=(r,s,m,id)=>r.status(s).json({success:false,error:m,requestId:id});const validPnr=p=>/^\d{10}$/.test(String(p||'').replace(/\D/g,''));const validTrain=n=>/^\d{5}$/.test(String(n||'').trim());const validDate=d=>/^\d{2}-\d{2}-\d{4}$/.test(String(d||'').trim());
-async function json(url,opt={}){const c=new AbortController(),t=setTimeout(()=>c.abort(),10000);try{const r=await fetch(url,{...opt,signal:c.signal,headers:{Accept:'application/json',...(opt.headers||{})}});const b=await r.json().catch(()=>({}));if(!r.ok)throw new Error(b?.error?.message||b?.message||`HTTP ${r.status}`);return b;}finally{clearTimeout(t);}}
-async function pnrIndian(p){const key=env('INDIAN_RAIL_API_KEY');if(!key)return null;return normalize(await json(`http://indianrailapi.com/api/pnrstatus/apikey/${encodeURIComponent(key)}/pnr/${encodeURIComponent(p)}/`),p);}
-function normalize(raw,p){const d=raw?.data||raw;if(!d)throw new Error('Empty PNR response');if(String(d.status||'').toLowerCase()==='error')throw new Error(d.message||'PNR lookup failed');const ps=Array.isArray(d.passengers)?d.passengers:[];return{success:true,provider:'Indian Rail API',data:{pnr:String(d.pnr||p),train:{number:d.train_number||d.trainNumber||'',name:d.train_name||d.trainName||''},journey:{dateOfJourney:d.travel_date||d.journeyDate||'',source:d.from||{},destination:d.to||{},class:d.class||'',quota:d.quota||''},passengers:ps.map((x,i)=>({serialNumber:x.number||x.serialNumber||i+1,booking:{status:x.booking_status||x.bookingStatus||'',details:x.booking_status||x.bookingStatus||''},current:{status:x.current_status||x.currentStatus||'',details:x.current_status||x.currentStatus||'',coach:x.coach||'',berthNo:x.berth||x.berthNo||''}})),chart:{status:d.chart_prepared?'Prepared':'Not prepared'},booking:{fare:d.total_fare||d.fare||null}}};}
-async function pnrRailkit(p){const key=env('RAILKIT_API_KEY');if(!key)return null;const m=await import('railkit');if(typeof m.configure!=='function'||typeof m.checkPNRStatus!=='function')throw new Error('RailKit SDK unavailable');m.configure(key);return m.checkPNRStatus(p);}
-async function radar(n,date){const key=env('RAILRADAR_API_KEY');if(!key)return null;const iso=`${date.slice(6)}-${date.slice(3,5)}-${date.slice(0,2)}`;const u=new URL(`https://api.railradar.in/v1/trains/${encodeURIComponent(n)}/live`);u.searchParams.set('date',iso);return{success:true,provider:'RailRadar',data:normalizeTrain(await json(u.toString(),{headers:{Authorization:`Bearer ${key}`}}),n,date)};}
-function normalizeTrain(raw,n,date){const d=raw?.data||raw,route=Array.isArray(d?.route)?d.route:(Array.isArray(d?.timeline)?d.timeline:[]);return{trainNo:String(d?.train_number||d?.trainNumber||n),trainName:d?.train_name||d?.trainName||'',date:d?.date||date,statusNote:d?.status_note||d?.status||'Live status available',lastUpdate:d?.updated_at||d?.last_update||new Date().toISOString(),currentStationCode:d?.current_station?.code||d?.currentStationCode||'',timeline:route.map(p=>({stationName:p.station_name||p.stationName||p.station?.name||'',stationCode:p.station_code||p.stationCode||p.station?.code||'',status:p.status||'',platform:p.platform||'',type:p.type||'stoppage',arrival:{actual:p.arrival?.actual||p.actual_arrival||'',scheduled:p.arrival?.scheduled||p.scheduled_arrival||''},departure:{actual:p.departure?.actual||p.actual_departure||'',scheduled:p.departure?.scheduled||p.scheduled_departure||''}}))};}
-async function railkitTrain(n,date){const key=env('RAILKIT_API_KEY');if(!key)return null;const m=await import('railkit');if(typeof m.configure!=='function'||typeof m.trackTrain!=='function')throw new Error('RailKit SDK unavailable');m.configure(key);return m.trackTrain(n,date);}
-router.get('/status',(req,res)=>res.json({pnr:{configured:Boolean(env('INDIAN_RAIL_API_KEY')||env('RAILKIT_API_KEY')),provider:env('INDIAN_RAIL_API_KEY')?'Indian Rail API':'RailKit'},liveTrain:{configured:Boolean(env('RAILRADAR_API_KEY')||env('RAILKIT_API_KEY')),provider:env('RAILRADAR_API_KEY')?'RailRadar':'RailKit'}}));
-router.get('/pnr',async(req,res)=>{const p=String(req.query.pnr||'').replace(/\D/g,'');if(!validPnr(p))return fail(res,400,'PNR must be exactly 10 digits.',req.requestId);for(const fn of [pnrIndian,pnrRailkit]){try{const r=await fn(p);if(r&&r.success!==false)return res.json(r);}catch(e){console.error('[railway][pnr]',e.message||e);}}return fail(res,503,'PNR provider unavailable. Add INDIAN_RAIL_API_KEY or RAILKIT_API_KEY in Render.',req.requestId);});
-router.get('/train/:trainNumber/live',async(req,res)=>{const n=String(req.params.trainNumber||'').trim(),date=String(req.query.date||'').trim();if(!validTrain(n))return fail(res,400,'Train number must be exactly 5 digits.',req.requestId);if(!validDate(date))return fail(res,400,'Journey date must be DD-MM-YYYY.',req.requestId);const k=n+':'+date,c=cache.get(k);if(c&&Date.now()-c.at<20000)return res.json(c.data);for(const fn of [radar,railkitTrain]){try{const r=await fn(n,date);if(r&&r.success!==false){cache.set(k,{at:Date.now(),data:r});return res.json(r);}}catch(e){console.error('[railway][train]',e.message||e);}}return fail(res,503,'Live train provider unavailable. Add RAILRADAR_API_KEY or RAILKIT_API_KEY in Render.',req.requestId);});module.exports=router;
+const express=require('express');
+const fetch=require('node-fetch');
+
+const router=express.Router();
+const trainCache=new Map();
+const TRAIN_CACHE_TTL_MS=45*1000;
+
+function fail(res,status,message,requestId){return res.status(status).json({success:false,error:message,requestId});}
+function validPnr(pnr){return /^\d{10}$/.test(String(pnr||'').replace(/\D/g,''));}
+function validTrain(n){return /^\d{5}$/.test(String(n||'').trim());}
+function validDate(d){return !d || /^\d{2}-\d{2}-\d{4}$/.test(String(d).trim());}
+function toRailRadarDate(d){
+  if(!d) return '';
+  const [dd,mm,yyyy]=String(d).split('-');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+async function railRadarTrain(number,date,requestId){
+  if(!process.env.RAILRADAR_API_KEY){const e=new Error('Live train tracking is not configured. Add RAILRADAR_API_KEY in Render.');e.code='NOT_CONFIGURED';throw e;}
+  const url=new URL(`https://api.railradar.in/v1/trains/${number}/live`);
+  if(date) url.searchParams.set('date',toRailRadarDate(date));
+  url.searchParams.set('authoritative','true');
+  const res=await fetch(url.toString(),{headers:{Accept:'application/json',Authorization:`Bearer ${process.env.RAILRADAR_API_KEY}`,'X-Request-Id':requestId||''},timeout:10000});
+  const body=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(body?.error?.message||body?.error||`RailRadar HTTP ${res.status}`);
+  return body;
+}
+
+async function railKitPnr(pnr){
+  if(!process.env.RAILKIT_API_KEY){const e=new Error('PNR status service is not configured. Add RAILKIT_API_KEY in Render.');e.code='NOT_CONFIGURED';throw e;}
+  let mod;
+  try{mod=await import('railkit');}catch(e){e.code='SDK_MISSING';throw new Error('PNR provider package is unavailable after deployment.');}
+  if(typeof mod.configure!=='function'||typeof mod.checkPNRStatus!=='function') throw new Error('PNR provider SDK is unavailable or incompatible.');
+  mod.configure(process.env.RAILKIT_API_KEY);
+  return mod.checkPNRStatus(pnr);
+}
+
+router.get('/pnr',async(req,res)=>{
+  const pnr=String(req.query.pnr||'').replace(/\D/g,'');
+  if(!validPnr(pnr)) return fail(res,400,'PNR must be exactly 10 digits.',req.requestId);
+  try{
+    const result=await railKitPnr(pnr);
+    if(!result||result.success===false) return fail(res,502,result?.error||'Unable to fetch PNR status.',req.requestId);
+    return res.json(result);
+  }catch(err){
+    console.error(`[${req.requestId||'unknown'}] railway PNR failed`,err.message||err);
+    return fail(res,err.code==='NOT_CONFIGURED'?503:502,err.code==='NOT_CONFIGURED'?err.message:'Railway PNR service is temporarily unavailable.',req.requestId);
+  }
+});
+
+router.get('/train/:trainNumber/live',async(req,res)=>{
+  const number=String(req.params.trainNumber||'').trim();
+  const date=String(req.query.date||'').trim();
+  if(!validTrain(number)) return fail(res,400,'Train number must be exactly 5 digits.',req.requestId);
+  if(!validDate(date)) return fail(res,400,'Journey date must be DD-MM-YYYY or omitted for today.',req.requestId);
+  const cacheKey=`${number}:${date||'today'}`;
+  const cached=trainCache.get(cacheKey);
+  if(cached&&Date.now()-cached.at<TRAIN_CACHE_TTL_MS) return res.json(cached.data);
+  try{
+    const result=await railRadarTrain(number,date,req.requestId);
+    trainCache.set(cacheKey,{at:Date.now(),data:result});
+    res.set('Cache-Control','no-store');
+    return res.json(result);
+  }catch(err){
+    console.error(`[${req.requestId||'unknown'}] railway train failed`,err.message||err);
+    return fail(res,err.code==='NOT_CONFIGURED'?503:502,err.code==='NOT_CONFIGURED'?err.message:'Live train service is temporarily unavailable.',req.requestId);
+  }
+});
+
+router.get('/status',(req,res)=>res.json({provider:'RailRadar + RailKit',trainTrackingConfigured:Boolean(process.env.RAILRADAR_API_KEY),pnrConfigured:Boolean(process.env.RAILKIT_API_KEY)}));
+
+module.exports=router;

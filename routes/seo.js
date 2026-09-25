@@ -28,21 +28,20 @@ router.get('/status', (req, res) => {
   res.json({ provider: 'Google Gemini API', configured: configured(), model: process.env.GEMINI_MODEL || 'gemini-3.8-flash' });
 });
 
-router.get('/meta-description', async (req, res) => {
-  const title = clean(req.query.title, 220);
-  const dek = clean(req.query.dek, 500);
-  const tag = clean(req.query.tag, 60);
-  const lang = String(req.query.lang || 'en').toLowerCase() === 'hi' ? 'hi' : 'en';
-  if (!title && !dek) return res.status(400).json({ success: false, error: 'title or dek is required' });
+async function generateMetaDescription({ title = '', dek = '', tag = '', lang = 'en' } = {}) {
+  title = clean(title, 220);
+  dek = clean(dek, 500);
+  tag = clean(tag, 60);
+  lang = String(lang || 'en').toLowerCase() === 'hi' ? 'hi' : 'en';
+  if (!title && !dek) return { success: false, configured: configured(), description: fallback(title, dek), source: 'deterministic-fallback' };
 
   const key = makeKey(title, dek, tag, lang);
   const cached = cache.get(key);
-  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return res.json(cached.data);
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.data;
 
   if (!configured()) {
     const payload = { success: false, configured: false, description: fallback(title, dek), source: 'deterministic-fallback' };
-    cache.set(key, { at: Date.now(), data: payload });
-    return res.json(payload);
+    return payload;
   }
 
   const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
@@ -71,16 +70,22 @@ router.get('/meta-description', async (req, res) => {
       const description = clean(text.replace(/^['\"`]+|['\"`]+$/g, ''), 170);
       const payload = { success: Boolean(description), configured: true, description: description || fallback(title, dek), source: description ? 'gemini' : 'deterministic-fallback', model };
       cache.set(key, { at: Date.now(), data: payload });
-      return res.json(payload);
+      return payload;
     } finally {
       clearTimeout(timer);
     }
   } catch (err) {
     console.error('[seo] Gemini meta generation failed', err.message || err);
     const payload = { success: false, configured: true, description: fallback(title, dek), source: 'deterministic-fallback', error: 'AI generation unavailable' };
-    cache.set(key, { at: Date.now(), data: payload });
-    return res.json(payload);
+    return payload;
   }
+}
+
+router.get('/meta-description', async (req, res) => {
+  const result = await generateMetaDescription(req.query);
+  if (!req.query.title && !req.query.dek) return res.status(400).json({ success: false, error: 'title or dek is required' });
+  res.set('Cache-Control', 'no-store').json(result);
 });
 
 module.exports = router;
+module.exports.generateMetaDescription = generateMetaDescription;
